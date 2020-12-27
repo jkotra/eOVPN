@@ -1,0 +1,11 @@
+.vpn_connected {
+    color: rgb(27, 98, 27);
+}
+
+.vpn_disconnected {
+    color: rgb(119, 14, 14);
+}
+
+.reset_button {
+    background: rgb(121, 21, 21);
+}
