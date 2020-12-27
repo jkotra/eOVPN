@@ -14,6 +14,7 @@
     <property name="modal">True</property>
     <property name="default-width">700</property>
     <property name="default-height">400</property>
+    <signal name="delete-event" handler="on_settings_window_delete_event" after="yes" swapped="no"/>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
@@ -360,10 +361,23 @@
                 <property name="can-focus">False</property>
               </object>
               <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="padding">4</property>
+                <property name="pack-type">end</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkSpinner" id="settings_spinner">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+              </object>
+              <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="padding">4</property>
-                <property name="position">0</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>
