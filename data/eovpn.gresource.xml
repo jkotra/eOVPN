@@ -10,7 +10,7 @@
     <file>images/lock.png</file>
     <file>css/main.css</file>
 
-    <file>country_flags/svg/aruba.svg</file>
+        <file>country_flags/svg/aruba.svg</file>
 		<file>country_flags/svg/mauritania.svg</file>
 		<file>country_flags/svg/italy.svg</file>
 		<file>country_flags/svg/armenia.svg</file>
