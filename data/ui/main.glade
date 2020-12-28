@@ -226,7 +226,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <child>
-                  <object class="GtkSpinner" id="spinner">
+                  <object class="GtkSpinner" id="main_spinner">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                   </object>
