@@ -7,7 +7,7 @@
     <file>ui/log.glade</file>
     <file>ui/settings.glade</file>
 
-    <file>images/lock.png</file>
+	<file>icons/com.github.jkotra.eovpn.svg</file>
     <file>css/main.css</file>
 
         <file>country_flags/svg/aruba.svg</file>

@@ -79,6 +79,7 @@
     <property name="can-focus">False</property>
     <property name="default-width">400</property>
     <property name="default-height">750</property>
+    <property name="startup-id">com.github.jkotra.eovpn</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>

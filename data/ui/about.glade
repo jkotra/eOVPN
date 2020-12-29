@@ -14,9 +14,10 @@
     <property name="website">https://github.com/jkotra/eOVPN</property>
     <property name="authors">Jagadeesh Kotra</property>
     <property name="artists">OpenVPN
-FlatIcon</property>
+Icon8</property>
     <property name="logo-icon-name">image-missing</property>
     <property name="license-type">gpl-3-0</property>
+    <signal name="delete-event" handler="on_about_dlg_delete_event" after="yes" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox">
         <property name="can-focus">False</property>
