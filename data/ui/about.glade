@@ -14,7 +14,8 @@
     <property name="website">https://github.com/jkotra/eOVPN</property>
     <property name="authors">Jagadeesh Kotra</property>
     <property name="artists">OpenVPN
-Icon8</property>
+Icon8
+SmashIcons</property>
     <property name="logo-icon-name">image-missing</property>
     <property name="license-type">gpl-3-0</property>
     <signal name="delete-event" handler="on_about_dlg_delete_event" after="yes" swapped="no"/>

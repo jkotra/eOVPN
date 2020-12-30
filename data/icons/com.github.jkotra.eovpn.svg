@@ -7,15 +7,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="50.339172mm"
-   height="32mm"
-   viewBox="0 0 50.339171 31.999999"
+   width="40"
+   height="40"
+   viewBox="0 0 40 40"
    version="1.1"
-   id="svg150"
-   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
-   sodipodi:docname="com.github.jkotra.eovpn.svg">
+   id="SVGRoot"
+   sodipodi:docname="com.github.jkotra.eovpn.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
   <defs
-     id="defs144" />
+     id="defs10" />
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -23,24 +23,26 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.94"
-     inkscape:cx="26.296236"
-     inkscape:cy="10.337447"
-     inkscape:document-units="mm"
+     inkscape:zoom="2"
+     inkscape:cx="37.584939"
+     inkscape:cy="16.666667"
+     inkscape:document-units="px"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
-     showgrid="false"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0"
+     showgrid="true"
      inkscape:window-width="1743"
-     inkscape:window-height="747"
-     inkscape:window-x="50"
-     inkscape:window-y="119"
-     inkscape:window-maximized="0" />
+     inkscape:window-height="1009"
+     inkscape:window-x="0"
+     inkscape:window-y="34"
+     inkscape:window-maximized="0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid19"
+       originx="-109"
+       originy="-90" />
+  </sodipodi:namedview>
   <metadata
-     id="metadata147">
+     id="metadata13">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -55,30 +57,87 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-98.875788,-145.43155)">
+     transform="translate(-109,-90)">
     <g
-       id="g238"
-       transform="matrix(0.8,0,0,0.8,114.01496,142.23155)">
+       id="g2022"
+       transform="translate(105,86)">
       <path
          fill="#ff9100"
          d="M 24,4 C 12.955,4 4,12.954 4,24 c 0,7.393 4.022,13.833 9.987,17.295 l 4.506,-7.783 C 15.212,31.608 13,28.066 13,24 c 0,-6.075 4.925,-11 11,-11 6.075,0 11,4.925 11,11 0,4.066 -2.212,7.608 -5.493,9.512 l 4.506,7.783 C 39.978,37.833 44,31.393 44,24 44,12.954 35.045,4 24,4 Z"
-         id="path224" />
+         id="path2008" />
       <path
          fill="#1a237e"
          d="m 30,24 c 0,-3.314 -2.687,-6 -6,-6 -3.313,0 -6,2.686 -6,6 0,2.556 1.601,4.733 3.852,5.597 l -2.56,13.822 C 20.805,43.785 22.376,44 24,44 c 1.624,0 3.195,-0.215 4.707,-0.58 L 26.147,29.598 C 28.399,28.733 30,26.556 30,24 Z"
-         id="path226" />
+         id="path2010" />
     </g>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:51.2811px;line-height:1.25;font-family:sans-serif;fill:#999999;fill-opacity:1;stroke:none;stroke-width:1.28203"
-       x="99.260376"
-       y="177.82227"
-       id="text242"
-       transform="scale(1.0062793,0.99375989)"><tspan
-         sodipodi:role="line"
-         id="tspan240"
-         x="99.260376"
-         y="177.82227"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Dexaters Sillent';-inkscape-font-specification:'Dexaters Sillent';fill:#999999;stroke-width:1.28203">e</tspan></text>
+    <g
+       id="g2298"
+       transform="matrix(0.27586207,0,0,0.27586207,132.58621,112.82759)">
+      <path
+         style="fill:#e7eced"
+         d="M 45,26 H 13 C 5.85,26 0,20.15 0,13 v 0 C 0,5.85 5.85,0 13,0 h 32 c 7.15,0 13,5.85 13,13 v 0 c 0,7.15 -5.85,13 -13,13 z"
+         id="path2234" />
+      <path
+         style="fill:#e7eced"
+         d="m 13,58 h 32 c 7.15,0 13,-5.85 13,-13 v 0 C 58,37.85 52.15,32 45,32 H 13 C 5.85,32 0,37.85 0,45 v 0 c 0,7.15 5.85,13 13,13 z"
+         id="path2236" />
+      <circle
+         style="fill:#88c057;stroke:#659c35;stroke-width:2;stroke-linecap:round;stroke-miterlimit:10"
+         cx="45"
+         cy="13"
+         r="9"
+         id="circle2238" />
+      <circle
+         style="fill:#ed7161;stroke:#d75a4a;stroke-width:2;stroke-linecap:round;stroke-miterlimit:10"
+         cx="13"
+         cy="45"
+         r="9"
+         id="circle2240" />
+      <g
+         id="g2242">
+</g>
+      <g
+         id="g2244">
+</g>
+      <g
+         id="g2246">
+</g>
+      <g
+         id="g2248">
+</g>
+      <g
+         id="g2250">
+</g>
+      <g
+         id="g2252">
+</g>
+      <g
+         id="g2254">
+</g>
+      <g
+         id="g2256">
+</g>
+      <g
+         id="g2258">
+</g>
+      <g
+         id="g2260">
+</g>
+      <g
+         id="g2262">
+</g>
+      <g
+         id="g2264">
+</g>
+      <g
+         id="g2266">
+</g>
+      <g
+         id="g2268">
+</g>
+      <g
+         id="g2270">
+</g>
+    </g>
   </g>
 </svg>
