@@ -87,7 +87,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="openvpn_config_remote_dir">
+                  <object class="GtkEntry" id="openvpn_config_remote_addr">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="max-width-chars">128</property>
@@ -111,7 +111,7 @@
                     <property name="margin-right">4</property>
                     <property name="margin-end">4</property>
                     <property name="margin-bottom">6</property>
-                    <signal name="clicked" handler="on_settings_validate_btn_clicked" object="openvpn_config_remote_dir" swapped="no"/>
+                    <signal name="clicked" handler="on_settings_validate_btn_clicked" object="openvpn_config_remote_addr" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -318,13 +318,13 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkFileChooserButton" id="cert_chooser">
+                      <object class="GtkFileChooserButton" id="crt_chooser">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="margin-top">4</property>
                         <property name="filter">filefilter1</property>
                         <property name="title" translatable="yes"/>
-                        <signal name="file-set" handler="on_cert_chooser_file_set" swapped="no"/>
+                        <signal name="file-set" handler="on_crt_chooser_file_set" swapped="no"/>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -358,7 +358,7 @@
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkLabel" id="openvpn_remote_check">
+              <object class="GtkLabel" id="openvpn_settings_statusbar">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
               </object>
@@ -410,7 +410,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <signal name="clicked" handler="on_settings_apply_btn_clicked" object="openvpn_config_remote_dir" swapped="no"/>
+                <signal name="clicked" handler="on_settings_apply_btn_clicked" object="openvpn_config_remote_addr" swapped="no"/>
               </object>
               <packing>
                 <property name="pack-type">end</property>

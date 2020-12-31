@@ -10,3 +10,10 @@ install_data(
     'icons/'+project_id+'.svg',
     install_dir: join_paths(icondir, 'scalable/apps')
 )
+
+
+#install application desktop file
+install_data(
+    project_id + '.desktop',
+    install_dir: join_paths(datadir, 'applications')
+)

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=eOVPN
+GenericName=eOVPN
+Comment=OpenVPN manager
+Icon=com.github.jkotra.eovpn
+Exec=eovpn %U
+Terminal=false
+Type=Application
+Categories=GNOME;GTK;VPN;
+StartupNotify=false
