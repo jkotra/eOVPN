@@ -137,18 +137,51 @@
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="ip_lbl">
+              <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">IP: 127.0.0.1</property>
-                <attributes>
-                  <attribute name="scale" value="1.2"/>
-                </attributes>
+                <child type="center">
+                  <object class="GtkLabel" id="ip_lbl">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">IP: 127.0.0.1</property>
+                    <attributes>
+                      <attribute name="scale" value="1.2"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">4</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <object class="GtkButton" id="copy_btn">
+                    <property name="label">gtk-copy</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="halign">start</property>
+                    <property name="use-stock">True</property>
+                    <property name="always-show-image">True</property>
+                    <signal name="clicked" handler="on_copy_btn_clicked" object="ip_lbl" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="padding">8</property>
+                    <property name="pack-type">end</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="padding">4</property>
                 <property name="position">2</property>
               </packing>
             </child>
