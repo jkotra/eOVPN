@@ -230,6 +230,7 @@
                   <object class="GtkSpinner" id="main_spinner">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="active">True</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -240,7 +241,20 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkStatusbar" id="status_bar">
+                  <object class="GtkImage" id="statusbar_icon">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="icon-name">dialog-ok</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">4</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkStatusbar" id="statusbar">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="margin-left">10</property>
