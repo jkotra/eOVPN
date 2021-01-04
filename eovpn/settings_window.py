@@ -5,7 +5,10 @@ import typing
 import json
 import logging
 import subprocess
+import re
 from os import path
+from urllib.parse import urlparse
+
 
 class SettingsWindow(Base):
     def __init__(self):
@@ -82,9 +85,14 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         if self.remote_addr_entry.get_text() != '':
             self.set_setting("remote", self.remote_addr_entry.get_text())
-            folder_name = self.remote_addr_entry.get_text().split('/')[-1]
-            self.set_setting("remote_savepath", path.join(self.EOVPN_CONFIG_DIR, folder_name))
+            
+            url = self.remote_addr_entry.get_text().strip()
 
+            folder_name = urlparse(url).netloc
+            if folder_name == '':
+                folder_name = "configs"
+
+            self.set_setting("remote_savepath", path.join(self.EOVPN_CONFIG_DIR, folder_name))
 
         if self.req_auth.get_active():
             self.set_setting("req_auth", True)
@@ -100,12 +108,9 @@ class SettingsWindowSignalHandler(SettingsManager):
             f.close()
 
 
-
-
-
     def on_reset_btn_clicked(self, button):
         subprocess.run(["rm", self.EOVPN_CONFIG_DIR + "/settings.json"])
-        #TODO - rest elements to blank
+        #TODO - reset elements to blank
 
         self.remote_addr_entry.set_text("")
         self.update_on_start.set_active(False)

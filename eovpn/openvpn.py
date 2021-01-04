@@ -127,8 +127,15 @@ class OpenVPN:
     
     def load_configs_to_tree(self, storage, config_folder):
         storage.clear()
+        
+        try:
+            config_list = os.listdir(config_folder)
+        except FileNotFoundError:
+            return False
 
-        config_list = os.listdir(config_folder)
+        if len(config_list) <= 0:
+            return False
+
         config_list.sort()
 
         for f in config_list:
@@ -169,6 +176,8 @@ class OpenVPN:
 
     
     def validate_remote(self, remote, result_lbl):
+
+
         def validate():
             self.spinner.start()
 

@@ -1,5 +1,5 @@
 import gi
-from gi.repository import Gtk, GLib, GdkPixbuf
+from gi.repository import Gtk, GLib, GdkPixbuf, Notify
 import os
 import subprocess
 import re
@@ -7,6 +7,8 @@ import json
 import logging
 
 builder_record = {}
+
+logger = logging.getLogger(__name__)
 
 class Base:
 
@@ -43,6 +45,11 @@ class Base:
         img = GdkPixbuf.Pixbuf.new_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/" + country_name + ".svg")
         img = img.scale_simple(64,64, GdkPixbuf.InterpType.BILINEAR)
         return img
+
+    def send_notification(self, action, message):
+        Notify.init("eOVPN")
+        notif = Notify.Notification.new(action, message, "dialog-information")
+        notif.show()    
 
 
 class SettingsManager(Base):
@@ -90,5 +97,4 @@ class SettingsManager(Base):
         f.write(json.dumps(json_content, indent=2))
         f.close()
 
-        print("setting changed", json_content)
-        #TODO: remove this print
+        logger.debug(json_content)
