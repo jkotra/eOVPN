@@ -8,8 +8,19 @@ import threading
 import os
 from time import sleep
 import logging
+from gi.repository import Gtk,GLib
 
 logger = logging.getLogger(__name__)
+
+def message_dialog(title, primary_text, secondary_text):
+    messagedialog = Gtk.MessageDialog(message_format="MessageDialog")
+    messagedialog.set_title(title)
+    messagedialog.set_markup("<span size='12000'><b>{}</b></span>".format(primary_text))
+    messagedialog.format_secondary_text(secondary_text)
+    messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
+    messagedialog.run()
+    messagedialog.hide()
+
 
 class OpenVPN:
 
@@ -19,7 +30,8 @@ class OpenVPN:
         self.statusbar_icon = statusbar_icon
         self.updater = updater
 
-        self.ovpn = re.compile(".ovpn")
+        self.ovpn = re.compile('.ovpn')
+        self.crt = re.compile(r'.crt|cert')
     
     def __set_statusbar_icon(self, result: bool):
         if self.statusbar_icon is not None:
@@ -153,9 +165,29 @@ class OpenVPN:
                 if test_remote.status_code == 200:
 
                     x_zip = zipfile.ZipFile(io.BytesIO(test_remote.content), "r")
-                    configs = list( filter(self.ovpn.findall, x_zip.namelist() ) )
+                    
+
+                    #remove path
+                    #for file in x_zip.infolist():
+                        #file.filename = os.path.basename(file.filename)
+
+
+                    files_in_zip = x_zip.namelist()
+
+
+                    configs = list( filter(self.ovpn.findall, files_in_zip) )
+                    certs = list( filter(self.crt.findall, files_in_zip ) )
+                    all_files = configs + certs
                     if len(configs) > 0:
-                        x_zip.extractall(destination)
+
+                        for file_name in all_files:
+                            
+                            file = x_zip.getinfo(file_name)
+                            file.filename = os.path.basename(file.filename)
+                            logger.info(file.filename)
+                            x_zip.extract(file, destination)
+
+                        #x_zip.extractall(destination)
                         self.statusbar.push(1, "Config(s) updated!")
                         self.__set_statusbar_icon(True)
                     else:
@@ -175,24 +207,25 @@ class OpenVPN:
 
 
     
-    def validate_remote(self, remote, result_lbl):
+    def validate_remote(self, remote):
 
 
         def validate():
             self.spinner.start()
 
             try:
-                test_remote = requests.get(remote)
+                test_remote = requests.get(remote, timeout=360)
                 if test_remote.status_code == 200:
                     x_zip = zipfile.ZipFile(io.BytesIO(test_remote.content), "r")
                     configs = list( filter(self.ovpn.findall, x_zip.namelist() ) )
                     if len(configs) > 0:
-                        result_lbl.set_text("Valid remote. {} configs.".format(len(configs)))
+                        GLib.idle_add(message_dialog, "Success", "Valid Remote", "{} OpenVPN configuration's found.".format(len(configs)))
                     else:
                         raise Exception("No configs found!")
             except Exception as e:
-                result_lbl.set_text("Error: {}".format(e))
+                GLib.idle_add(message_dialog, "Error", "Error", str(e))
             self.spinner.stop()
+            
 
         th = threading.Thread(target=validate)
         th.start()    

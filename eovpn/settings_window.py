@@ -6,6 +6,7 @@ import json
 import logging
 import subprocess
 import re
+import os
 from os import path
 from urllib.parse import urlparse
 
@@ -83,16 +84,27 @@ class SettingsWindowSignalHandler(SettingsManager):
 
     def on_settings_apply_btn_clicked(self, buttton):
 
-        if self.remote_addr_entry.get_text() != '':
-            self.set_setting("remote", self.remote_addr_entry.get_text())
-            
-            url = self.remote_addr_entry.get_text().strip()
+        #to set sensitive based on remote value
+        _builder = self.get_builder("main.glade")
+        main_window_update_btn = _builder.get_object("update_btn")
+        
+        url = self.remote_addr_entry.get_text().strip()
 
+        if url != '':
+            self.set_setting("remote", url)
+            main_window_update_btn.set_sensitive(True)
             folder_name = urlparse(url).netloc
             if folder_name == '':
                 folder_name = "configs"
 
-            self.set_setting("remote_savepath", path.join(self.EOVPN_CONFIG_DIR, folder_name))
+            self.set_setting("remote_savepath", path.join(self.EOVPN_CONFIG_DIR, folder_name))    
+        
+        else:
+            self.set_setting("remote", None)
+            main_window_update_btn.set_sensitive(False)
+        
+        #save folder name to config
+        
 
         if self.req_auth.get_active():
             self.set_setting("req_auth", True)
@@ -105,7 +117,7 @@ class SettingsWindowSignalHandler(SettingsManager):
 
             f = open(self.EOVPN_CONFIG_DIR + "/auth.txt","w+")
             f.write("{user}\n{passw}".format(user=username, passw=password))
-            f.close()
+            f.close()                         
 
 
     def on_reset_btn_clicked(self, button):
@@ -128,10 +140,11 @@ class SettingsWindowSignalHandler(SettingsManager):
 
     def on_crt_chooser_file_set(self, chooser):
         self.set_setting("crt", chooser.get_filename())
+        self.set_setting("crt_set_explicit", True)
 
     def on_req_auth_toggled(self, toggle):
         self.set_setting("req_auth", toggle.get_active())
         self.user_pass_box.set_sensitive(toggle.get_active())
 
     def on_settings_validate_btn_clicked(self, entry):
-        self.ovpn.validate_remote(entry.get_text(), self.valid_result_lbl)
+        self.ovpn.validate_remote(entry.get_text())

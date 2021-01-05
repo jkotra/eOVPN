@@ -6,6 +6,7 @@ from log_window import LogWindow
 from about_dialog import AboutWindow
 from openvpn import OpenVPN
 import requests
+import os
 import typing
 import json
 import re
@@ -53,12 +54,14 @@ class MainWindowSignalHandler(SettingsManager):
         self.config_selected = None
         self.is_connected = False
         self.connect_btn = self.builder.get_object("connect_btn")
+        self.update_btn = self.builder.get_object("update_btn")
 
         #reset session.log
         open(self.EOVPN_CONFIG_DIR + "/session.log", 'w').close()
 
-        #GLib.idle_add(self.update_status_ip_loc_flag)
-        
+        if self.get_setting("remote") is None:
+            self.update_btn.set_sensitive(False)
+
 
         self.ovpn = OpenVPN(self.statusbar, self.spinner, self.statusbar_icon, self.update_status_ip_loc_flag)
         self.ovpn.get_version()
@@ -164,6 +167,17 @@ class MainWindowSignalHandler(SettingsManager):
         self.last_updated.set_text("Last Updated: {}".format(
             timestamp
         ))
+
+        if not self.get_setting("crt_set_explicit") and self.get_setting("crt") is None:
+            crt_re = re.compile(r'.crt')
+
+            files = os.listdir(self.get_setting("remote_savepath"))                       
+            crt = list(filter(crt_re.findall, files))
+
+            if len(crt) >= 1:
+                self.set_setting("crt", os.path.join(self.get_setting("remote_savepath"),
+                                                    crt[-1]))
+            
 
         self.set_setting("last_update_timestamp", timestamp)
 
