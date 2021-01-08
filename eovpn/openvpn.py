@@ -42,6 +42,14 @@ class OpenVPN:
             else:
                 self.statusbar_icon.set_from_icon_name("dialog-warning", 1)
     
+    def __check_log_for_errs(self):
+        log_file = os.path.join(GLib.get_user_config_dir(), "eovpn", "session.log")
+        f = open(log_file, 'r').read().split('\n')
+        f.reverse()
+
+        for line in range(5):
+            if "SIGTERM" in f[line]:
+                return True, f[line+1]
 
     def connect(self, openvpn_config, auth_file, ca=None, logfile=None):
 
@@ -65,14 +73,19 @@ class OpenVPN:
         commands.append("--daemon")
 
         out = subprocess.run(commands, capture_output=True)
+        error_message = None
         
         
         while True:   
             if r := self.get_connection_status():
                 self.updater()
                 break
-            else:
-                logger.info("get_connection_status() = {}".format(r))
+            elif r := self.__check_log_for_errs():
+                logger.warning("status = {}".format(r))
+                error_message = r[-1].split(" ")[-1]
+                out.returncode = 1
+                break
+            else:    
                 sleep(1)
 
         self.spinner.stop()
@@ -83,7 +96,7 @@ class OpenVPN:
             self.__set_statusbar_icon(True)
             return True
         else:
-            self.statusbar.push(1, "Failed to connect!")
+            self.statusbar.push(1, "Failed to connect! - {}".format(error_message))
             self.__set_statusbar_icon(False)
             return False
         

@@ -68,6 +68,7 @@ class SettingsManager(Base):
                 f.close()
             except Exception as e:
                 #TODO - LOG to stdout
+                logger.critical(str(e))
                 return False
 
             return True
