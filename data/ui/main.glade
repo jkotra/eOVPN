@@ -162,14 +162,19 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="copy_btn">
-                    <property name="label">gtk-copy</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
                     <property name="receives-default">True</property>
                     <property name="halign">start</property>
-                    <property name="use-stock">True</property>
                     <property name="always-show-image">True</property>
                     <signal name="clicked" handler="on_copy_btn_clicked" object="ip_lbl" swapped="no"/>
+                    <child>
+                      <object class="GtkImage">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="icon-name">gtk-copy</property>
+                      </object>
+                    </child>
                   </object>
                   <packing>
                     <property name="expand">True</property>
