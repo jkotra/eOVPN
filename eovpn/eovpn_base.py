@@ -1,4 +1,5 @@
 import gi
+gi.require_version('Notify', '0.7')
 from gi.repository import Gtk, GLib, GdkPixbuf, Notify
 import os
 import subprocess

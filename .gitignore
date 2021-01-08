@@ -1,4 +1,6 @@
 __pycache__
-build/**
-builddir/**
+build
+builddir
 playground.py
+build-dir
+.flatpak-builder

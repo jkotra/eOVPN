@@ -123,7 +123,13 @@ class OpenVPN:
         return True
         
     def get_connection_status(self) -> bool:
-        ip_output = subprocess.run(["ip", "link"], stdout=subprocess.PIPE).stdout.decode('utf-8')
+
+        try:
+            ip_output = subprocess.run(["ip", "link"], stdout=subprocess.PIPE).stdout.decode('utf-8')
+        except Exception as e:
+            logger.critical(str(e))
+            return False
+
         vmnet = re.compile("tun.*:")
         link = vmnet.findall(ip_output)
         
@@ -134,20 +140,31 @@ class OpenVPN:
 
     def get_version(self):
 
-        #find openvpn and display version if found
+        """find openvpn and display version if found"""
+
+        def not_found():
+            self.statusbar.push(1, "OpenVPN not found.")
+            self.__set_statusbar_icon(False)
+
         opvpn_ver = re.compile("OpenVPN [0-9]*.[0-9]*.[0-9]")
         self.spinner.start()
-        out = subprocess.run(["openvpn", "--version"], stdout=subprocess.PIPE)
-        out = out.stdout.decode('utf-8')
 
+        try:
+            out = subprocess.run(["openvpn", "--version"], stdout=subprocess.PIPE)
+        except Exception as e:
+            logger.critical(str(e))
+            not_found()
+            
+
+        out = out.stdout.decode('utf-8')
         ver = opvpn_ver.findall(out)
 
         if len(ver) > 0:
             self.statusbar.push(1, ver[0])
             self.__set_statusbar_icon(None)
         else:
-            self.statusbar.push(1, "OpenVPN not found.")
-            self.__set_statusbar_icon(False)
+            not_found()    
+
         self.spinner.stop()
     
     def load_configs_to_tree(self, storage, config_folder):
@@ -164,7 +181,7 @@ class OpenVPN:
         config_list.sort()
 
         for f in config_list:
-            if f.endswith("ovpn"):
+            if f.endswith(".ovpn"):
                 storage.append([f])
 
     def download_config(self, remote, destination):
@@ -178,15 +195,8 @@ class OpenVPN:
                 if test_remote.status_code == 200:
 
                     x_zip = zipfile.ZipFile(io.BytesIO(test_remote.content), "r")
-                    
-
-                    #remove path
-                    #for file in x_zip.infolist():
-                        #file.filename = os.path.basename(file.filename)
-
 
                     files_in_zip = x_zip.namelist()
-
 
                     configs = list( filter(self.ovpn.findall, files_in_zip) )
                     certs = list( filter(self.crt.findall, files_in_zip ) )
@@ -200,7 +210,6 @@ class OpenVPN:
                             logger.info(file.filename)
                             x_zip.extract(file, destination)
 
-                        #x_zip.extractall(destination)
                         self.statusbar.push(1, "Config(s) updated!")
                         self.__set_statusbar_icon(True)
                     else:

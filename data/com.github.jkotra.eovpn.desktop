@@ -6,5 +6,5 @@ Icon=com.github.jkotra.eovpn
 Exec=eovpn %U
 Terminal=false
 Type=Application
-Categories=GNOME;GTK;VPN;
+Categories=Network;X-VPN;
 StartupNotify=false
