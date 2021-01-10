@@ -43,6 +43,8 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         self.valid_result_lbl = self.builder.get_object("openvpn_settings_statusbar")
 
+        self.are_you_sure = self.builder.get_object("settings_reset_ask_sure")
+
 
 
         self.update_settings_ui()
@@ -121,6 +123,19 @@ class SettingsWindowSignalHandler(SettingsManager):
 
 
     def on_reset_btn_clicked(self, button):
+        self.are_you_sure.run()
+        
+    
+    def reset_yes_btn_clicked_cb(self, dialog):
+        self.reset_settings()
+        dialog.hide()
+        return True
+
+    def reset_cancel_btn_clicked_cb(self, dialog):
+        dialog.hide()
+        return True    
+
+    def reset_settings(self):
         subprocess.run(["rm", self.EOVPN_CONFIG_DIR + "/settings.json"])
         #TODO - reset elements to blank
 
@@ -131,7 +146,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.auth_user.set_text("")
         self.auth_pass.set_text("")
 
-        self.crt_chooser.set_filename("")
+        self.crt_chooser.set_filename("")     
 
 
 

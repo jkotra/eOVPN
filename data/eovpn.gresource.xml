@@ -8,6 +8,9 @@
     <file>ui/settings.glade</file>
 
 	<file>icons/com.github.jkotra.eovpn.svg</file>
+	<file>images/openvpn_dark.png</file>
+	<file>images/connected.svg</file>
+	<file>images/disconnected.svg</file>
     <file>css/main.css</file>
 
         <file>country_flags/svg/aruba.svg</file>

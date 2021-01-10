@@ -107,16 +107,42 @@
             <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkLabel" id="status_lbl">
+              <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Disconnected</property>
-                <attributes>
-                  <attribute name="scale" value="2"/>
-                </attributes>
-                <style>
-                  <class name="vpn_disconnected"/>
-                </style>
+                <child type="center">
+                  <object class="GtkLabel" id="status_lbl">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Disconnected</property>
+                    <attributes>
+                      <attribute name="scale" value="2"/>
+                    </attributes>
+                    <style>
+                      <class name="vpn_disconnected"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="padding">20</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="connection_symbol">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="halign">end</property>
+                    <property name="icon-name">application-x-executable</property>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="padding">12</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>

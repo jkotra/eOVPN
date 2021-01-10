@@ -225,6 +225,7 @@ class OpenVPN:
             os.mkdir(destination)
 
         th = threading.Thread(target=download)
+        th.daemon = True
         th.start()
 
 
@@ -245,9 +246,10 @@ class OpenVPN:
                     else:
                         raise Exception("No configs found!")
             except Exception as e:
-                GLib.idle_add(message_dialog, "Error", "Error", str(e))
+                GLib.idle_add(message_dialog, "Validate Error", "Error", str(e))
             self.spinner.stop()
             
 
         th = threading.Thread(target=validate)
+        th.daemon = True
         th.start()    

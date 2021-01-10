@@ -1,9 +1,15 @@
 .vpn_connected {
     color: rgb(27, 98, 27);
+    border-radius: 25px;
+    border: 2px solid rgb(27, 98, 27);
+    padding: 4px;
 }
 
 .vpn_disconnected {
     color: rgb(119, 14, 14);
+    border-radius: 25px;
+    border: 2px solid rgb(119, 14, 14);
+    padding: 4px;
 }
 
 .reset_button {

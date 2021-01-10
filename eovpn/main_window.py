@@ -45,6 +45,7 @@ class MainWindowSignalHandler(SettingsManager):
         super(MainWindowSignalHandler, self).__init__()
         
         self.builder = builder
+
         self.statusbar = self.builder.get_object("statusbar")
         self.spinner = self.builder.get_object("main_spinner")
         self.last_updated = builder.get_object("last_updated_lbl")
@@ -118,9 +119,13 @@ class MainWindowSignalHandler(SettingsManager):
 
         status_label = builder.get_object("status_lbl")
         ctx = status_label.get_style_context()
+        connection_image = builder.get_object("connection_symbol")
 
         if self.ovpn.get_connection_status():
             status_label.set_text("Connected")
+
+            pic = self.get_image("connected.svg", (64,64))
+            connection_image.set_from_pixbuf(pic)
 
             #set css class
             ctx.remove_class("vpn_disconnected")
@@ -134,6 +139,9 @@ class MainWindowSignalHandler(SettingsManager):
         else:
             
             logger.info("connection status = False")
+
+            pic = self.get_image("disconnected.svg", (64,64))
+            connection_image.set_from_pixbuf(pic)
 
             status_label.set_text("Disconnected")
             ctx.remove_class("vpn_connected")
