@@ -57,6 +57,8 @@ class MainWindowSignalHandler(SettingsManager):
         self.update_btn = self.builder.get_object("update_btn")
 
         #reset session.log
+        if os.path.exists(self.EOVPN_CONFIG_DIR) != True:
+            os.mkdir(self.EOVPN_CONFIG_DIR)
         open(self.EOVPN_CONFIG_DIR + "/session.log", 'w').close()
 
         if self.get_setting("remote") is None:

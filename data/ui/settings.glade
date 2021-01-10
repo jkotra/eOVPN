@@ -424,7 +424,7 @@
                 <property name="receives-default">True</property>
                 <signal name="clicked" handler="on_reset_btn_clicked" swapped="no"/>
                 <style>
-                  <class name="reset_button"/>
+                  <class name="destructive-action"/>
                 </style>
               </object>
               <packing>
