@@ -4,4 +4,4 @@ builddir
 playground.py
 build-dir
 .flatpak-builder
-*.*~
+*~
