@@ -9,22 +9,18 @@ import os
 from time import sleep
 import logging
 from gi.repository import Gtk,GLib
+import psutil
+
+from eovpn_base import Base
 
 logger = logging.getLogger(__name__)
 
-def message_dialog(title, primary_text, secondary_text):
-    messagedialog = Gtk.MessageDialog(message_format="MessageDialog")
-    messagedialog.set_title(title)
-    messagedialog.set_markup("<span size='12000'><b>{}</b></span>".format(primary_text))
-    messagedialog.format_secondary_text(secondary_text)
-    messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-    messagedialog.run()
-    messagedialog.hide()
 
-
-class OpenVPN:
+class OpenVPN(Base):
 
     def __init__(self, statusbar, spinner, statusbar_icon=None, updater=None):
+
+        super(OpenVPN, self).__init__()
         self.spinner = spinner
         self.statusbar = statusbar
         self.statusbar_icon = statusbar_icon
@@ -36,11 +32,11 @@ class OpenVPN:
     def __set_statusbar_icon(self, result: bool):
         if self.statusbar_icon is not None:
             if result is None:
-                self.statusbar_icon.set_from_icon_name("dialog-information", 1)
+                self.statusbar_icon.set_from_icon_name("emblem-important-symbolic", 1)
             if result:
-                self.statusbar_icon.set_from_icon_name("dialog-ok", 1)
+                self.statusbar_icon.set_from_icon_name("emblem-ok-symbolic", 1)
             else:
-                self.statusbar_icon.set_from_icon_name("dialog-warning", 1)
+                self.statusbar_icon.set_from_icon_name("dialog-error-symbolic", 1)
     
     def __check_log_for_errs(self):
         log_file = os.path.join(GLib.get_user_config_dir(), "eovpn", "session.log")
@@ -51,7 +47,8 @@ class OpenVPN:
             if "SIGTERM" in f[line]:
                 return True, f[line+1]
 
-    def connect(self, openvpn_config, auth_file, ca=None, logfile=None):
+
+    def connect(self, openvpn_config, auth_file, ca=None, logfile=None) -> bool:
 
         self.spinner.start()
         self.statusbar.push(1, "Connecting...")
@@ -72,19 +69,25 @@ class OpenVPN:
         
         commands.append("--daemon")
 
-        out = subprocess.run(commands, capture_output=True)
+        out = subprocess.run(commands, stdout=subprocess.PIPE)
         error_message = None
         
         
-        while True:   
-            if r := self.get_connection_status():
+        while True:
+            connection_status = self.get_connection_status()
+            log_err = self.__check_log_for_errs()
+
+            logger.debug("get_connection_status() = {} __check_log_for_errs = {}".format(connection_status, any(log_err)))
+
+            if connection_status:
                 self.updater()
                 break
-            elif r := self.__check_log_for_errs():
-                logger.warning("status = {}".format(r))
-                error_message = r[-1].split(" ")[-1]
+
+            if any(log_err):
+                error_message = log_err[-1].split(" ")[-1]
                 out.returncode = 1
                 break
+
             else:    
                 sleep(1)
 
@@ -101,7 +104,7 @@ class OpenVPN:
             return False
         
 
-    def disconnect(self, logfile):
+    def disconnect(self):
 
         self.spinner.start()
         self.statusbar.push(1, "Disconnecting..")
@@ -140,7 +143,7 @@ class OpenVPN:
 
     def get_version(self):
 
-        """find openvpn and display version if found"""
+        """find openvpn and display version in statusbar if found"""
 
         def not_found():
             self.statusbar.push(1, "OpenVPN not found.")
@@ -148,24 +151,25 @@ class OpenVPN:
 
         opvpn_ver = re.compile("OpenVPN [0-9]*.[0-9]*.[0-9]")
         self.spinner.start()
-
+        
         try:
             out = subprocess.run(["openvpn", "--version"], stdout=subprocess.PIPE)
         except Exception as e:
             logger.critical(str(e))
             not_found()
-            
-
+  
         out = out.stdout.decode('utf-8')
         ver = opvpn_ver.findall(out)
 
         if len(ver) > 0:
             self.statusbar.push(1, ver[0])
-            self.__set_statusbar_icon(None)
+            self.__set_statusbar_icon(True)
         else:
-            not_found()    
+            not_found()
+            return False
 
         self.spinner.stop()
+        return True
     
     def load_configs_to_tree(self, storage, config_folder):
         storage.clear()
@@ -183,6 +187,7 @@ class OpenVPN:
         for f in config_list:
             if f.endswith(".ovpn"):
                 storage.append([f])
+
 
     def download_config(self, remote, destination):
 
@@ -206,7 +211,7 @@ class OpenVPN:
                         for file_name in all_files:
                             
                             file = x_zip.getinfo(file_name)
-                            file.filename = os.path.basename(file.filename)
+                            file.filename = os.path.basename(file.filename) #remove nested dir
                             logger.info(file.filename)
                             x_zip.extract(file, destination)
 
@@ -242,11 +247,11 @@ class OpenVPN:
                     x_zip = zipfile.ZipFile(io.BytesIO(test_remote.content), "r")
                     configs = list( filter(self.ovpn.findall, x_zip.namelist() ) )
                     if len(configs) > 0:
-                        GLib.idle_add(message_dialog, "Success", "Valid Remote", "{} OpenVPN configuration's found.".format(len(configs)))
+                        GLib.idle_add(self.message_dialog, "Success", "Valid Remote", "{} OpenVPN configuration's found.".format(len(configs)))
                     else:
                         raise Exception("No configs found!")
             except Exception as e:
-                GLib.idle_add(message_dialog, "Validate Error", "Error", str(e))
+                GLib.idle_add(self.message_dialog, "Validate Error", "Error", str(e))
             self.spinner.stop()
             
 

@@ -53,7 +53,16 @@ class Base:
     def send_notification(self, action, message):
         Notify.init("eOVPN")
         notif = Notify.Notification.new(action, message, "dialog-information")
-        notif.show()    
+        notif.show()
+
+    def message_dialog(self, title, primary_text, secondary_text):
+        messagedialog = Gtk.MessageDialog(message_format="MessageDialog")
+        messagedialog.set_title(title)
+        messagedialog.set_markup("<span size='12000'><b>{}</b></span>".format(primary_text))
+        messagedialog.format_secondary_text(secondary_text)
+        messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
+        messagedialog.run()
+        messagedialog.hide()    
 
 
 class SettingsManager(Base):

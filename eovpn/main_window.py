@@ -17,6 +17,7 @@ import zipfile
 import threading
 import time
 import datetime
+import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -194,15 +195,35 @@ class MainWindowSignalHandler(SettingsManager):
         #TODO: figure this out
         self.ovpn.load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
 
+
+    def on_open_vpn_running_kill_btn_clicked(self, dlg):
+        disconnect = threading.Thread(target=self.ovpn.disconnect)
+        disconnect.start()
+        dlg.hide()
+        return True
+
+    def on_open_vpn_running_cancel_btn_clicked(self, dlg):
+        dlg.hide()
+        return True
+
     def on_connect_btn_clicked(self, button):
 
         log_file = self.EOVPN_CONFIG_DIR + "/session.log"
 
         if self.is_connected:
-            disconnect = threading.Thread(target=self.ovpn.disconnect, args=(log_file,))
+            disconnect = threading.Thread(target=self.ovpn.disconnect)
             disconnect.start()
             return True
         
+        #if openvpn is running, it must be killed.
+        for proc in psutil.process_iter():
+            print(proc.name())
+            if proc.name().lower() == "openvpn":
+                # ask user if he wants it killed
+                dlg = self.builder.get_object("openvpn_running_dlg")
+                dlg.run()
+                return False
+
         try:
             config_file = self.get_setting("remote_savepath") + "/" + self.config_selected
         except TypeError:
