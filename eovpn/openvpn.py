@@ -9,7 +9,6 @@ import os
 from time import sleep
 import logging
 from gi.repository import Gtk,GLib
-import psutil
 
 from eovpn_base import Base
 
