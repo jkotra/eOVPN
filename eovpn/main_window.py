@@ -217,7 +217,6 @@ class MainWindowSignalHandler(SettingsManager):
         
         #if openvpn is running, it must be killed.
         for proc in psutil.process_iter():
-            print(proc.name())
             if proc.name().lower() == "openvpn":
                 # ask user if he wants it killed
                 dlg = self.builder.get_object("openvpn_running_dlg")

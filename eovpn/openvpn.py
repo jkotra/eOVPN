@@ -76,13 +76,14 @@ class OpenVPN(Base):
             connection_status = self.get_connection_status()
             log_err = self.__check_log_for_errs()
 
-            logger.debug("get_connection_status() = {} __check_log_for_errs = {}".format(connection_status, any(log_err)))
+            logger.debug("status = {}".format(connection_status))
+            logger.debug("openvpn_err = {}".format(log_err))
 
             if connection_status:
                 self.updater()
                 break
 
-            if any(log_err):
+            if log_err is not None:
                 error_message = log_err[-1].split(" ")[-1]
                 out.returncode = 1
                 break
