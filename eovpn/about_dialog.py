@@ -6,6 +6,7 @@ class AboutWindow(Base):
         self.builder = self.get_builder("about.glade")
         self.builder.connect_signals(AboutWindowSignalHandler())
         self.window = self.builder.get_object("about_dlg")
+        self.window.set_version(self.APP_VERSION)
         self.window.set_logo(self.get_logo())
 
 
