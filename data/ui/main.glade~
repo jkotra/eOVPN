@@ -198,7 +198,7 @@
                       <object class="GtkImage">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="icon-name">edit-copy</property>
+                        <property name="icon-name">gtk-copy</property>
                       </object>
                     </child>
                   </object>
