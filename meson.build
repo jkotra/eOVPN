@@ -1,10 +1,15 @@
 project('eovpn',
   version: '0.01',
-  meson_version: '>= 0.47.0'
+  meson_version: '>= 0.51.0'
 )
 
 i18n = import('i18n')
-python = import('python3')
+python = import('python')
+python_instllation = python.find_installation(  modules: [
+      'requests',
+      'psutil'
+    ],)
+
 gnome = import('gnome')
 project_id = 'com.github.jkotra.eovpn'
 
@@ -16,7 +21,7 @@ datadir = get_option('datadir') # should be /usr/share
 message(prefix)
 
 pkg_datadir = join_paths(prefix, datadir, meson.project_name())
-python_dir = join_paths(prefix, python.sysconfig_path('purelib'))
+python_dir = join_paths(prefix, python_instllation.get_path('purelib'))
 locale_dir = join_paths(prefix, get_option('localedir'))
 icondir = join_paths(datadir, 'icons/hicolor')
 
