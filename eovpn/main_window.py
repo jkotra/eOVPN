@@ -14,7 +14,6 @@ import subprocess
 import logging
 import io
 import zipfile
-import threading
 import time
 import datetime
 import psutil
@@ -135,11 +134,11 @@ class MainWindowSignalHandler(SettingsManager):
 
             #change btn text
             self.connect_btn.set_label("Disconnect!")
+
+            logger.info("connection status = True")
             self.is_connected = True
 
         else:
-            
-            logger.info("connection status = False")
 
             pic = self.get_image("disconnected.svg", (64,64))
             connection_image.set_from_pixbuf(pic)
@@ -148,10 +147,10 @@ class MainWindowSignalHandler(SettingsManager):
             ctx.remove_class("vpn_connected")
             ctx.add_class("vpn_disconnected")
             self.connect_btn.set_label("Connect!")
-
+            
+            logger.info("connection status = False")
             self.is_connected = False
                 
-
 
         ip_label = builder.get_object("ip_lbl")
         ip_label.set_text(ip['query'])
@@ -191,9 +190,8 @@ class MainWindowSignalHandler(SettingsManager):
             
 
         self.set_setting("last_update_timestamp", timestamp)
-
-        #TODO: figure this out
-        self.ovpn.load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
+        self.ovpn.load_configs_to_tree(self.config_storage,
+                                       self.get_setting("remote_savepath"))
 
 
     def on_open_vpn_running_kill_btn_clicked(self, dlg):
@@ -207,7 +205,7 @@ class MainWindowSignalHandler(SettingsManager):
 
     def on_connect_btn_clicked(self, button):
 
-        log_file = self.EOVPN_CONFIG_DIR + "/session.log"
+        log_file = os.path.join(self.EOVPN_CONFIG_DIR, "session.log")
 
         if self.is_connected:
             ThreadManager().create(self.ovpn.disconnect, None, True)
@@ -222,13 +220,13 @@ class MainWindowSignalHandler(SettingsManager):
                 return False
 
         try:
-            config_file = self.get_setting("remote_savepath") + "/" + self.config_selected
+            config_file = os.path.join(self.get_setting("remote_savepath"), self.config_selected)
         except TypeError:
             self.statusbar.push(1, "No config selected.")
             self.statusbar_icon.set_from_icon_name("dialog-warning", 1)
             return False
 
-        auth_file = self.EOVPN_CONFIG_DIR + "/auth.txt"
+        auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
         crt = self.get_setting("crt")
         
-        ThreadManager().create(self.ovpn.connect, (config_file, auth_file, crt, log_file,),  True)
+        ThreadManager().create(self.ovpn.connect, (config_file, auth_file, crt, log_file,),  is_daemon=True)

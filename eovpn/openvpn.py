@@ -4,7 +4,6 @@ import io
 import re
 import requests
 import io
-import threading
 import os
 from time import sleep
 import logging
