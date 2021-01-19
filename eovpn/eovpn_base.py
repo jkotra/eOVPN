@@ -6,6 +6,7 @@ import subprocess
 import re
 import json
 import logging
+import threading
 
 builder_record = {}
 
@@ -63,6 +64,25 @@ class Base:
         messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
         messagedialog.run()
         messagedialog.hide()    
+
+class ThreadManager:
+    
+    def create(self, function_to_run, arguments, is_daemon=False, join=False):
+
+        if arguments is None:
+            th = threading.Thread(target=function_to_run)
+        else:
+            th = threading.Thread(target=function_to_run, args=arguments)
+        th.daemon = is_daemon
+        th.start()
+        
+        if join:
+            self.__join_thread(th)
+    
+    def __join_thread(self, thread):
+
+        logger.info("join request for {}".format(str(thread)))
+        thread.join()
 
 
 class SettingsManager(Base):

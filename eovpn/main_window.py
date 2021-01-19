@@ -1,6 +1,6 @@
 from gi.repository import Gtk, GLib, Gdk, GdkPixbuf, Gio
 
-from eovpn_base import Base, SettingsManager
+from eovpn_base import Base, SettingsManager, ThreadManager
 from settings_window import SettingsWindow
 from log_window import LogWindow
 from about_dialog import AboutWindow
@@ -197,8 +197,7 @@ class MainWindowSignalHandler(SettingsManager):
 
 
     def on_open_vpn_running_kill_btn_clicked(self, dlg):
-        disconnect = threading.Thread(target=self.ovpn.disconnect)
-        disconnect.start()
+        ThreadManager().create(self.ovpn.disconnect, None, True)
         dlg.hide()
         return True
 
@@ -211,8 +210,7 @@ class MainWindowSignalHandler(SettingsManager):
         log_file = self.EOVPN_CONFIG_DIR + "/session.log"
 
         if self.is_connected:
-            disconnect = threading.Thread(target=self.ovpn.disconnect)
-            disconnect.start()
+            ThreadManager().create(self.ovpn.disconnect, None, True)
             return True
         
         #if openvpn is running, it must be killed.
@@ -232,6 +230,5 @@ class MainWindowSignalHandler(SettingsManager):
 
         auth_file = self.EOVPN_CONFIG_DIR + "/auth.txt"
         crt = self.get_setting("crt")
-
-        x = threading.Thread(target=self.ovpn.connect, args=(config_file, auth_file, crt, log_file))
-        x.start()
+        
+        ThreadManager().create(self.ovpn.connect, (config_file, auth_file, crt, log_file,),  True)

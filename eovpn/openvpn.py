@@ -10,7 +10,7 @@ from time import sleep
 import logging
 from gi.repository import Gtk,GLib
 
-from eovpn_base import Base
+from eovpn_base import Base, ThreadManager
 
 logger = logging.getLogger(__name__)
 
@@ -229,14 +229,11 @@ class OpenVPN(Base):
         if not os.path.exists(destination):
             os.mkdir(destination)
 
-        th = threading.Thread(target=download)
-        th.daemon = True
-        th.start()
+        ThreadManager().create(download, None, True)
 
 
-    
+
     def validate_remote(self, remote):
-
 
         def validate():
             self.spinner.start()
@@ -255,6 +252,4 @@ class OpenVPN(Base):
             self.spinner.stop()
             
 
-        th = threading.Thread(target=validate)
-        th.daemon = True
-        th.start()    
+        ThreadManager().create(validate, None, True)
