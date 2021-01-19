@@ -27,11 +27,13 @@ class OpenVPN(Base):
         self.ovpn = re.compile('.ovpn')
         self.crt = re.compile(r'.crt|cert')
     
-    def __set_statusbar_icon(self, result: bool):
+    def __set_statusbar_icon(self, result: bool, connected: bool = False):
         if self.statusbar_icon is not None:
-            if result is None:
+            if result and connected:
+                self.statusbar_icon.set_from_icon_name("network-vpn-symbolic", 1)
+            elif result is None:
                 self.statusbar_icon.set_from_icon_name("emblem-important-symbolic", 1)
-            if result:
+            elif result:
                 self.statusbar_icon.set_from_icon_name("emblem-ok-symbolic", 1)
             else:
                 self.statusbar_icon.set_from_icon_name("dialog-error-symbolic", 1)
@@ -95,7 +97,7 @@ class OpenVPN(Base):
         if out.returncode == 0:
             
             self.statusbar.push(1, "Connected to {}.".format(openvpn_config.split('/')[-1]))
-            self.__set_statusbar_icon(True)
+            self.__set_statusbar_icon(True, connected=True)
             return True
         else:
             self.statusbar.push(1, "Failed to connect! - {}".format(error_message))
@@ -162,7 +164,6 @@ class OpenVPN(Base):
 
         if len(ver) > 0:
             self.statusbar.push(1, ver[0])
-            self.__set_statusbar_icon(True)
         else:
             not_found()
             return False
