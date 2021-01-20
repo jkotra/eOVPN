@@ -68,7 +68,6 @@ class MainWindowSignalHandler(SettingsManager):
 
         self.ovpn = OpenVPN(self.statusbar, self.spinner, self.statusbar_icon, self.update_status_ip_loc_flag)
         self.ovpn.get_version()
-        #self.ovpn.load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
 
         if (ts := self.get_setting("last_update_timestamp")) is not None:
             self.last_updated.set_text("Last Updated: {}".format(ts))
