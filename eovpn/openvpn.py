@@ -9,12 +9,12 @@ from time import sleep
 import logging
 from gi.repository import Gtk,GLib
 
-from eovpn_base import Base, ThreadManager
+from eovpn_base import Base, ThreadManager, SettingsManager
 
 logger = logging.getLogger(__name__)
 
-
-class OpenVPN(Base):
+      
+class OpenVPN(SettingsManager):
 
     def __init__(self, statusbar, spinner, statusbar_icon=None, updater=None):
 
@@ -171,58 +171,75 @@ class OpenVPN(Base):
         self.spinner.stop()
         return True
     
-    def load_configs_to_tree(self, storage, config_folder):
-        storage.clear()
-        
+    def __load_configs_to_tree(self, storage, config_folder):
         try:
             config_list = os.listdir(config_folder)
-        except FileNotFoundError:
+            config_list.sort()
+        except Exception as e:
+            logger.error(str(e))
             return False
 
-        if len(config_list) <= 0:
-            return False
+        try:
+            try:
+                storage.clear()
+            except AttributeError:
+                pass
 
-        config_list.sort()
+            if len(config_list) <= 0:
+                return False
+
+        except Exception as e:
+            logger.error(str(e))    
 
         for f in config_list:
             if f.endswith(".ovpn"):
                 storage.append([f])
+    
+    def download_config_to_dest_plain(self, remote, destination):
+
+        """download from remote"""
+
+        try:
+            test_remote = requests.get(remote, timeout=360)
+        except Exception as e:
+            logger.error(str(e))
+
+        if test_remote.status_code == 200:
+
+            x_zip = zipfile.ZipFile(io.BytesIO(test_remote.content), "r")
+            files_in_zip = x_zip.namelist()
+
+            configs = list( filter(self.ovpn.findall, files_in_zip) )
+            certs = list( filter(self.crt.findall, files_in_zip ) )
+            all_files = configs + certs
+            if len(configs) > 0:
+
+                for file_name in all_files:
+                            
+                    file = x_zip.getinfo(file_name)
+                    file.filename = os.path.basename(file.filename) #remove nested dir
+                    logger.info(file.filename)
+                    x_zip.extract(file, destination)
+                return True
+            return False  
 
 
-    def download_config(self, remote, destination):
+    def download_config(self, remote, destination, storage):
 
         def download():
 
             self.spinner.start()
 
-            try:
-                test_remote = requests.get(remote)
-                if test_remote.status_code == 200:
+            if self.download_config_to_dest_plain(remote, destination):
 
-                    x_zip = zipfile.ZipFile(io.BytesIO(test_remote.content), "r")
-
-                    files_in_zip = x_zip.namelist()
-
-                    configs = list( filter(self.ovpn.findall, files_in_zip) )
-                    certs = list( filter(self.crt.findall, files_in_zip ) )
-                    all_files = configs + certs
-                    if len(configs) > 0:
-
-                        for file_name in all_files:
-                            
-                            file = x_zip.getinfo(file_name)
-                            file.filename = os.path.basename(file.filename) #remove nested dir
-                            logger.info(file.filename)
-                            x_zip.extract(file, destination)
-
-                        self.statusbar.push(1, "Config(s) updated!")
-                        self.__set_statusbar_icon(True)
-                    else:
-                        self.statusbar.push(1, "No config(s) found!")
-                        self.__set_statusbar_icon(False)
-
-            except Exception as e:
-                self.statusbar.push(1, str(e))
+                self.statusbar.push(1, "Config(s) updated!")
+                self.__set_statusbar_icon(True)
+                GLib.idle_add(self.__load_configs_to_tree,
+                              storage,
+                              self.get_setting("remote_savepath"))
+            else:
+                self.statusbar.push(1, "No config(s) found!")
+                self.__set_statusbar_icon(False)
 
             self.spinner.stop()
         

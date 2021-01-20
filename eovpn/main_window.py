@@ -68,7 +68,7 @@ class MainWindowSignalHandler(SettingsManager):
 
         self.ovpn = OpenVPN(self.statusbar, self.spinner, self.statusbar_icon, self.update_status_ip_loc_flag)
         self.ovpn.get_version()
-        self.ovpn.load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
+        #self.ovpn.load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
 
         if (ts := self.get_setting("last_update_timestamp")) is not None:
             self.last_updated.set_text("Last Updated: {}".format(ts))
@@ -172,8 +172,12 @@ class MainWindowSignalHandler(SettingsManager):
         logger.info("{} copied to clipboard.".format(ip))
 
     def on_update_btn_clicked(self, button):
-        self.ovpn.download_config(self.get_setting("remote"), self.get_setting("remote_savepath"))
+        self.ovpn.download_config(self.get_setting("remote"),
+                                  self.get_setting("remote_savepath"),
+                                  self.config_storage)
+
         timestamp = str(datetime.datetime.fromtimestamp(time.time()))
+
         self.last_updated.set_text("Last Updated: {}".format(
             timestamp
         ))
@@ -190,9 +194,6 @@ class MainWindowSignalHandler(SettingsManager):
             
 
         self.set_setting("last_update_timestamp", timestamp)
-        self.ovpn.load_configs_to_tree(self.config_storage,
-                                       self.get_setting("remote_savepath"))
-
 
     def on_open_vpn_running_kill_btn_clicked(self, dlg):
         ThreadManager().create(self.ovpn.disconnect, None, True)
