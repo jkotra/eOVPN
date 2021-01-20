@@ -4,7 +4,7 @@ from eovpn_base import Base, SettingsManager, ThreadManager
 from settings_window import SettingsWindow
 from log_window import LogWindow
 from about_dialog import AboutWindow
-from openvpn import OpenVPN
+from openvpn import OpenVPN_eOVPN
 import requests
 import os
 import typing
@@ -66,16 +66,33 @@ class MainWindowSignalHandler(SettingsManager):
             self.update_btn.set_sensitive(False)
 
 
-        self.ovpn = OpenVPN(self.statusbar, self.spinner, self.statusbar_icon, self.update_status_ip_loc_flag)
-        self.ovpn.get_version()
+        self.ovpn = OpenVPN_eOVPN(self.statusbar, self.spinner, self.statusbar_icon)
+        self.ovpn.get_version_eovpn()
 
         if (ts := self.get_setting("last_update_timestamp")) is not None:
             self.last_updated.set_text("Last Updated: {}".format(ts))
 
-        self.update_status_ip_loc_flag()    
+        self.update_status_ip_loc_flag()
 
+        if self.get_setting("remote_savepath") != None:
+            self.ovpn.load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
+    
 
+    #callbacks passed to OpenVPN_eOVPN
 
+    def on_connect(self, result):
+        logger.debug("result = {}".format(result))
+        if result:
+            self.update_status_ip_loc_flag()
+        else:
+            self.statusbar.push(1, "Failed to connect!")
+
+    def on_disconnect(self, result):
+        logger.debug("result = {}".format(result))
+        if result:
+            self.update_status_ip_loc_flag()
+
+    #end
 
     def on_settings_btn_clicked(self, button):
         settings_window = SettingsWindow()
@@ -120,7 +137,7 @@ class MainWindowSignalHandler(SettingsManager):
         ctx = status_label.get_style_context()
         connection_image = builder.get_object("connection_symbol")
 
-        if self.ovpn.get_connection_status():
+        if self.ovpn.get_connection_status_eovpn():
             status_label.set_text("Connected")
 
             pic = self.get_image("connected.svg", (64,64))
@@ -195,7 +212,7 @@ class MainWindowSignalHandler(SettingsManager):
         self.set_setting("last_update_timestamp", timestamp)
 
     def on_open_vpn_running_kill_btn_clicked(self, dlg):
-        ThreadManager().create(self.ovpn.disconnect, None, True)
+        ThreadManager().create(self.ovpn.disconnect, (self.on_disconnect,), True)
         dlg.hide()
         return True
 
@@ -208,13 +225,13 @@ class MainWindowSignalHandler(SettingsManager):
         log_file = os.path.join(self.EOVPN_CONFIG_DIR, "session.log")
 
         if self.is_connected:
-            ThreadManager().create(self.ovpn.disconnect, None, True)
+            ThreadManager().create(self.ovpn.disconnect_eovpn, (self.on_disconnect,), True)
             return True
         
         #if openvpn is running, it must be killed.
         for proc in psutil.process_iter():
             if proc.name().lower() == "openvpn":
-                # ask user if he wants it killed
+                # ask user if he wants it to be killed
                 dlg = self.builder.get_object("openvpn_running_dlg")
                 dlg.run()
                 return False
@@ -229,4 +246,4 @@ class MainWindowSignalHandler(SettingsManager):
         auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
         crt = self.get_setting("crt")
         
-        ThreadManager().create(self.ovpn.connect, (config_file, auth_file, crt, log_file,),  is_daemon=True)
+        ThreadManager().create(self.ovpn.connect_eovpn, (config_file, auth_file, crt, log_file, self.on_connect),  is_daemon=True)

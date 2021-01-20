@@ -5,24 +5,99 @@ import re
 import requests
 import io
 import os
-from time import sleep
+import time
 import logging
 from gi.repository import Gtk,GLib
+import platform
+import psutil
 
 from eovpn_base import Base, ThreadManager, SettingsManager
 
 logger = logging.getLogger(__name__)
 
-      
-class OpenVPN(SettingsManager):
 
-    def __init__(self, statusbar, spinner, statusbar_icon=None, updater=None):
+class OpenVPN:
 
-        super(OpenVPN, self).__init__()
+    def __init__(self, timeout=120):
+        self.timeout = timeout    
+
+    def get_connection_status(self) -> bool:
+
+        nif = psutil.net_if_stats()
+
+        for nif_a in nif.keys():
+            if "tun" in nif_a:
+                if nif[nif_a].isup:
+                    return True
+
+        return False
+
+
+    def connect(self, *args):
+        
+        openvpn_exe_cmd = []
+
+        openvpn_exe_cmd.append("pkexec")
+        openvpn_exe_cmd.append("openvpn")
+
+        for arg in args:
+            openvpn_exe_cmd.append(arg)    
+        
+        logger.info("args = {}".format(args))
+        out = subprocess.run(openvpn_exe_cmd, stdout=subprocess.PIPE)
+        start_time = time.time()
+
+        while True and ((time.time() - start_time) <= self.timeout):
+            connection_status = self.get_connection_status()
+            logger.debug("status = {}".format(connection_status))
+
+            if connection_status:
+                return True
+            else:
+                time.sleep(1)
+        return False
+
+    def disconnect(self):
+
+        subprocess.call(["pkexec", "killall", "openvpn"])
+        start_time = time.time()
+
+        while True and ((time.time() - start_time) <= self.timeout):
+            connection_status = self.get_connection_status()
+
+            if not connection_status:
+                return True
+
+        return False
+
+    def get_version(self):
+
+        opvpn_ver = re.compile("OpenVPN [0-9]*.[0-9]*.[0-9]")
+        
+        try:
+            out = subprocess.run(["openvpn", "--version"], stdout=subprocess.PIPE)
+        except Exception as e:
+            logger.critical(str(e))
+            not_found()
+  
+        out = out.stdout.decode('utf-8')
+        ver = opvpn_ver.findall(out)
+
+        if len(ver) > 0:
+            return ver[0]
+
+        return False
+
+class OpenVPN_eOVPN(SettingsManager):
+
+    def __init__(self, statusbar=None, spinner=None, statusbar_icon=None):
+
+        super(OpenVPN_eOVPN, self).__init__()
+        self.openvpn = OpenVPN(120)
+
         self.spinner = spinner
         self.statusbar = statusbar
         self.statusbar_icon = statusbar_icon
-        self.updater = updater
 
         self.ovpn = re.compile('.ovpn')
         self.crt = re.compile(r'.crt|cert')
@@ -37,141 +112,65 @@ class OpenVPN(SettingsManager):
                 self.statusbar_icon.set_from_icon_name("emblem-ok-symbolic", 1)
             else:
                 self.statusbar_icon.set_from_icon_name("dialog-error-symbolic", 1)
-    
-    def __check_log_for_errs(self):
-        log_file = os.path.join(GLib.get_user_config_dir(), "eovpn", "session.log")
-        f = open(log_file, 'r').read().split('\n')
-        f.reverse()
-
-        for line in range(5):
-            if "SIGTERM" in f[line]:
-                return True, f[line+1]
 
 
-    def connect(self, openvpn_config, auth_file, ca=None, logfile=None) -> bool:
+    def connect_eovpn(self, openvpn_config, auth_file, ca=None, logfile=None, callback=None) -> bool:
 
         self.spinner.start()
-        self.statusbar.push(1, "Connecting...")
+        self.statusbar.push(1, "Connecting..")
 
-        commands = ["pkexec", "openvpn"]
-        commands.append("--config")
-        commands.append(openvpn_config)
-        commands.append("--auth-user-pass")
-        commands.append(auth_file)
+        connection_result = self.openvpn.connect("--config", openvpn_config, "--auth-user-pass", auth_file, "--ca", ca,
+                     "--log", logfile, "--daemon")
 
-        if ca is not None:
-            commands.append("--ca")
-            commands.append(ca)
-
-        if logfile is not None:
-            commands.append("--log")
-            commands.append(logfile)
-        
-        commands.append("--daemon")
-
-        out = subprocess.run(commands, stdout=subprocess.PIPE)
-        error_message = None
-        
-        
-        while True:
-            connection_status = self.get_connection_status()
-            log_err = self.__check_log_for_errs()
-
-            logger.debug("status = {}".format(connection_status))
-            logger.debug("openvpn_err = {}".format(log_err))
-
-            if connection_status:
-                self.updater()
-                break
-
-            if log_err is not None:
-                error_message = log_err[-1].split(" ")[-1]
-                out.returncode = 1
-                break
-
-            else:    
-                sleep(1)
-
-        self.spinner.stop()
-
-        if out.returncode == 0:
-            
+        if connection_result:
             self.statusbar.push(1, "Connected to {}.".format(openvpn_config.split('/')[-1]))
             self.__set_statusbar_icon(True, connected=True)
-            return True
         else:
-            self.statusbar.push(1, "Failed to connect! - {}".format(error_message))
             self.__set_statusbar_icon(False)
-            return False
+
+        callback(connection_result)
+        self.spinner.stop()
+        return connection_result  
         
 
-    def disconnect(self):
+    def disconnect_eovpn(self, callback=None):
 
         self.spinner.start()
         self.statusbar.push(1, "Disconnecting..")
         self.__set_statusbar_icon(None)
 
-        subprocess.call(["pkexec", "killall", "openvpn"]) 
-
-        while True:
-            if (r := self.get_connection_status()) is False:
-                self.updater()
-                break
-            else:
-                logger.info("get_connection_status() = {}".format(r))
-                sleep(1) 
-        
+        disconnect_result = self.openvpn.disconnect()
+  
         self.spinner.stop()
-        self.statusbar.push(1, "Disconnected.")
-        self.__set_statusbar_icon(None)
-        return True
+        if disconnect_result:
+            self.statusbar.push(1, "Disconnected.")
+
+        callback(disconnect_result)
+        return disconnect_result
         
-    def get_connection_status(self) -> bool:
+    def get_connection_status_eovpn(self) -> bool:
+        return self.openvpn.get_connection_status()
 
-        try:
-            ip_output = subprocess.run(["ip", "link"], stdout=subprocess.PIPE).stdout.decode('utf-8')
-        except Exception as e:
-            logger.critical(str(e))
-            return False
 
-        vmnet = re.compile("tun.*:")
-        link = vmnet.findall(ip_output)
-        
-        if len(link) > 0:
-            return True
-        else:
-            return False    
-
-    def get_version(self):
-
-        """find openvpn and display version in statusbar if found"""
+    def get_version_eovpn(self):
+        self.spinner.stop()
+        version = self.openvpn.get_version()
+        print(version)
 
         def not_found():
             self.statusbar.push(1, "OpenVPN not found.")
             self.__set_statusbar_icon(False)
 
-        opvpn_ver = re.compile("OpenVPN [0-9]*.[0-9]*.[0-9]")
-        self.spinner.start()
-        
-        try:
-            out = subprocess.run(["openvpn", "--version"], stdout=subprocess.PIPE)
-        except Exception as e:
-            logger.critical(str(e))
-            not_found()
-  
-        out = out.stdout.decode('utf-8')
-        ver = opvpn_ver.findall(out)
-
-        if len(ver) > 0:
-            self.statusbar.push(1, ver[0])
-        else:
+        if version is False:
             not_found()
             return False
+        else:
+            self.statusbar.push(1, version)
+            return True    
 
-        self.spinner.stop()
-        return True
+        return False    
     
-    def __load_configs_to_tree(self, storage, config_folder):
+    def load_configs_to_tree(self, storage, config_folder):
         try:
             config_list = os.listdir(config_folder)
             config_list.sort()
@@ -196,8 +195,6 @@ class OpenVPN(SettingsManager):
                 storage.append([f])
     
     def download_config_to_dest_plain(self, remote, destination):
-
-        """download from remote"""
 
         try:
             test_remote = requests.get(remote, timeout=360)
@@ -234,7 +231,7 @@ class OpenVPN(SettingsManager):
 
                 self.statusbar.push(1, "Config(s) updated!")
                 self.__set_statusbar_icon(True)
-                GLib.idle_add(self.__load_configs_to_tree,
+                GLib.idle_add(self.load_configs_to_tree,
                               storage,
                               self.get_setting("remote_savepath"))
             else:

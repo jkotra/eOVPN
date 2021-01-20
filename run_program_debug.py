@@ -21,6 +21,10 @@ sys.path.insert(1, os.getcwd() + "/eovpn/")
 from eovpn.application import app
 
 if __name__ == "__main__":
+
+    if not os.path.exists("build"):
+        subprocess.run(["meson", "build"])
+
     try:
         gre_path = "build/data/com.github.jkotra.eovpn.gresource"
         if args.b:

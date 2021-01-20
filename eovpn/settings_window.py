@@ -1,5 +1,5 @@
 from eovpn_base import Base, SettingsManager
-from openvpn import OpenVPN
+from openvpn import OpenVPN_eOVPN
 import requests
 import typing
 import json
@@ -29,7 +29,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.builder = builder
         self.spinner = self.builder.get_object("settings_spinner")
         self.status_bar = self.builder.get_object("openvpn_settings_statusbar")
-        self.ovpn = OpenVPN(self.status_bar, self.spinner)
+        self.ovpn = OpenVPN_eOVPN(self.status_bar, self.spinner, None)
         
         self.remote_addr_entry = self.builder.get_object("openvpn_config_remote_addr")
         self.update_on_start = self.builder.get_object("update_on_start")
