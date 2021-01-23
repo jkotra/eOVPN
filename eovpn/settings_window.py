@@ -9,6 +9,7 @@ import re
 import os
 from os import path
 from urllib.parse import urlparse
+import shutil
 
 
 class SettingsWindow(Base):
@@ -106,7 +107,6 @@ class SettingsWindowSignalHandler(SettingsManager):
             main_window_update_btn.set_sensitive(False)
         
         #save folder name to config
-        
 
         if self.req_auth.get_active():
             self.set_setting("req_auth", True)
@@ -146,7 +146,12 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.auth_user.set_text("")
         self.auth_pass.set_text("")
 
-        self.crt_chooser.set_filename("")     
+        self.crt_chooser.set_filename("")
+
+        if self.get_setting("remote_savepath") != None:
+            shutil.rmtree(self.get_setting("remote_savepath"))
+            self.up
+
 
 
 

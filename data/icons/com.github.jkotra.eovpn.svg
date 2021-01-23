@@ -5,17 +5,41 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="40"
-   height="40"
-   viewBox="0 0 40 40"
+   width="128mm"
+   height="128mm"
+   viewBox="0 0 128 128"
    version="1.1"
-   id="SVGRoot"
+   id="svg8"
    sodipodi:docname="com.github.jkotra.eovpn.svg"
    inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
   <defs
-     id="defs10" />
+     id="defs2">
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient1473">
+      <stop
+         style="stop-color:#f2f2f2;stop-opacity:1;"
+         offset="0"
+         id="stop1469" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="1"
+         id="stop1471" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient1473"
+       id="linearGradient1475"
+       x1="14.78092"
+       y1="101.37151"
+       x2="118.66404"
+       y2="19.365513"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-0.72570515)" />
+  </defs>
   <sodipodi:namedview
      id="base"
      pagecolor="#ffffff"
@@ -23,33 +47,27 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="37.584939"
-     inkscape:cy="16.666667"
-     inkscape:document-units="px"
+     inkscape:zoom="1.1532263"
+     inkscape:cx="292.78133"
+     inkscape:cy="241.25857"
+     inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
-     showgrid="true"
-     inkscape:window-width="1743"
+     showgrid="false"
+     inkscape:window-width="1920"
      inkscape:window-height="1009"
      inkscape:window-x="0"
      inkscape:window-y="34"
-     inkscape:window-maximized="0">
-    <inkscape:grid
-       type="xygrid"
-       id="grid19"
-       originx="-109"
-       originy="-90" />
-  </sodipodi:namedview>
+     inkscape:window-maximized="1" />
   <metadata
-     id="metadata13">
+     id="metadata5">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -57,87 +75,36 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-109,-90)">
+     style="display:inline">
+    <rect
+       style="fill:url(#linearGradient1475);fill-opacity:1;stroke-width:0.248"
+       id="rect1769"
+       width="107.87667"
+       height="87.709801"
+       x="10.061665"
+       y="19.365513"
+       rx="13.808789"
+       ry="13.808789" />
     <g
-       id="g2022"
-       transform="translate(105,86)">
+       id="g1950"
+       transform="matrix(1.2016875,0,0,1.2427344,35.1595,32.108941)">
       <path
          fill="#ff9100"
          d="M 24,4 C 12.955,4 4,12.954 4,24 c 0,7.393 4.022,13.833 9.987,17.295 l 4.506,-7.783 C 15.212,31.608 13,28.066 13,24 c 0,-6.075 4.925,-11 11,-11 6.075,0 11,4.925 11,11 0,4.066 -2.212,7.608 -5.493,9.512 l 4.506,7.783 C 39.978,37.833 44,31.393 44,24 44,12.954 35.045,4 24,4 Z"
-         id="path2008" />
+         id="path1936" />
       <path
          fill="#1a237e"
          d="m 30,24 c 0,-3.314 -2.687,-6 -6,-6 -3.313,0 -6,2.686 -6,6 0,2.556 1.601,4.733 3.852,5.597 l -2.56,13.822 C 20.805,43.785 22.376,44 24,44 c 1.624,0 3.195,-0.215 4.707,-0.58 L 26.147,29.598 C 28.399,28.733 30,26.556 30,24 Z"
-         id="path2010" />
-    </g>
-    <g
-       id="g2298"
-       transform="matrix(0.27586207,0,0,0.27586207,132.58621,112.82759)">
-      <path
-         style="fill:#e7eced"
-         d="M 45,26 H 13 C 5.85,26 0,20.15 0,13 v 0 C 0,5.85 5.85,0 13,0 h 32 c 7.15,0 13,5.85 13,13 v 0 c 0,7.15 -5.85,13 -13,13 z"
-         id="path2234" />
-      <path
-         style="fill:#e7eced"
-         d="m 13,58 h 32 c 7.15,0 13,-5.85 13,-13 v 0 C 58,37.85 52.15,32 45,32 H 13 C 5.85,32 0,37.85 0,45 v 0 c 0,7.15 5.85,13 13,13 z"
-         id="path2236" />
-      <circle
-         style="fill:#88c057;stroke:#659c35;stroke-width:2;stroke-linecap:round;stroke-miterlimit:10"
-         cx="45"
-         cy="13"
-         r="9"
-         id="circle2238" />
-      <circle
-         style="fill:#ed7161;stroke:#d75a4a;stroke-width:2;stroke-linecap:round;stroke-miterlimit:10"
-         cx="13"
-         cy="45"
-         r="9"
-         id="circle2240" />
-      <g
-         id="g2242">
-</g>
-      <g
-         id="g2244">
-</g>
-      <g
-         id="g2246">
-</g>
-      <g
-         id="g2248">
-</g>
-      <g
-         id="g2250">
-</g>
-      <g
-         id="g2252">
-</g>
-      <g
-         id="g2254">
-</g>
-      <g
-         id="g2256">
-</g>
-      <g
-         id="g2258">
-</g>
-      <g
-         id="g2260">
-</g>
-      <g
-         id="g2262">
-</g>
-      <g
-         id="g2264">
-</g>
-      <g
-         id="g2266">
-</g>
-      <g
-         id="g2268">
-</g>
-      <g
-         id="g2270">
-</g>
+         id="path1938" />
     </g>
   </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer 2"
+     style="display:inline" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Layer 3" />
 </svg>

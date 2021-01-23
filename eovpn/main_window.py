@@ -35,7 +35,7 @@ class MainWindow(Base):
 
 
     def show(self):
-        self.window.show_all()
+        self.window.show()
 
 
 
@@ -51,6 +51,7 @@ class MainWindowSignalHandler(SettingsManager):
         self.last_updated = builder.get_object("last_updated_lbl")
         self.config_storage = builder.get_object("config_storage")
         self.statusbar_icon = builder.get_object("statusbar_icon")
+        self.proto_label = builder.get_object("openvpn_proto")
 
         self.config_selected = None
         self.is_connected = False
@@ -84,6 +85,7 @@ class MainWindowSignalHandler(SettingsManager):
         logger.debug("result = {}".format(result))
         if result:
             self.update_status_ip_loc_flag()
+            self.set_setting("last_connected", self.config_selected)
         else:
             self.statusbar.push(1, "Failed to connect!")
 
@@ -139,13 +141,16 @@ class MainWindowSignalHandler(SettingsManager):
 
         if self.ovpn.get_connection_status_eovpn():
             status_label.set_text("Connected")
+            
+            ctx.remove_class("bg_red")
+            ctx.add_class("bg_green")
+            
+            if self.config_selected != None:
+                self.ovpn.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
+                                                  self.get_setting("remote_savepath"),
+                                                  self.config_selected), self.proto_label )
+            
 
-            pic = self.get_image("connected.svg", (64,64))
-            connection_image.set_from_pixbuf(pic)
-
-            #set css class
-            ctx.remove_class("vpn_disconnected")
-            ctx.add_class("vpn_connected")
             logger.info("connection status = True")
 
             #change btn text
@@ -156,12 +161,13 @@ class MainWindowSignalHandler(SettingsManager):
 
         else:
 
-            pic = self.get_image("disconnected.svg", (64,64))
-            connection_image.set_from_pixbuf(pic)
-
             status_label.set_text("Disconnected")
-            ctx.remove_class("vpn_connected")
-            ctx.add_class("vpn_disconnected")
+            
+            ctx.remove_class("bg_green")
+            ctx.add_class("bg_red")
+
+            self.proto_label.hide()
+
             self.connect_btn.set_label("Connect!")
             
             logger.info("connection status = False")
@@ -212,7 +218,7 @@ class MainWindowSignalHandler(SettingsManager):
         self.set_setting("last_update_timestamp", timestamp)
 
     def on_open_vpn_running_kill_btn_clicked(self, dlg):
-        ThreadManager().create(self.ovpn.disconnect, (self.on_disconnect,), True)
+        ThreadManager().create(self.ovpn.disconnect_eovpn, (self.on_disconnect,), True)
         dlg.hide()
         return True
 
@@ -240,7 +246,7 @@ class MainWindowSignalHandler(SettingsManager):
             config_file = os.path.join(self.get_setting("remote_savepath"), self.config_selected)
         except TypeError:
             self.statusbar.push(1, "No config selected.")
-            self.statusbar_icon.set_from_icon_name("dialog-warning", 1)
+            self.statusbar_icon.set_from_icon_name("dialog-warning-symbolic", 1)
             return False
 
         auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")

@@ -10,6 +10,7 @@ import logging
 from gi.repository import Gtk,GLib
 import platform
 import psutil
+import shutil
 
 from eovpn_base import Base, ThreadManager, SettingsManager
 
@@ -49,7 +50,7 @@ class OpenVPN:
 
         while True and ((time.time() - start_time) <= self.timeout):
             connection_status = self.get_connection_status()
-            logger.debug("status = {}".format(connection_status))
+            logger.debug("status = {} timeout = {}".format(connection_status, time.time() - start_time))
 
             if connection_status:
                 return True
@@ -64,9 +65,12 @@ class OpenVPN:
 
         while True and ((time.time() - start_time) <= self.timeout):
             connection_status = self.get_connection_status()
+            logger.debug("status = {} timeout = {}".format(connection_status, time.time() - start_time))
 
             if not connection_status:
                 return True
+            else:
+                time.sleep(1)    
 
         return False
 
@@ -242,6 +246,17 @@ class OpenVPN_eOVPN(SettingsManager):
         
         if not os.path.exists(destination):
             os.mkdir(destination)
+        
+        if os.path.isdir(os.path.expanduser(remote)):
+            
+            #this is a local directory
+            remote = os.path.expanduser(remote)
+            
+            shutil.copytree(remote, destination, dirs_exist_ok=True)
+            GLib.idle_add(self.load_configs_to_tree,
+                              storage,
+                              self.get_setting("remote_savepath"))
+            return True
 
         ThreadManager().create(download, None, True)
 
@@ -249,7 +264,7 @@ class OpenVPN_eOVPN(SettingsManager):
 
     def validate_remote(self, remote):
 
-        def validate():
+        def remote_validate():
             self.spinner.start()
 
             try:
@@ -264,6 +279,30 @@ class OpenVPN_eOVPN(SettingsManager):
             except Exception as e:
                 GLib.idle_add(self.message_dialog, "Validate Error", "Error", str(e))
             self.spinner.stop()
-            
+        
+        if os.path.isdir(os.path.expanduser(remote)):
+            remote = os.path.expanduser(remote)
+            configs = list( filter(self.ovpn.findall, os.listdir(remote) ) )
+            if len(configs) > 0:
+                GLib.idle_add(self.message_dialog, "Success", "Valid Source", "{} OpenVPN configuration's found.".format(len(configs)))
+            else:
+                raise Exception("No configs found!")
+        else:
+            ThreadManager().create(remote_validate, None, True)    
 
-        ThreadManager().create(validate, None, True)
+
+        
+
+    def openvpn_config_set_protocol(self,config, label):
+        proto = re.compile("proto [tcp|udp]*")
+        f = open(config).read()
+
+        matches = proto.search(f)
+        
+        try:
+            protocol = matches.group().split(" ")[-1]
+            label.set_text(protocol.upper())
+            label.show()
+        except Exception as e:
+            logger.error(str(e))    
+            

@@ -1,15 +1,40 @@
-.vpn_connected {
-    color: rgb(27, 98, 27);
-    border-radius: 25px;
-    border: 2px solid rgb(27, 98, 27);
-    padding: 4px;
+
+.badge_proto {
+    border-radius: 10px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: white;
 }
 
-.vpn_disconnected {
-    color: rgb(119, 14, 14);
-    border-radius: 25px;
-    border: 2px solid rgb(119, 14, 14);
-    padding: 4px;
+.badge_status {
+    border-radius: 10px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: white;
+}
+
+.badge {
+    background-color: #1a5fb4;
+    border-radius: 100px;
+    padding: 2px 6px 2px 6px;
+    color: white;
+}
+
+
+.bg_red {
+    background-color: rgb(119, 14, 14);
+}
+
+.bg_blue {
+    background-color: rgb(15, 55, 165);
+}
+
+.bg_green {
+    background-color: #26a269;
 }
 
 .reset_button {
