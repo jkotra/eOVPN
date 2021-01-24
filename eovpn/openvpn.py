@@ -12,7 +12,7 @@ import platform
 import psutil
 import shutil
 
-from .eovpn_base import Base, ThreadManager, SettingsManager
+from eovpn_base import Base, ThreadManager, SettingsManager
 
 logger = logging.getLogger(__name__)
 
