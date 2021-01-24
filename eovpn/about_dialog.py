@@ -1,4 +1,4 @@
-from eovpn_base import Base
+from .eovpn_base import Base
 
 class AboutWindow(Base):
     def __init__(self):

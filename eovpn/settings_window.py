@@ -1,5 +1,5 @@
-from eovpn_base import Base, SettingsManager
-from openvpn import OpenVPN_eOVPN
+from .eovpn_base import Base, SettingsManager
+from .openvpn import OpenVPN_eOVPN
 import requests
 import typing
 import json

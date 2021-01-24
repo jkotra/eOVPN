@@ -4,8 +4,8 @@ from gi.repository import Gtk, Gdk, GLib, Gio
 
 import os, sys
 
-from eovpn_base import Base
-from main_window import MainWindow
+from .eovpn_base import Base
+from .main_window import MainWindow
 
 class eovpn(Base):
     def __init__(self, app):

@@ -1,4 +1,4 @@
-from eovpn_base import Base
+from .eovpn_base import Base
 from gi.repository import Gtk
 
 class LogWindow(Base):

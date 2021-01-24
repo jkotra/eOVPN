@@ -12,7 +12,7 @@ import platform
 import psutil
 import shutil
 
-from eovpn_base import Base, ThreadManager, SettingsManager
+from .eovpn_base import Base, ThreadManager, SettingsManager
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ class OpenVPN:
             out = subprocess.run(["openvpn", "--version"], stdout=subprocess.PIPE)
         except Exception as e:
             logger.critical(str(e))
-            not_found()
+            return False
   
         out = out.stdout.decode('utf-8')
         ver = opvpn_ver.findall(out)

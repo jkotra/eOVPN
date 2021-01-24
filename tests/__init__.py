@@ -1,4 +1,8 @@
 import gi
 gi.require_version('Gtk', '3.0')
 
-from .tests import *
+import sys
+import os
+sys.path.insert(1, os.getcwd() + "/eovpn/")
+
+from .openvpn import *

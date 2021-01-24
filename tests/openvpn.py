@@ -2,10 +2,6 @@ import sys
 import os
 import unittest
 
-import gi
-gi.require_version('Gtk', '3.0')
-
-
 from eovpn.openvpn import OpenVPN_eOVPN
 
 class OpenVPN_test(unittest.TestCase):

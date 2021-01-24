@@ -5,7 +5,6 @@ import os
 import locale
 
 sys.path.insert(1, '@PYTHON_DIR@')
-sys.path.insert(1, '@PYTHON_DIR@/eovpn/')
 pkgdatadir = '@PKG_DATADIR@'
 
 

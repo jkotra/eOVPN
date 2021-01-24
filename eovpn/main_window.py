@@ -1,10 +1,10 @@
 from gi.repository import Gtk, GLib, Gdk, GdkPixbuf, Gio
 
-from eovpn_base import Base, SettingsManager, ThreadManager
-from settings_window import SettingsWindow
-from log_window import LogWindow
-from about_dialog import AboutWindow
-from openvpn import OpenVPN_eOVPN
+from .eovpn_base import Base, SettingsManager, ThreadManager
+from .settings_window import SettingsWindow
+from .log_window import LogWindow
+from .about_dialog import AboutWindow
+from .openvpn import OpenVPN_eOVPN
 import requests
 import os
 import typing
