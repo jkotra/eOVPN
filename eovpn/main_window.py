@@ -70,7 +70,8 @@ class MainWindowSignalHandler(SettingsManager):
         self.ovpn = OpenVPN_eOVPN(self.statusbar, self.spinner, self.statusbar_icon)
         self.ovpn.get_version_eovpn()
 
-        if (ts := self.get_setting("last_update_timestamp")) is not None:
+        if self.get_setting("last_update_timestamp") is not None:
+            ts = self.get_setting("last_update_timestamp")
             self.last_updated.set_text("Last Updated: {}".format(ts))
 
         self.update_status_ip_loc_flag()
@@ -95,6 +96,9 @@ class MainWindowSignalHandler(SettingsManager):
             self.update_status_ip_loc_flag()
 
     #end
+
+    def on_menu_exit_clicked(self, window):
+        window.close()
 
     def on_settings_btn_clicked(self, button):
         settings_window = SettingsWindow()

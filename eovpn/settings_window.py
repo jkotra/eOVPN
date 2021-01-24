@@ -150,9 +150,12 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         if self.get_setting("remote_savepath") != None:
             shutil.rmtree(self.get_setting("remote_savepath"))
-            self.up
+        
 
-
+        auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
+        if os.path.exists(auth_file):
+            logging.debug("{} removed".format(auth_file))
+            os.remove(auth_file)
 
 
     def on_update_on_start_toggled(self, toggle):
