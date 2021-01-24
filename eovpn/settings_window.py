@@ -11,6 +11,7 @@ from os import path
 from urllib.parse import urlparse
 import shutil
 
+logger = logging.getLogger(__name__)
 
 class SettingsWindow(Base):
     def __init__(self):
@@ -136,8 +137,6 @@ class SettingsWindowSignalHandler(SettingsManager):
         return True    
 
     def reset_settings(self):
-        subprocess.run(["rm", self.EOVPN_CONFIG_DIR + "/settings.json"])
-        #TODO - reset elements to blank
 
         self.remote_addr_entry.set_text("")
         self.update_on_start.set_active(False)
@@ -147,15 +146,20 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.auth_pass.set_text("")
 
         self.crt_chooser.set_filename("")
+        
 
         if self.get_setting("remote_savepath") != None:
-            shutil.rmtree(self.get_setting("remote_savepath"))
+            if os.path.exists(self.get_setting("remote_savepath")):
+                logger.debug("removing {}".format(self.get_setting("remote_savepath")))
+                shutil.rmtree(self.get_setting("remote_savepath"))
         
 
         auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
         if os.path.exists(auth_file):
-            logging.debug("{} removed".format(auth_file))
+            logger.debug("removing {}".format(auth_file))
             os.remove(auth_file)
+
+        subprocess.run(["rm", self.EOVPN_CONFIG_DIR + "/settings.json"])    
 
 
     def on_update_on_start_toggled(self, toggle):

@@ -7,12 +7,12 @@ import io
 import os
 import time
 import logging
-from gi.repository import Gtk,GLib
+from gi.repository import GLib
 import platform
 import psutil
 import shutil
 
-from eovpn_base import Base, ThreadManager, SettingsManager
+from .eovpn_base import Base, ThreadManager, SettingsManager
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ class OpenVPN_eOVPN(SettingsManager):
     def __init__(self, statusbar=None, spinner=None, statusbar_icon=None):
 
         super(OpenVPN_eOVPN, self).__init__()
-        self.openvpn = OpenVPN(120)
+        self.openvpn = OpenVPN(60)
 
         self.spinner = spinner
         self.statusbar = statusbar
@@ -159,7 +159,6 @@ class OpenVPN_eOVPN(SettingsManager):
     def get_version_eovpn(self):
         self.spinner.stop()
         version = self.openvpn.get_version()
-        print(version)
 
         def not_found():
             self.statusbar.push(1, "OpenVPN not found.")

@@ -5,3 +5,5 @@ playground.py
 build-dir
 .flatpak-builder
 *~
+*.ovpn
+*.crt
