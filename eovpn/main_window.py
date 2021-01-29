@@ -68,7 +68,7 @@ class MainWindowSignalHandler(SettingsManager):
 
 
         self.ovpn = OpenVPN_eOVPN(self.statusbar, self.spinner, self.statusbar_icon)
-        self.ovpn.get_version_eovpn()
+        self.ovpn.get_version_eovpn(callback=self.on_version)
 
         if self.get_setting("last_update_timestamp") is not None:
             ts = self.get_setting("last_update_timestamp")
@@ -94,6 +94,10 @@ class MainWindowSignalHandler(SettingsManager):
         logger.debug("result = {}".format(result))
         if result:
             self.update_status_ip_loc_flag()
+
+    def on_version(self, result):
+        if result is False:
+            self.connect_btn.set_sensitive(False)        
 
     #end
 

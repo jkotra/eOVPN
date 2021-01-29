@@ -156,9 +156,11 @@ class OpenVPN_eOVPN(SettingsManager):
         return self.openvpn.get_connection_status()
 
 
-    def get_version_eovpn(self):
+    def get_version_eovpn(self, callback=None):
         self.spinner.stop()
         version = self.openvpn.get_version()
+
+        result = False
 
         def not_found():
             self.statusbar.push(1, "OpenVPN not found.")
@@ -166,12 +168,13 @@ class OpenVPN_eOVPN(SettingsManager):
 
         if version is False:
             not_found()
-            return False
+            result = False
         else:
             self.statusbar.push(1, version)
-            return True    
+            result = True    
 
-        return False    
+        if callback is not None:
+            callback(result)
     
     def load_configs_to_tree(self, storage, config_folder):
         try:
