@@ -46,9 +46,14 @@ class Base:
         return img
 
 
-    def get_country_image(self, country_name):
-        img = GdkPixbuf.Pixbuf.new_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/" + country_name + ".svg")
-        img = img.scale_simple(64,64, GdkPixbuf.InterpType.BILINEAR)
+    def get_country_image(self, country_alpha_code):
+
+        try:
+            img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/" + country_alpha_code.lower() + ".svg", 72, -1, True)
+        except Exception as e:
+            logger.error(str(e))
+            img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/uno.svg", 72, -1, True)
+
         return img
 
     def send_notification(self, action, message):

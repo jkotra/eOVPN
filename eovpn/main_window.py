@@ -48,12 +48,14 @@ class MainWindowSignalHandler(SettingsManager):
 
         self.statusbar = self.builder.get_object("statusbar")
         self.spinner = self.builder.get_object("main_spinner")
-        self.last_updated = builder.get_object("last_updated_lbl")
-        self.config_storage = builder.get_object("config_storage")
-        self.statusbar_icon = builder.get_object("statusbar_icon")
-        self.proto_label = builder.get_object("openvpn_proto")
+        self.last_updated = self.builder.get_object("last_updated_lbl")
+        self.config_storage = self.builder.get_object("config_storage")
+        self.config_tree = self.builder.get_object("config_treeview")
+        self.statusbar_icon = self.builder.get_object("statusbar_icon")
+        self.proto_label = self.builder.get_object("openvpn_proto")
 
         self.config_selected = None
+        self.selected_cursor = None
         self.is_connected = False
         self.connect_btn = self.builder.get_object("connect_btn")
         self.update_btn = self.builder.get_object("update_btn")
@@ -78,7 +80,14 @@ class MainWindowSignalHandler(SettingsManager):
 
         if self.get_setting("remote_savepath") != None:
             self.ovpn.load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
-    
+
+        if self.get_setting("last_connected") != None:
+            if self.get_setting("last_connected_cursor") != None:
+                logger.debug("restoring cursor: {}".format(self.get_setting("last_connected_cursor")))
+
+                i = self.get_setting("last_connected_cursor")
+                self.config_tree.set_cursor(i)
+                self.config_tree.scroll_to_cell(i)
 
     #callbacks passed to OpenVPN_eOVPN
 
@@ -87,6 +96,7 @@ class MainWindowSignalHandler(SettingsManager):
         if result:
             self.update_status_ip_loc_flag()
             self.set_setting("last_connected", self.config_selected)
+            self.set_setting("last_connected_cursor", self.selected_cursor)
         else:
             self.statusbar.push(1, "Failed to connect!")
 
@@ -120,9 +130,13 @@ class MainWindowSignalHandler(SettingsManager):
 
     def on_config_treeview_cursor_changed(self, tree):
         model, path = tree.get_selection().get_selected_rows()
+        self.selected_cursor = path[-1].get_indices()[-1]
+
         try:
             model_iter = model.get_iter(path)
             self.config_selected = model.get_value(model_iter, 0)
+            logger.debug("{} {}".format(self.selected_cursor, self.config_selected))
+
         except Exception as e:
             logger.error(str(e))    
 
@@ -191,7 +205,7 @@ class MainWindowSignalHandler(SettingsManager):
 
         country_image = builder.get_object("country_image")
 
-        country_id = ip['country'].replace(" ","-").lower()
+        country_id = ip['countryCode'].lower()
         pic = self.get_country_image(country_id)
         country_image.set_from_pixbuf(pic)
 
