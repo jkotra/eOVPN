@@ -107,7 +107,13 @@ class MainWindowSignalHandler(SettingsManager):
             self.update_status_ip_loc_flag()
 
     def on_version(self, result):
+        if result:
+            img = self.get_image("openvpn_black.svg","icons", (16,16))
+            statusbar_icon = self.builder.get_object("statusbar_icon")
+            statusbar_icon.set_from_pixbuf(img)
+
         if result is False:
+            
             self.connect_btn.set_sensitive(False)        
 
     #end

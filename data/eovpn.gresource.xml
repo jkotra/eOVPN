@@ -8,6 +8,7 @@
     <file>ui/settings.glade</file>
 
 	<file>icons/com.github.jkotra.eovpn.svg</file>
+  <file>icons/openvpn_black.svg</file>
     <file>css/main.css</file>
 
 <file>country_flags/svg/uno.svg</file>

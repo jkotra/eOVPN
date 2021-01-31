@@ -38,8 +38,8 @@ class Base:
         img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/com.github.jkotra.eovpn.svg", -1, 128, True)
         return img
 
-    def get_image(self, image_name, scale=False):
-        img = GdkPixbuf.Pixbuf.new_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/images/" + image_name)
+    def get_image(self, image_name, image_cat, scale=False):
+        img = GdkPixbuf.Pixbuf.new_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/{}/".format(image_cat) + image_name)
         if scale is not False:
             w, h = scale
             img = img.scale_simple(w, h, GdkPixbuf.InterpType.BILINEAR)
