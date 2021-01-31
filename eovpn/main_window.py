@@ -272,7 +272,13 @@ class MainWindowSignalHandler(SettingsManager):
             self.statusbar_icon.set_from_icon_name("dialog-warning-symbolic", 1)
             return False
 
-        auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
-        crt = self.get_setting("crt")
+        auth_file = None
+        crt = None
+        
+        if self.get_setting("req_auth"):
+            auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
+
+        if self.get_setting("crt") is not None:    
+            crt = self.get_setting("crt")
         
         ThreadManager().create(self.ovpn.connect_eovpn, (config_file, auth_file, crt, log_file, self.on_connect),  is_daemon=True)

@@ -35,16 +35,27 @@ class OpenVPN:
 
 
     def connect(self, *args):
-        
+
+        args = list(args)
+
         openvpn_exe_cmd = []
 
         openvpn_exe_cmd.append("pkexec")
         openvpn_exe_cmd.append("openvpn")
 
         for arg in args:
-            openvpn_exe_cmd.append(arg)    
+            try:
+                if arg is None:
+                    openvpn_exe_cmd.pop()
+                    continue
+
+                openvpn_exe_cmd.append(arg)    
+            except IndexError:
+                pass
+
         
-        logger.info("args = {}".format(args))
+        logger.info("args = {}".format(openvpn_exe_cmd))
+
         out = subprocess.run(openvpn_exe_cmd, stdout=subprocess.PIPE)
         start_time = time.time()
 
