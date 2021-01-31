@@ -88,6 +88,7 @@ class MainWindowSignalHandler(SettingsManager):
                 i = self.get_setting("last_connected_cursor")
                 self.config_tree.set_cursor(i)
                 self.config_tree.scroll_to_cell(i)
+                self.config_selected = self.get_setting("last_connected")
 
     #callbacks passed to OpenVPN_eOVPN
 
