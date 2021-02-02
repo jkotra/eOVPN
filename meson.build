@@ -17,11 +17,12 @@ project_id = 'com.github.jkotra.eovpn'
 prefix = get_option('prefix') # should be /usr
 bindir = get_option('bindir') # should be bin
 datadir = get_option('datadir') # should be /usr/share
+pkg_datadir = join_paths(prefix, datadir, meson.project_name())
+python_dir = python_instllation.get_install_dir()
 
 message(prefix)
+message(python_dir)
 
-pkg_datadir = join_paths(prefix, datadir, meson.project_name())
-python_dir = join_paths(prefix, python_instllation.get_path('purelib'))
 locale_dir = join_paths(prefix, get_option('localedir'))
 icondir = join_paths(datadir, 'icons/hicolor')
 
@@ -29,7 +30,6 @@ icondir = join_paths(datadir, 'icons/hicolor')
 dependency('gobject-introspection-1.0', version: '>= 1.35.0')
 dependency('gtk+-3.0', version: '>= 3.22')
 dependency('glib-2.0')
-dependency('pygobject-3.0', version: '>= 3.29.1')
 
 
 conf = configuration_data()
