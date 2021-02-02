@@ -40,6 +40,10 @@ class OpenVPN:
 
         openvpn_exe_cmd = []
 
+        if os.getenv("FLATPAK_ID") is not None:
+            openvpn_exe_cmd.append("flatpak-spawn")
+            openvpn_exe_cmd.append("--host")
+
         openvpn_exe_cmd.append("pkexec")
         openvpn_exe_cmd.append("openvpn")
 
@@ -71,7 +75,17 @@ class OpenVPN:
 
     def disconnect(self):
 
-        subprocess.call(["pkexec", "killall", "openvpn"])
+        commands = []
+
+        if os.getenv("FLATPAK_ID") is not None:
+            commands.append("flatpak-spawn")
+            commands.append("--host")
+
+        commands.append("pkexec")
+        commands.append("killall")
+        commands.append("openvpn")    
+
+        subprocess.call(commands)
         start_time = time.time()
 
         while True and ((time.time() - start_time) <= self.timeout):
@@ -88,9 +102,16 @@ class OpenVPN:
     def get_version(self):
 
         opvpn_ver = re.compile("OpenVPN [0-9]*.[0-9]*.[0-9]")
+
+        commands = []
+        if os.getenv("FLATPAK_ID") is not None:
+            commands.append("flatpak-spawn")
+            commands.append("--host")
         
+        commands.append("openvpn")
+        commands.append("--version")
         try:
-            out = subprocess.run(["openvpn", "--version"], stdout=subprocess.PIPE)
+            out = subprocess.run(commands, stdout=subprocess.PIPE)
         except Exception as e:
             logger.critical(str(e))
             return False
