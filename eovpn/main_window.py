@@ -219,7 +219,6 @@ class MainWindowSignalHandler(SettingsManager):
                                   self.get_setting("remote_savepath"),
                                   self.config_storage)
 
-        timestamp = str(datetime.datetime.fromtimestamp(time.time()))
 
         if not self.get_setting("crt_set_explicit") and self.get_setting("crt") is None:
             crt_re = re.compile(r'.crt')
@@ -231,8 +230,6 @@ class MainWindowSignalHandler(SettingsManager):
                 self.set_setting("crt", os.path.join(self.get_setting("remote_savepath"),
                                                     crt[-1]))
             
-
-        self.set_setting("last_update_timestamp", timestamp)
 
     def on_open_vpn_running_kill_btn_clicked(self, dlg):
         ThreadManager().create(self.ovpn.disconnect_eovpn, (self.on_disconnect,), True)

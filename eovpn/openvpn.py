@@ -333,6 +333,7 @@ class OpenVPN_eOVPN(SettingsManager):
             GLib.idle_add(self.load_configs_to_tree,
                               storage,
                               self.get_setting("remote_savepath"))
+            self.statusbar.push(1, "Config(s) updated!")                  
             return True
 
         ThreadManager().create(download, None, True)
