@@ -48,7 +48,6 @@ class MainWindowSignalHandler(SettingsManager):
 
         self.statusbar = self.builder.get_object("statusbar")
         self.spinner = self.builder.get_object("main_spinner")
-        self.last_updated = self.builder.get_object("last_updated_lbl")
         self.config_storage = self.builder.get_object("config_storage")
         self.config_tree = self.builder.get_object("config_treeview")
         self.statusbar_icon = self.builder.get_object("statusbar_icon")
@@ -58,23 +57,13 @@ class MainWindowSignalHandler(SettingsManager):
         self.selected_cursor = None
         self.is_connected = False
         self.connect_btn = self.builder.get_object("connect_btn")
-        self.update_btn = self.builder.get_object("update_btn")
 
         #reset session.log
         if os.path.exists(self.EOVPN_CONFIG_DIR) != True:
             os.mkdir(self.EOVPN_CONFIG_DIR)
-        open(self.EOVPN_CONFIG_DIR + "/session.log", 'w').close()
-
-        if self.get_setting("remote") is None:
-            self.update_btn.set_sensitive(False)
-
 
         self.ovpn = OpenVPN_eOVPN(self.statusbar, self.spinner, self.statusbar_icon)
         self.ovpn.get_version_eovpn(callback=self.on_version)
-
-        if self.get_setting("last_update_timestamp") is not None:
-            ts = self.get_setting("last_update_timestamp")
-            self.last_updated.set_text("Last Updated: {}".format(ts))
 
         self.update_status_ip_loc_flag()
 
@@ -137,7 +126,11 @@ class MainWindowSignalHandler(SettingsManager):
 
     def on_config_treeview_cursor_changed(self, tree):
         model, path = tree.get_selection().get_selected_rows()
-        self.selected_cursor = path[-1].get_indices()[-1]
+
+        try:
+            self.selected_cursor = path[-1].get_indices()[-1]
+        except IndexError:
+            return False
 
         try:
             model_iter = model.get_iter(path)
@@ -228,10 +221,6 @@ class MainWindowSignalHandler(SettingsManager):
                                   self.config_storage)
 
         timestamp = str(datetime.datetime.fromtimestamp(time.time()))
-
-        self.last_updated.set_text("Last Updated: {}".format(
-            timestamp
-        ))
 
         if not self.get_setting("crt_set_explicit") and self.get_setting("crt") is None:
             crt_re = re.compile(r'.crt')

@@ -43,8 +43,9 @@ class OpenVPN:
         if os.getenv("FLATPAK_ID") is not None:
             openvpn_exe_cmd.append("flatpak-spawn")
             openvpn_exe_cmd.append("--host")
-
-        openvpn_exe_cmd.append("pkexec")
+        
+        if os.geteuid != 0:
+            openvpn_exe_cmd.append("pkexec")
         openvpn_exe_cmd.append("openvpn")
 
         for arg in args:
@@ -58,19 +59,53 @@ class OpenVPN:
                 pass
 
         
-        logger.info("args = {}".format(openvpn_exe_cmd))
+        logger.info("openvpn_exe_cmd = {}".format(openvpn_exe_cmd))
+
+
+        log_file_opt = openvpn_exe_cmd.index("--log")
+        log_file = openvpn_exe_cmd[log_file_opt + 1]
+
+        assert type(log_file) == str
+        
+        #open and close / create new log file
+        open(log_file, 'w+').close()
 
         out = subprocess.run(openvpn_exe_cmd, stdout=subprocess.PIPE)
+        if out.returncode != 0:
+            return False
+
         start_time = time.time()
 
         while True and ((time.time() - start_time) <= self.timeout):
             connection_status = self.get_connection_status()
             logger.debug("status = {} timeout = {}".format(connection_status, time.time() - start_time))
+            
 
             if connection_status:
                 return True
             else:
-                time.sleep(1)
+                #check for errors.
+
+                f = open(log_file, "r")
+                for line in f.readlines():
+                    for word in line.split(" "):
+
+                        if "AUTH_FAILED" in word:
+                            return "Authentication failed."
+
+                        elif "SIGTERM" in word:
+                            return "OpenVPN Killed!"
+
+                        elif "ERROR:" in word:
+                            return line.split(":")[-1]
+                        else:
+                            continue  
+
+
+                f.close()            
+                    
+
+            time.sleep(1)
         return False
 
     def disconnect(self):
@@ -157,6 +192,14 @@ class OpenVPN_eOVPN(SettingsManager):
 
         connection_result = self.openvpn.connect("--config", openvpn_config, "--auth-user-pass", auth_file, "--ca", ca,
                      "--log", logfile, "--daemon")
+
+        if type(connection_result) is not bool:
+            # this is a error message
+
+            self.statusbar.push(1, connection_result)
+            self.__set_statusbar_icon(False, False)
+            self.spinner.stop()
+            return False        
 
         if connection_result:
             self.statusbar.push(1, "Connected to {}.".format(openvpn_config.split('/')[-1]))

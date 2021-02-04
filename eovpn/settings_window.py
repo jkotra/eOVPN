@@ -90,13 +90,11 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         #to set sensitive based on remote value
         _builder = self.get_builder("main.glade")
-        main_window_update_btn = _builder.get_object("update_btn")
         
         url = self.remote_addr_entry.get_text().strip()
 
         if url != '':
             self.set_setting("remote", url)
-            main_window_update_btn.set_sensitive(True)
             folder_name = urlparse(url).netloc
             if folder_name == '':
                 folder_name = "configs"
@@ -105,7 +103,6 @@ class SettingsWindowSignalHandler(SettingsManager):
         
         else:
             self.set_setting("remote", None)
-            main_window_update_btn.set_sensitive(False)
         
         #save folder name to config
 
