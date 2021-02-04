@@ -135,7 +135,6 @@ class MainWindowSignalHandler(SettingsManager):
         try:
             model_iter = model.get_iter(path)
             self.config_selected = model.get_value(model_iter, 0)
-            logger.debug("{} {}".format(self.selected_cursor, self.config_selected))
 
         except Exception as e:
             logger.error(str(e))    
