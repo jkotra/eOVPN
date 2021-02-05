@@ -174,28 +174,12 @@
     <property name="default-height">800</property>
     <property name="startup-id">com.github.jkotra.eovpn</property>
     <child>
-      <object class="GtkBox">
+      <object class="GtkBox" id="main_box">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
-        <child type="center">
-          <object class="GtkButton" id="connect_btn">
-            <property name="label" translatable="yes">Connect!</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="halign">center</property>
-            <property name="valign">center</property>
-            <signal name="clicked" handler="on_connect_btn_clicked" swapped="no"/>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">3</property>
-          </packing>
-        </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="info_box">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
@@ -322,7 +306,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox">
+          <object class="GtkBox" id="statusbar_box">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
@@ -439,44 +423,84 @@
           </packing>
         </child>
         <child>
-          <object class="GtkViewport">
+          <object class="GtkPaned">
             <property name="visible">True</property>
-            <property name="can-focus">False</property>
+            <property name="can-focus">True</property>
+            <property name="orientation">vertical</property>
             <child>
-              <object class="GtkScrolledWindow">
+              <object class="GtkViewport">
+                <property name="height-request">200</property>
                 <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="shadow-type">in</property>
+                <property name="can-focus">False</property>
                 <child>
-                  <object class="GtkTreeView" id="config_treeview">
+                  <object class="GtkScrolledWindow">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="model">config_storage</property>
-                    <property name="search-column">0</property>
-                    <signal name="cursor-changed" handler="on_config_treeview_cursor_changed" swapped="no"/>
-                    <child internal-child="selection">
-                      <object class="GtkTreeSelection"/>
-                    </child>
+                    <property name="shadow-type">in</property>
                     <child>
-                      <object class="GtkTreeViewColumn">
-                        <property name="title" translatable="yes">OpenVPN configuration</property>
+                      <object class="GtkTreeView" id="config_treeview">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="model">config_storage</property>
+                        <property name="search-column">0</property>
+                        <signal name="cursor-changed" handler="on_config_treeview_cursor_changed" swapped="no"/>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
                         <child>
-                          <object class="GtkCellRendererText"/>
-                          <attributes>
-                            <attribute name="text">0</attribute>
-                          </attributes>
+                          <object class="GtkTreeViewColumn">
+                            <property name="title" translatable="yes">OpenVPN configuration</property>
+                            <child>
+                              <object class="GtkCellRendererText"/>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
+                          </object>
                         </child>
                       </object>
                     </child>
                   </object>
                 </child>
               </object>
+              <packing>
+                <property name="resize">False</property>
+                <property name="shrink">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkButton" id="connect_btn">
+                    <property name="label" translatable="yes">Connect!</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="receives-default">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                    <signal name="clicked" handler="on_connect_btn_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">12</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="resize">True</property>
+                <property name="shrink">False</property>
+              </packing>
             </child>
           </object>
           <packing>
             <property name="expand">True</property>
             <property name="fill">True</property>
-            <property name="padding">12</property>
+            <property name="padding">8</property>
             <property name="position">2</property>
           </packing>
         </child>

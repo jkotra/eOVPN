@@ -46,6 +46,12 @@ class MainWindowSignalHandler(SettingsManager):
         
         self.builder = builder
 
+        # info box items
+        self.status_label = self.builder.get_object("status_lbl")
+        self.country_image = self.builder.get_object("country_image")
+        self.ip_label = self.builder.get_object("ip_lbl")
+        self.location_label = self.builder.get_object("location_lbl")
+
         self.statusbar = self.builder.get_object("statusbar")
         self.spinner = self.builder.get_object("main_spinner")
         self.config_storage = self.builder.get_object("config_storage")
@@ -154,14 +160,10 @@ class MainWindowSignalHandler(SettingsManager):
         else:
             ip = json.loads(ip.content)    
         
-        builder = self.get_builder("main.glade")
-
-        status_label = builder.get_object("status_lbl")
-        ctx = status_label.get_style_context()
-        connection_image = builder.get_object("connection_symbol")
+        ctx = self.status_label.get_style_context()
 
         if self.ovpn.get_connection_status_eovpn():
-            status_label.set_text("Connected")
+            self.status_label.set_text("Connected")
             
             ctx.remove_class("bg_red")
             ctx.add_class("bg_green")
@@ -173,16 +175,13 @@ class MainWindowSignalHandler(SettingsManager):
             
 
             logger.info("connection status = True")
-
             #change btn text
             self.connect_btn.set_label("Disconnect!")
-
-            logger.info("connection status = True")
             self.is_connected = True
 
         else:
 
-            status_label.set_text("Disconnected")
+            self.status_label.set_text("Disconnected")
             
             ctx.remove_class("bg_green")
             ctx.add_class("bg_red")
@@ -193,20 +192,15 @@ class MainWindowSignalHandler(SettingsManager):
             
             logger.info("connection status = False")
             self.is_connected = False
-                
 
-        ip_label = builder.get_object("ip_lbl")
-        ip_label.set_text(ip['query'])
-
-        location_label = builder.get_object("location_lbl")
-        location_label.set_text(ip['country'])
+        self.ip_label.set_text(ip['query'])
+        
+        self.location_label.set_text(ip['country'])
         logger.info("location={}".format(ip['country']))
-
-        country_image = builder.get_object("country_image")
 
         country_id = ip['countryCode'].lower()
         pic = self.get_country_image(country_id)
-        country_image.set_from_pixbuf(pic)
+        self.country_image.set_from_pixbuf(pic)
 
     def on_copy_btn_clicked(self, ip):
         ip = ip.get_text()

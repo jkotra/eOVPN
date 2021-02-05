@@ -192,6 +192,14 @@ class OpenVPN_eOVPN(SettingsManager):
         self.spinner.start()
         self.statusbar.push(1, "Connecting..")
 
+        #check if config requires auth
+        f = open(openvpn_config, "r")
+        if "auth-user-pass" in f.read() and auth_file is None:
+            self.spinner.stop()
+            self.statusbar.push(1, "Config requires authorization (auth-user-pass)")
+            self.__set_statusbar_icon(False, False)
+            return False
+
         connection_result = self.openvpn.connect("--config", openvpn_config, "--auth-user-pass", auth_file, "--ca", ca,
                      "--log", logfile, "--daemon")
 
@@ -306,9 +314,10 @@ class OpenVPN_eOVPN(SettingsManager):
 
     def download_config(self, remote, destination, storage):
 
-        def download():
+        self.spinner.start()
+        self.statusbar.push(1, "Updating...")
 
-            self.spinner.start()
+        def download():
 
             if self.download_config_to_dest_plain(remote, destination):
 
@@ -332,12 +341,13 @@ class OpenVPN_eOVPN(SettingsManager):
             remote = os.path.expanduser(remote)
             
             shutil.copytree(remote, destination, dirs_exist_ok=True)
+            self.spinner.stop()
             GLib.idle_add(self.load_configs_to_tree,
                               storage,
                               self.get_setting("remote_savepath"))
             self.statusbar.push(1, "Config(s) updated!")                  
             return True
-
+        #else download config from remote
         ThreadManager().create(download, None, True)
 
 
