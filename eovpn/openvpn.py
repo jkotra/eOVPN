@@ -120,7 +120,9 @@ class OpenVPN:
         commands.append("killall")
         commands.append("openvpn")    
 
-        subprocess.call(commands)
+        out = subprocess.run(commands, stdout=subprocess.PIPE)
+        if out.returncode != 0:
+            return False        
         start_time = time.time()
 
         while True and ((time.time() - start_time) <= self.timeout):
