@@ -78,12 +78,16 @@ class MainWindowSignalHandler(SettingsManager):
 
         if self.get_setting("last_connected") != None:
             if self.get_setting("last_connected_cursor") != None:
-                logger.debug("restoring cursor: {}".format(self.get_setting("last_connected_cursor")))
-
                 i = self.get_setting("last_connected_cursor")
                 self.config_tree.set_cursor(i)
                 self.config_tree.scroll_to_cell(i)
                 self.config_selected = self.get_setting("last_connected")
+
+                logger.debug("restored cursor= {} | config_selected={}".format(i, self.config_selected))
+
+                if self.get_setting("connect_on_startup"):
+                    if self.is_connected is False:
+                        self.on_connect_btn_clicked(self.connect_btn)
 
     #callbacks passed to OpenVPN_eOVPN
 
@@ -93,6 +97,8 @@ class MainWindowSignalHandler(SettingsManager):
             self.update_status_ip_loc_flag()
             self.set_setting("last_connected", self.config_selected)
             self.set_setting("last_connected_cursor", self.selected_cursor)
+
+            logger.debug("cursor={} config={}".format(self.config_selected, self.selected_cursor))
         else:
             self.statusbar.push(1, "Failed to connect!")
 

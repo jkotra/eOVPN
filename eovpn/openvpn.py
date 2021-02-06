@@ -225,12 +225,11 @@ class OpenVPN_eOVPN(SettingsManager):
     def disconnect_eovpn(self, callback=None):
 
         self.spinner.start()
-        self.statusbar.push(1, "Disconnecting..")
-        self.__set_statusbar_icon(None)
 
         disconnect_result = self.openvpn.disconnect()
   
         self.spinner.stop()
+
         if disconnect_result:
             self.statusbar.push(1, "Disconnected.")
 
@@ -291,10 +290,15 @@ class OpenVPN_eOVPN(SettingsManager):
             test_remote = requests.get(remote, timeout=360)
         except Exception as e:
             logger.error(str(e))
+            return False
 
         if test_remote.status_code == 200:
 
-            x_zip = zipfile.ZipFile(io.BytesIO(test_remote.content), "r")
+            try:
+                x_zip = zipfile.ZipFile(io.BytesIO(test_remote.content), "r")
+            except zipfile.BadZipFile:
+                return False
+                    
             files_in_zip = x_zip.namelist()
 
             configs = list( filter(self.ovpn.findall, files_in_zip) )

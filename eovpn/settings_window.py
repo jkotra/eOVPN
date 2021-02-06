@@ -170,5 +170,8 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.set_setting("req_auth", toggle.get_active())
         self.user_pass_box.set_sensitive(toggle.get_active())
 
+    def on_connect_on_startup_chkbox_toggled(self, toggle):
+        self.set_setting("connect_on_startup", toggle.get_active())
+
     def on_settings_validate_btn_clicked(self, entry):
         self.ovpn.validate_remote(entry.get_text())
