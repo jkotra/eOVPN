@@ -10,6 +10,7 @@ import logging
 from gi.repository import GLib
 import platform
 import psutil
+import shutil
 
 from .eovpn_base import Base, ThreadManager, SettingsManager
 
