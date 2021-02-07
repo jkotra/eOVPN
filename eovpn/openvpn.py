@@ -10,7 +10,6 @@ import logging
 from gi.repository import GLib
 import platform
 import psutil
-import shutil
 
 from .eovpn_base import Base, ThreadManager, SettingsManager
 
@@ -32,6 +31,16 @@ class OpenVPN:
                     return True
 
         return False
+
+    def is_openvpn_running(self):
+
+        #if openvpn is running, it must be killed.
+        for proc in psutil.process_iter():
+            if proc.name().lower() == "openvpn":
+                # ask user if he wants it to be killed
+                return True, proc.pid
+
+        return False, -1       
 
 
     def connect(self, *args):
@@ -115,10 +124,17 @@ class OpenVPN:
         if os.getenv("FLATPAK_ID") is not None:
             commands.append("flatpak-spawn")
             commands.append("--host")
+        
+        status, pid = self.is_openvpn_running()
+        logger.debug("openvpn_running={} pid={}".format(status, pid))
 
+        if not status:
+            return False
+    
         commands.append("pkexec")
-        commands.append("killall")
-        commands.append("openvpn")    
+        commands.append("kill")
+        commands.append("-15") #SIGTERM
+        commands.append(str(pid))
 
         out = subprocess.run(commands, stdout=subprocess.PIPE)
         if out.returncode != 0:

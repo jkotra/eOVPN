@@ -245,6 +245,16 @@ class MainWindowSignalHandler(SettingsManager):
         dlg.hide()
         return True
 
+    def is_openvpn_running(self):
+
+        #if openvpn is running, it must be killed.
+        for proc in psutil.process_iter():
+            if proc.name().lower() == "openvpn":
+                # ask user if he wants it to be killed
+                return True, proc.pid
+
+        return False, -1    
+
     def on_connect_btn_clicked(self, button):
 
         log_file = os.path.join(self.EOVPN_CONFIG_DIR, "session.log")
@@ -253,13 +263,12 @@ class MainWindowSignalHandler(SettingsManager):
             ThreadManager().create(self.ovpn.disconnect_eovpn, (self.on_disconnect,), True)
             return True
         
-        #if openvpn is running, it must be killed.
-        for proc in psutil.process_iter():
-            if proc.name().lower() == "openvpn":
-                # ask user if he wants it to be killed
-                dlg = self.builder.get_object("openvpn_running_dlg")
-                dlg.run()
-                return False
+        is_ovpn_running, _ = self.is_openvpn_running()
+
+        if is_ovpn_running:
+            dlg = self.builder.get_object("openvpn_running_dlg")
+            dlg.run()
+            return False
 
         try:
             config_file = os.path.join(self.get_setting("remote_savepath"), self.config_selected)
