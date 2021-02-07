@@ -16,6 +16,32 @@ from .eovpn_base import Base, ThreadManager, SettingsManager
 
 logger = logging.getLogger(__name__)
 
+def is_openvpn_running():
+
+    #for flatpak
+    is_flatpak = os.getenv("FLATPAK_ID") is not None
+    logger.debug("flatpak = {}".format(is_flatpak))
+
+    if is_flatpak:
+        out = subprocess.run("flatpak-spawn", "--host", "pgrep", "openvpn", stdout=subprocess.PIPE)
+        if out.returncode != 0:
+            return False, -1
+        else:
+            out = out.stdout.decode('utf-8')
+
+            try:
+                pid = int(out)
+                return True, pid
+            except Exception as e:
+                logger.error(str(e))
+                return False, -1 
+
+    for proc in psutil.process_iter():
+        print(proc)
+        if proc.name().lower() == "openvpn":
+            return True, proc.pid
+
+    return False, -1 
 
 class OpenVPN:
 
@@ -32,17 +58,6 @@ class OpenVPN:
                     return True
 
         return False
-
-    def is_openvpn_running(self):
-
-        #if openvpn is running, it must be killed.
-        for proc in psutil.process_iter():
-            if proc.name().lower() == "openvpn":
-                # ask user if he wants it to be killed
-                return True, proc.pid
-
-        return False, -1       
-
 
     def connect(self, *args):
 
@@ -126,7 +141,7 @@ class OpenVPN:
             commands.append("flatpak-spawn")
             commands.append("--host")
         
-        status, pid = self.is_openvpn_running()
+        status, pid = is_openvpn_running()
         logger.debug("openvpn_running={} pid={}".format(status, pid))
 
         if not status:
@@ -136,6 +151,8 @@ class OpenVPN:
         commands.append("kill")
         commands.append("-15") #SIGTERM
         commands.append(str(pid))
+
+        logger.debug("disconnect_cmd = {}".format(commands))
 
         out = subprocess.run(commands, stdout=subprocess.PIPE)
         if out.returncode != 0:

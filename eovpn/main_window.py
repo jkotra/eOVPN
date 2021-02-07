@@ -4,7 +4,7 @@ from .eovpn_base import Base, SettingsManager, ThreadManager
 from .settings_window import SettingsWindow
 from .log_window import LogWindow
 from .about_dialog import AboutWindow
-from .openvpn import OpenVPN_eOVPN
+from .openvpn import OpenVPN_eOVPN, is_openvpn_running
 import requests
 import os
 import typing
@@ -245,16 +245,6 @@ class MainWindowSignalHandler(SettingsManager):
         dlg.hide()
         return True
 
-    def is_openvpn_running(self):
-
-        #if openvpn is running, it must be killed.
-        for proc in psutil.process_iter():
-            if proc.name().lower() == "openvpn":
-                # ask user if he wants it to be killed
-                return True, proc.pid
-
-        return False, -1    
-
     def on_connect_btn_clicked(self, button):
 
         log_file = os.path.join(self.EOVPN_CONFIG_DIR, "session.log")
@@ -263,7 +253,7 @@ class MainWindowSignalHandler(SettingsManager):
             ThreadManager().create(self.ovpn.disconnect_eovpn, (self.on_disconnect,), True)
             return True
         
-        is_ovpn_running, _ = self.is_openvpn_running()
+        is_ovpn_running, _ = is_openvpn_running()
 
         if is_ovpn_running:
             dlg = self.builder.get_object("openvpn_running_dlg")
