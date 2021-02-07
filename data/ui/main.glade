@@ -80,8 +80,6 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="margin-left">4</property>
-            <property name="margin-right">4</property>
             <property name="text" translatable="yes">Log</property>
             <property name="centered">True</property>
             <signal name="clicked" handler="on_log_btn_clicked" swapped="no"/>
@@ -94,12 +92,10 @@
           </packing>
         </child>
         <child>
-          <object class="GtkModelButton" id="Update">
+          <object class="GtkModelButton" id="update_btn">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="margin-left">4</property>
-            <property name="margin-right">4</property>
             <property name="text" translatable="yes">Update</property>
             <property name="centered">True</property>
             <signal name="clicked" handler="on_update_btn_clicked" swapped="no"/>

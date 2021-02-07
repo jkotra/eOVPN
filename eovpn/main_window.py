@@ -63,6 +63,7 @@ class MainWindowSignalHandler(SettingsManager):
         self.selected_cursor = None
         self.is_connected = False
         self.connect_btn = self.builder.get_object("connect_btn")
+        self.update_btn = self.builder.get_object("update_btn")
 
         #reset session.log
         if os.path.exists(self.EOVPN_CONFIG_DIR) != True:
@@ -88,6 +89,10 @@ class MainWindowSignalHandler(SettingsManager):
                 if self.get_setting("connect_on_launch"):
                     if self.is_connected is False:
                         self.on_connect_btn_clicked(self.connect_btn)
+        
+        if self.get_setting("update_on_start"):
+            self.on_update_btn_clicked(self.update_btn)
+
 
     #callbacks passed to OpenVPN_eOVPN
 
