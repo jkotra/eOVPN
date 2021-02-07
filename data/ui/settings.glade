@@ -404,14 +404,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkCheckButton" id="connect_on_startup_chkbox">
-            <property name="label" translatable="yes">Connect on Startup</property>
+          <object class="GtkCheckButton" id="connect_on_launch_chkbox">
+            <property name="label" translatable="yes">Connect on Launch</property>
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">False</property>
             <property name="halign">center</property>
             <property name="draw-indicator">True</property>
-            <signal name="toggled" handler="on_connect_on_startup_chkbox_toggled" swapped="no"/>
+            <signal name="toggled" handler="on_connect_on_launch_chkbox_toggled" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>

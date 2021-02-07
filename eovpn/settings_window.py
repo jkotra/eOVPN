@@ -44,6 +44,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.crt_chooser = self.builder.get_object("crt_chooser")
 
         self.valid_result_lbl = self.builder.get_object("openvpn_settings_statusbar")
+        self.connect_on_launch = self.builder.get_object("connect_on_launch_chkbox")
 
         self.are_you_sure = self.builder.get_object("settings_reset_ask_sure")
 
@@ -79,6 +80,12 @@ class SettingsWindowSignalHandler(SettingsManager):
         crt_path = self.get_setting("crt")
         if crt_path is not None:
             self.crt_chooser.set_filename(crt_path)
+
+        is_connect_on_launch = self.get_setting("connect_on_launch")
+
+        if is_connect_on_launch:
+            self.connect_on_launch.set_active(True)
+
 
 
 
@@ -170,8 +177,8 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.set_setting("req_auth", toggle.get_active())
         self.user_pass_box.set_sensitive(toggle.get_active())
 
-    def on_connect_on_startup_chkbox_toggled(self, toggle):
-        self.set_setting("connect_on_startup", toggle.get_active())
+    def on_connect_on_launch_chkbox_toggled(self, toggle):
+        self.set_setting("connect_on_launch", toggle.get_active())
 
     def on_settings_validate_btn_clicked(self, entry):
         self.ovpn.validate_remote(entry.get_text())

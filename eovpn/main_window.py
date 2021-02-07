@@ -85,7 +85,7 @@ class MainWindowSignalHandler(SettingsManager):
 
                 logger.debug("restored cursor= {} | config_selected={}".format(i, self.config_selected))
 
-                if self.get_setting("connect_on_startup"):
+                if self.get_setting("connect_on_launch"):
                     if self.is_connected is False:
                         self.on_connect_btn_clicked(self.connect_btn)
 
