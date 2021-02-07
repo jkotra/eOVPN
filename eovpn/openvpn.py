@@ -23,7 +23,7 @@ def is_openvpn_running():
     logger.debug("flatpak = {}".format(is_flatpak))
 
     if is_flatpak:
-        out = subprocess.run("flatpak-spawn", "--host", "pgrep", "openvpn", stdout=subprocess.PIPE)
+        out = subprocess.run(["flatpak-spawn", "--host", "pgrep", "openvpn"], stdout=subprocess.PIPE)
         if out.returncode != 0:
             return False, -1
         else:
