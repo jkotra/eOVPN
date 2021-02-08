@@ -37,7 +37,6 @@ def is_openvpn_running():
                 return False, -1 
 
     for proc in psutil.process_iter():
-        print(proc)
         if proc.name().lower() == "openvpn":
             return True, proc.pid
 

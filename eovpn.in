@@ -16,10 +16,12 @@ import logging
 from eovpn.application import app
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--debug', type=int, action="store", default = 0, help="Debug level. 10 = DEBUG | 50 = CRITICAL" )
+parser.add_argument('--debug', type=int, action="store", default = False, help="Debug level. 10 = DEBUG | 50 = CRITICAL" )
 args = parser.parse_args()
 
-logging.basicConfig(level=args.debug, format='%(levelname)s:%(name)s.py:%(funcName)s:%(message)s')
+if args.debug is not False:
+    assert type(args.debug) == int
+    logging.basicConfig(level=args.debug, format='%(levelname)s:%(name)s.py:%(funcName)s:%(message)s')
 
 
 if __name__ == "__main__":
