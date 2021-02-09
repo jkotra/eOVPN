@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2013 First Lastname <your@email.com> -->
+<component type="desktop-application">
+  <id>com.github.jkotra.eovpn</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-2.0+</project_license>
+  <name>eOVPN</name>
+  <summary>OpenVPN Configuration Manager</summary>
+
+  <description>
+    <p>
+
+    eOVPN is a application to connect, manage and update(from remote <i>.zip</i>) OpenVPN configurations.
+
+    </p>
+  </description>
+
+  <launchable type="desktop-id">com.github.jkotra.eovpn.desktop</launchable>
+
+  <screenshots>
+
+        <screenshot type="default">
+            <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/window.png</image>
+        </screenshot>
+        <screenshot>
+            <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/connected.png</image>
+        </screenshot>
+
+  </screenshots>
+
+  <url type="homepage">https://github.com/jkotra/eOVPN</url>
+
+  <provides>
+    <binary>eovpn</binary>
+  </provides>
+
+  <releases>
+    <release version="0.01" date="2020-02-10">
+      <description>
+        <p>Initial Release</p>
+      </description>
+    </release>
+  </releases>
+</component>

@@ -17,3 +17,9 @@ install_data(
     project_id + '.desktop',
     install_dir: join_paths(datadir, 'applications')
 )
+
+#install metadata
+install_data(
+    project_id + '.metainfo.xml',
+    install_dir: join_paths(prefix, 'share', 'metainfo')
+)
