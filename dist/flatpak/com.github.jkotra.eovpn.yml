@@ -22,5 +22,6 @@ modules:
 
     sources:
       - type: git
-        path: ../../
+        path: https://github.com/jkotra/eOVPN
+        tag: 0.01
 
