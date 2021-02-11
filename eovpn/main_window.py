@@ -232,8 +232,8 @@ class MainWindowSignalHandler(SettingsManager):
             crt = list(filter(crt_re.findall, files))
 
             logger.debug("{}".format(crt))
-            #BUG: not working in ubuntu?
-            if len(crt) >= 1:
+
+            if len(crt) >= 1 and self.get_setting("crt_set_explicit") != True:
                 self.set_setting("crt", os.path.join(self.get_setting("remote_savepath"),
                                                     crt[-1]))
             

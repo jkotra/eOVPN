@@ -121,10 +121,11 @@ class SettingsWindowSignalHandler(SettingsManager):
 
             password = self.auth_pass.get_text()
             self.set_setting("auth_pass", password)
-
-            f = open(self.EOVPN_CONFIG_DIR + "/auth.txt","w+")
+            
+            auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
+            f = open(auth_file ,"w+")
             f.write("{user}\n{passw}".format(user=username, passw=password))
-            f.close()                         
+            f.close()                       
 
 
     def on_reset_btn_clicked(self, button):
