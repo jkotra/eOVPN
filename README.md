@@ -1,18 +1,31 @@
 # eOVPN
 
+---
 
 eOVPN is a application to connect, manage and update(from remote <i>.zip</i>) OpenVPN configurations.
 
+## Usage / Setup
+
+1. Open 'Settings' from menu.
+2. Fill in the details, click 'Save' on completion.
+3. Click 'Update' from menu.
+
 ---
 
-# Debug
+## Install
 
 ```
->> python run_program_debug.py --help
+meson build
+ninja install
+```
 
-\usage: run_program_debug.py [-h] [-b]
+To uninstall:
+```
+ninja uninstall
+```
 
-optional arguments:
-  -h, --help  show this help message and exit
-  -b
+### Flatpak
+
+```
+flatpak-builder --user --install build-dir dist/flatpak/com.github.jkotra.eovpn.yml  --force-clean
 ```
