@@ -6,9 +6,9 @@ eOVPN is a application to connect, manage and update(from remote <i>.zip</i>) Op
 
 ## Usage / Setup
 
-1. Open 'Settings' from menu.
+1. Open 'Settings' from the menu.
 2. Fill in the details, click 'Save' on completion.
-3. Click 'Update' from menu.
+3. Click 'Update' from the menu.
 
 ---
 
