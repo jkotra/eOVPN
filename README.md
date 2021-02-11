@@ -29,3 +29,7 @@ ninja uninstall
 ```
 flatpak-builder --user --install build-dir dist/flatpak/com.github.jkotra.eovpn.yml  --force-clean
 ```
+
+---
+
+* special thanks to [Gabriele Musco](https://gitlab.gnome.org/GabMus) for design suggestions.
