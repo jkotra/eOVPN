@@ -37,6 +37,10 @@
     background-color: #26a269;
 }
 
+.bg_black {
+    background-color: black;
+}
+
 .reset_button {
     background: rgb(121, 21, 21);
 }

@@ -62,6 +62,8 @@ class MainWindowSignalHandler(SettingsManager):
         self.config_selected = None
         self.selected_cursor = None
         self.is_connected = False
+        self.no_network = False
+
         self.connect_btn = self.builder.get_object("connect_btn")
         self.update_btn = self.builder.get_object("update_btn")
 
@@ -76,18 +78,19 @@ class MainWindowSignalHandler(SettingsManager):
 
         if self.get_setting("remote_savepath") != None:
             self.ovpn.load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
-
+        
         if self.get_setting("last_connected") != None:
+            logger.debug("last_connected = {}".format(self.get_setting("last_connected")))
             if self.get_setting("last_connected_cursor") != None:
                 i = self.get_setting("last_connected_cursor")
                 self.config_tree.set_cursor(i)
                 self.config_tree.scroll_to_cell(i)
                 self.config_selected = self.get_setting("last_connected")
 
-                logger.debug("restored cursor= {} | config_selected={}".format(i, self.config_selected))
+                logger.debug("restored cursor = {} | config_selected = {}".format(i, self.config_selected))
 
                 if self.get_setting("connect_on_launch"):
-                    if self.is_connected is False:
+                    if (self.is_connected is False) and (self.no_network is False):
                         self.on_connect_btn_clicked(self.connect_btn)
         
         if self.get_setting("update_on_start"):
@@ -103,7 +106,7 @@ class MainWindowSignalHandler(SettingsManager):
             self.set_setting("last_connected", self.config_selected)
             self.set_setting("last_connected_cursor", self.selected_cursor)
 
-            logger.debug("cursor={} config={}".format(self.config_selected, self.selected_cursor))
+            logger.debug("saved to config: cursor={} config={}".format(self.config_selected, self.selected_cursor))
         else:
             self.statusbar.push(1, "Failed to connect!")
 
@@ -158,12 +161,24 @@ class MainWindowSignalHandler(SettingsManager):
 
 
     def update_status_ip_loc_flag(self) -> None:
+
+        ctx = self.status_label.get_style_context()
+
         try:
             ip = requests.get("http://ip-api.com/json/")
             logger.debug(ip.content)
             
         except Exception as e:
             logging.warning(e)
+
+            #set no network label and uno image as country.
+            ctx.add_class("bg_black")
+            self.status_label.set_text("No Network")
+            uno = self.get_country_image("uno")
+            self.country_image.set_from_pixbuf(uno)
+            self.no_network = True
+
+            self.connect_btn.set_sensitive(False)
             return False
 
         if ip.status_code != 200:
@@ -171,7 +186,7 @@ class MainWindowSignalHandler(SettingsManager):
         else:
             ip = json.loads(ip.content)    
         
-        ctx = self.status_label.get_style_context()
+        
 
         if self.ovpn.get_connection_status_eovpn():
             self.status_label.set_text("Connected")
