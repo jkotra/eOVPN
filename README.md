@@ -16,6 +16,7 @@ eOVPN is a application to connect, manage and update(from remote <i>.zip</i>) Op
 
 ```
 meson build
+cd build
 ninja install
 ```
 
