@@ -14,6 +14,14 @@ eOVPN is a application to connect, manage and update(from remote <i>.zip</i>) Op
 
 ## Install
 
+### Dependencies
+
+```
+pip install -r requirements.txt
+```
+
+eOVPN uses [meson build system](https://mesonbuild.com/), to build the project:
+
 ```
 meson build
 cd build
