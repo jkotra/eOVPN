@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2013 First Lastname <your@email.com> -->
 <component type="desktop-application">
   <id>com.github.jkotra.eovpn</id>
   <metadata_license>FSFAP</metadata_license>
   <project_license>GPL-2.0+</project_license>
+  <developer_name>Jagadeesh Kotra</developer_name>
   <name>eOVPN</name>
   <summary>OpenVPN Configuration Manager</summary>
 
@@ -29,6 +29,7 @@
   </screenshots>
 
   <url type="homepage">https://github.com/jkotra/eOVPN</url>
+  <url type="bugtracker">https://github.com/jkotra/eOVPN/issues</url>
 
   <provides>
     <binary>eovpn</binary>
