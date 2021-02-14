@@ -36,6 +36,13 @@
   </provides>
 
   <releases>
+
+    <release version="0.02" date="2020-02-14">
+      <description>
+        <p>Improve settings UI</p>
+      </description>
+    </release>
+
     <release version="0.01" date="2020-02-10">
       <description>
         <p>Initial Release</p>
