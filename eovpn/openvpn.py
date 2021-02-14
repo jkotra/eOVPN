@@ -218,7 +218,10 @@ class OpenVPN_eOVPN(SettingsManager):
                 self.statusbar_icon.set_from_icon_name("emblem-ok-symbolic", 1)
             else:
                 self.statusbar_icon.set_from_icon_name("dialog-error-symbolic", 1)
-
+    
+    def __push_to_statusbar(self, message):
+        if self.statusbar is not None:
+            self.statusbar.push(1, message)
 
     def connect_eovpn(self, openvpn_config, auth_file, ca=None, logfile=None, callback=None) -> bool:
 
@@ -350,21 +353,24 @@ class OpenVPN_eOVPN(SettingsManager):
 
 
     def download_config(self, remote, destination, storage):
-
+        
         self.spinner.start()
-        self.statusbar.push(1, "Updating...")
+        self.__push_to_statusbar("Updating...")
 
         def download():
 
             if self.download_config_to_dest_plain(remote, destination):
+                
 
-                self.statusbar.push(1, "Config(s) updated!")
+                self.__push_to_statusbar("Config(s) updated!")
+
                 self.__set_statusbar_icon(True)
                 GLib.idle_add(self.load_configs_to_tree,
                               storage,
                               self.get_setting("remote_savepath"))
             else:
-                self.statusbar.push(1, "No config(s) found!")
+
+                self.__push_to_statusbar("No config(s) found!")
                 self.__set_statusbar_icon(False)
 
             self.spinner.stop()

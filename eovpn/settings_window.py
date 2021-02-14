@@ -1,4 +1,4 @@
-from .eovpn_base import Base, SettingsManager
+from .eovpn_base import Base, SettingsManager, ThreadManager
 from .openvpn import OpenVPN_eOVPN
 import requests
 import typing
@@ -8,6 +8,8 @@ import subprocess
 import re
 import os
 from os import path
+import time
+from gi.repository import GLib
 from urllib.parse import urlparse
 import shutil
 
@@ -31,10 +33,19 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.builder = builder
         self.spinner = self.builder.get_object("settings_spinner")
         self.status_bar = self.builder.get_object("openvpn_settings_statusbar")
-        self.ovpn = OpenVPN_eOVPN(self.status_bar, self.spinner, None)
+        self.ovpn = OpenVPN_eOVPN(spinner = self.spinner)
         
         self.remote_addr_entry = self.builder.get_object("openvpn_config_remote_addr")
         self.update_on_start = self.builder.get_object("update_on_start")
+
+        self.setting_saved_reveal = self.builder.get_object("reveal_settings_saved")
+        #by default, it's not revealed (duh!)
+        self.setting_saved_reveal.set_reveal_child(False)
+        
+        #load tree from mainwindow
+        main_builder = self.get_builder("main.glade")
+        self.config_storage = main_builder.get_object("config_storage")
+
 
         self.req_auth = self.builder.get_object("req_auth")
         self.auth_user = self.builder.get_object("auth_user")
@@ -47,8 +58,6 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.connect_on_launch = self.builder.get_object("connect_on_launch_chkbox")
 
         self.are_you_sure = self.builder.get_object("settings_reset_ask_sure")
-
-
 
         self.update_settings_ui()
     
@@ -87,13 +96,13 @@ class SettingsWindowSignalHandler(SettingsManager):
             self.connect_on_launch.set_active(True)
 
 
-
-
     def on_settings_window_delete_event(self, window, event) -> bool:
         window.hide()
         return True
 
     def on_settings_apply_btn_clicked(self, buttton):
+
+        initial_remote = self.get_setting("remote")
 
         #to set sensitive based on remote value
         _builder = self.get_builder("main.glade")
@@ -125,8 +134,23 @@ class SettingsWindowSignalHandler(SettingsManager):
             auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
             f = open(auth_file ,"w+")
             f.write("{user}\n{passw}".format(user=username, passw=password))
-            f.close()                       
+            f.close()
+        
+        if initial_remote is None:
+            self.ovpn.download_config(url,
+                                self.get_setting("remote_savepath"),
+                                self.config_storage)
 
+        #show settings saved notfication
+        self.setting_saved_reveal.set_reveal_child(True)
+        ThreadManager().create(self.close_revealer_after_sec, (5, self.setting_saved_reveal,), True)       
+    
+    def close_revealer_after_sec(self, sec: int, revealer):
+        time.sleep(sec)
+        revealer.set_reveal_child(False)
+
+    def on_revealer_close_btn_clicked(self, btn):
+        self.setting_saved_reveal.set_reveal_child(False)
 
     def on_reset_btn_clicked(self, button):
         self.are_you_sure.run()
@@ -152,19 +176,20 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         self.crt_chooser.set_filename("")
         
-
+        #remove config dir
         if self.get_setting("remote_savepath") != None:
             if os.path.exists(self.get_setting("remote_savepath")):
                 logger.debug("removing {}".format(self.get_setting("remote_savepath")))
                 shutil.rmtree(self.get_setting("remote_savepath"))
-        
+                self.config_storage.clear()
+
 
         auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
         if os.path.exists(auth_file):
             logger.debug("removing {}".format(auth_file))
             os.remove(auth_file)
 
-        subprocess.run(["rm", self.EOVPN_CONFIG_DIR + "/settings.json"])    
+        subprocess.run(["rm", self.EOVPN_CONFIG_DIR + "/settings.json"])
 
 
     def on_update_on_start_toggled(self, toggle):
