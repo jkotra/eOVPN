@@ -41,6 +41,8 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.setting_saved_reveal = self.builder.get_object("reveal_settings_saved")
         #by default, it's not revealed (duh!)
         self.setting_saved_reveal.set_reveal_child(False)
+        #only close the first time
+        self.reveal_delay_close = False
         
         #load tree from mainwindow
         main_builder = self.get_builder("main.glade")
@@ -143,11 +145,14 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         #show settings saved notfication
         self.setting_saved_reveal.set_reveal_child(True)
-        ThreadManager().create(self.close_revealer_after_sec, (5, self.setting_saved_reveal,), True)       
-    
+        if self.reveal_delay_close == False:
+            ThreadManager().create(self.close_revealer_after_sec, (5, self.setting_saved_reveal,), False)
+
     def close_revealer_after_sec(self, sec: int, revealer):
         time.sleep(sec)
-        revealer.set_reveal_child(False)
+        if self.setting_saved_reveal.get_reveal_child() and self.reveal_delay_close == False:
+            revealer.set_reveal_child(False)
+            self.reveal_delay_close = True
 
     def on_revealer_close_btn_clicked(self, btn):
         self.setting_saved_reveal.set_reveal_child(False)
