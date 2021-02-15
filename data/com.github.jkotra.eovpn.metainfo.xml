@@ -37,6 +37,14 @@
 
   <releases>
 
+    <release version="0.02.1" date="2020-02-15">
+      <description>
+        <ul>
+          <li>Fix bug with update if remote is empty</li>
+        </ul>  
+      </description>
+    </release>    
+
     <release version="0.02" date="2020-02-14">
       <description>
         <p>Improve settings UI</p>

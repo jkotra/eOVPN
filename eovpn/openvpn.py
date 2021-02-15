@@ -354,6 +354,12 @@ class OpenVPN_eOVPN(SettingsManager):
 
     def download_config(self, remote, destination, storage):
         
+
+        if remote == None or remote == "":
+            self.__push_to_statusbar("Invalid Remote")
+            self.__set_statusbar_icon(False)
+            return False
+        
         self.spinner.start()
         self.__push_to_statusbar("Updating...")
 
