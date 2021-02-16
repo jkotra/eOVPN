@@ -11,6 +11,7 @@ from gi.repository import GLib
 import platform
 import psutil
 import shutil
+import gettext
 
 from .eovpn_base import Base, ThreadManager, SettingsManager
 
@@ -226,13 +227,13 @@ class OpenVPN_eOVPN(SettingsManager):
     def connect_eovpn(self, openvpn_config, auth_file, ca=None, logfile=None, callback=None) -> bool:
 
         self.spinner.start()
-        self.statusbar.push(1, "Connecting..")
+        self.__push_to_statusbar(gettext.gettext("Connecting.."))
 
         #check if config requires auth
         f = open(openvpn_config, "r")
         if "auth-user-pass" in f.read() and auth_file is None:
             self.spinner.stop()
-            self.statusbar.push(1, "Config requires authorization (auth-user-pass)")
+            self.__push_to_statusbar(gettext.gettext("Config requires authorization (auth-user-pass)"))
             self.__set_statusbar_icon(False, False)
             return False
 
@@ -242,13 +243,13 @@ class OpenVPN_eOVPN(SettingsManager):
         if type(connection_result) is not bool:
             # this is a error message
 
-            self.statusbar.push(1, connection_result)
+            self.__push_to_statusbar(connection_result)
             self.__set_statusbar_icon(False, False)
             self.spinner.stop()
             return False        
 
         if connection_result:
-            self.statusbar.push(1, "Connected to {}.".format(openvpn_config.split('/')[-1]))
+            self.__push_to_statusbar(gettext.gettext("Connected to {}.").format(openvpn_config.split('/')[-1]))
             self.__set_statusbar_icon(True, connected=True)
         else:
             self.__set_statusbar_icon(False)
@@ -267,7 +268,7 @@ class OpenVPN_eOVPN(SettingsManager):
         self.spinner.stop()
 
         if disconnect_result:
-            self.statusbar.push(1, "Disconnected.")
+            self.__push_to_statusbar(gettext.gettext("Disconnected."))
 
         callback(disconnect_result)
         return disconnect_result
@@ -283,14 +284,14 @@ class OpenVPN_eOVPN(SettingsManager):
         result = False
 
         def not_found():
-            self.statusbar.push(1, "OpenVPN not found.")
+            self.__push_to_statusbar(gettext.gettext("OpenVPN not found."))
             self.__set_statusbar_icon(False)
 
         if version is False:
             not_found()
             result = False
         else:
-            self.statusbar.push(1, version)
+            self.__push_to_statusbar(version)
             result = True    
 
         if callback is not None:
@@ -356,19 +357,19 @@ class OpenVPN_eOVPN(SettingsManager):
         
 
         if remote == None or remote == "":
-            self.__push_to_statusbar("Invalid Remote")
+            self.__push_to_statusbar(gettext.gettext("Invalid Remote"))
             self.__set_statusbar_icon(False)
             return False
         
         self.spinner.start()
-        self.__push_to_statusbar("Updating...")
+        self.__push_to_statusbar(gettext.gettext("Updating..."))
 
         def download():
 
             if self.download_config_to_dest_plain(remote, destination):
                 
 
-                self.__push_to_statusbar("Config(s) updated!")
+                self.__push_to_statusbar(gettext.gettext("Config(s) updated!"))
 
                 self.__set_statusbar_icon(True)
                 GLib.idle_add(self.load_configs_to_tree,
@@ -376,7 +377,7 @@ class OpenVPN_eOVPN(SettingsManager):
                               self.get_setting("remote_savepath"))
             else:
 
-                self.__push_to_statusbar("No config(s) found!")
+                self.__push_to_statusbar(gettext.gettext("No config(s) found!"))
                 self.__set_statusbar_icon(False)
 
             self.spinner.stop()
@@ -394,7 +395,7 @@ class OpenVPN_eOVPN(SettingsManager):
             GLib.idle_add(self.load_configs_to_tree,
                               storage,
                               self.get_setting("remote_savepath"))
-            self.statusbar.push(1, "Config(s) updated!")                  
+            self.__push_to_statusbar(gettext.gettext("Config(s) updated!"))                  
             return True
         #else download config from remote
         ThreadManager().create(download, None, True)

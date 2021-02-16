@@ -17,6 +17,7 @@ import zipfile
 import time
 import datetime
 import psutil
+import gettext
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +109,7 @@ class MainWindowSignalHandler(SettingsManager):
 
             logger.debug("saved to config: cursor={} config={}".format(self.config_selected, self.selected_cursor))
         else:
-            self.statusbar.push(1, "Failed to connect!")
+            self.statusbar.push(1, gettext.gettext("Failed to connect!"))
 
     def on_disconnect(self, result):
         logger.debug("result = {}".format(result))
@@ -173,7 +174,7 @@ class MainWindowSignalHandler(SettingsManager):
 
             #set no network label and uno image as country.
             ctx.add_class("bg_black")
-            self.status_label.set_text("No Network")
+            self.status_label.set_text(gettext.gettext("No Network"))
             uno = self.get_country_image("uno")
             self.country_image.set_from_pixbuf(uno)
             self.no_network = True
@@ -189,7 +190,7 @@ class MainWindowSignalHandler(SettingsManager):
         
 
         if self.ovpn.get_connection_status_eovpn():
-            self.status_label.set_text("Connected")
+            self.status_label.set_text(gettext.gettext("Connected"))
             
             ctx.remove_class("bg_red")
             ctx.add_class("bg_green")
@@ -202,19 +203,19 @@ class MainWindowSignalHandler(SettingsManager):
 
             logger.info("connection status = True")
             #change btn text
-            self.connect_btn.set_label("Disconnect!")
+            self.connect_btn.set_label(gettext.gettext("Disconnect!"))
             self.is_connected = True
 
         else:
 
-            self.status_label.set_text("Disconnected")
+            self.status_label.set_text(gettext.gettext("Disconnected"))
             
             ctx.remove_class("bg_green")
             ctx.add_class("bg_red")
 
             self.proto_label.hide()
 
-            self.connect_btn.set_label("Connect!")
+            self.connect_btn.set_label(gettext.gettext("Connect!"))
             
             logger.info("connection status = False")
             self.is_connected = False
@@ -280,7 +281,7 @@ class MainWindowSignalHandler(SettingsManager):
         try:
             config_file = os.path.join(self.get_setting("remote_savepath"), self.config_selected)
         except TypeError:
-            self.statusbar.push(1, "No config selected.")
+            self.statusbar.push(1, gettext.gettext("No config selected."))
             self.statusbar_icon.set_from_icon_name("dialog-warning-symbolic", 1)
             return False
 

@@ -3,9 +3,11 @@
 import sys
 import os
 import locale
+import gettext
 
 sys.path.insert(1, '@PYTHON_DIR@')
 pkgdatadir = '@PKG_DATADIR@'
+localedir = '@LOCALE_DIR@'
 
 
 from gi.repository import Gio
@@ -25,6 +27,12 @@ if args.debug is not False:
 
 
 if __name__ == "__main__":
+
+    locale.bindtextdomain('eovpn', localedir)
+    locale.textdomain('eovpn')
+    gettext.bindtextdomain('eovpn', localedir)
+    gettext.textdomain('eovpn')
+
 
     resource = Gio.resource_load(os.path.join(pkgdatadir, 'com.github.jkotra.eovpn.gresource'))
     Gio.Resource._register(resource)

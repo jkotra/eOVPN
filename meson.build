@@ -39,7 +39,7 @@ conf.set('PKG_DATADIR', pkg_datadir)
 conf.set('LOCALE_DIR', join_paths(get_option('prefix'), get_option('datadir'), 'locale'))
 conf.set('PYTHON_DIR', python_dir)
 
-
+subdir('po')
 subdir('data')
 install_subdir(
   'eovpn',
