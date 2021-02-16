@@ -37,6 +37,14 @@
 
   <releases>
 
+    <release version="0.03" date="2020-02-16">
+      <description>
+        <ul>
+          <li>Support for translations.</li>
+        </ul>  
+      </description>
+    </release>        
+
     <release version="0.02.1" date="2020-02-15">
       <description>
         <ul>
