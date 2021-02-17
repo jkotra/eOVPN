@@ -1,0 +1,225 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Italian Translation\n"
+"POT-Creation-Date: 2021-02-17 08:20+0100\n"
+"PO-Revision-Date: 2021-02-17 09:03+0100\n"
+"Language-Team: Albano Battistella <albano_battistella@hotmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __push_to_statusbar\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Last-Translator: albano battistella <albano_battistella@hotmail.com>\n"
+"Language: it_IT\n"
+"X-Poedit-SearchPath-0: eovpn\n"
+"X-Poedit-SearchPath-1: data\n"
+"X-Poedit-SearchPath-2: data/ui\n"
+"X-Poedit-SearchPathExcluded-0: __pycache__/*\n"
+
+#: data/com.github.jkotra.eovpn.desktop:3
+#: data/com.github.jkotra.eovpn.desktop:4
+msgid "eOVPN"
+msgstr "eOVPN"
+
+#: data/com.github.jkotra.eovpn.desktop:5
+msgid "OpenVPN manager"
+msgstr "Gestore OpenVPN"
+
+#: data/ui/about.glade:12
+msgid "OpenVPN Configuration(s) Manager"
+msgstr "Gestore Configurazione(i) OpenVPN"
+
+#: data/ui/log.glade:7 data/ui/main.glade:83
+msgid "Log"
+msgstr "Log"
+
+#: data/ui/log.glade:50
+msgid "Close"
+msgstr "Chiudi"
+
+#: data/ui/main.glade:19
+msgid "OpenVPN is running in background!"
+msgstr "OpenVPN è in esecuzione in background!"
+
+#: data/ui/main.glade:20
+msgid ""
+"OpenVPN is still running in background. It must be killed before attempting "
+"to connect again. Kill it?"
+msgstr ""
+"OpenVPN è ancora in esecuzione in background. Deve essere interrotto prima "
+"di tentare di connettersi di nuovo. Disattivarlo?"
+
+#: data/ui/main.glade:32 data/ui/settings.glade:561
+msgid "Cancel"
+msgstr "Cancella"
+
+#: data/ui/main.glade:46
+msgid "Kill"
+msgstr "Disattiva"
+
+#: data/ui/main.glade:99
+msgid "Update"
+msgstr "Aggiorna"
+
+#: data/ui/main.glade:117 data/ui/settings.glade:503
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: data/ui/main.glade:135
+msgid "About"
+msgstr "Informazioni "
+
+#: data/ui/main.glade:153
+msgid "Exit"
+msgstr "Esci"
+
+#: data/ui/main.glade:190 eovpn/main_window.py:211
+msgid "Disconnected"
+msgstr "Disconnesso"
+
+#: data/ui/main.glade:236
+msgid "IP: 127.0.0.1"
+msgstr "IP: 127.0.0.1"
+
+#: data/ui/main.glade:286
+msgid "Location: Earth"
+msgstr "Posizione: Terra"
+
+#: data/ui/main.glade:374
+msgid "TCP/UDP"
+msgstr "TCP/UDP"
+
+#: data/ui/main.glade:448
+msgid "OpenVPN configuration"
+msgstr "Configurazione OpenVPN"
+
+#: data/ui/main.glade:474 eovpn/main_window.py:218
+msgid "Connect!"
+msgstr "Connetti!"
+
+#: data/ui/settings.glade:58
+msgid "Settings Saved"
+msgstr "impostazioni Salvate"
+
+#: data/ui/settings.glade:115
+msgid "General"
+msgstr "Generale"
+
+#: data/ui/settings.glade:148
+msgid "Configuration Source: "
+msgstr "Fonte Configurazione:"
+
+#: data/ui/settings.glade:162
+msgid "https://example.com/configs.zip"
+msgstr "https://example.com/configs.zip"
+
+#: data/ui/settings.glade:173
+msgid "Validate"
+msgstr "Convalida"
+
+#: data/ui/settings.glade:202
+msgid "Update configuration(s) on start"
+msgstr "Aggiorna configurazione(i) all'avvio"
+
+#: data/ui/settings.glade:243
+msgid "Requires Authorization"
+msgstr "Richiede Autorizzazione"
+
+#: data/ui/settings.glade:271
+msgid "Username:"
+msgstr "Nome utente:"
+
+#: data/ui/settings.glade:309
+msgid "Password:"
+msgstr "Password:"
+
+#: data/ui/settings.glade:357
+msgid "Authorization"
+msgstr "Autorizzazione"
+
+#: data/ui/settings.glade:379
+msgid "OpenVPN CRT:"
+msgstr "OpenVPN CRT:"
+
+#: data/ui/settings.glade:476
+msgid "Connect on Launch"
+msgstr "Connetti all'Avvio"
+
+#: data/ui/settings.glade:507
+msgid "Save"
+msgstr "Salva"
+
+#: data/ui/settings.glade:519
+msgid "Reset"
+msgstr "Ripristina"
+
+#: data/ui/settings.glade:547
+msgid "Are you sure?"
+msgstr "Sei sicuro?"
+
+#: data/ui/settings.glade:548
+msgid "All settings will be permanently deleted."
+msgstr "Tutte le impostazioni verranno eliminate definitivamente."
+
+#: data/ui/settings.glade:576
+msgid "Yes"
+msgstr "Si"
+
+#: eovpn/main_window.py:112
+msgid "Failed to connect!"
+msgstr "Connessione fallita!"
+
+#: eovpn/main_window.py:177
+msgid "No Network"
+msgstr "Nessuna Rete"
+
+#: eovpn/main_window.py:193
+msgid "Connected"
+msgstr "Connesso"
+
+#: eovpn/main_window.py:206
+msgid "Disconnect!"
+msgstr "Disconnetti!"
+
+#: eovpn/main_window.py:284
+msgid "No config selected."
+msgstr "Nessuna configurazione selezionata."
+
+#: eovpn/openvpn.py:229
+msgid "Connecting.."
+msgstr "In Connessione..."
+
+#: eovpn/openvpn.py:235
+msgid "Config requires authorization (auth-user-pass)"
+msgstr "La configurazione richiede l'autorizzazione (autenticazione utente)"
+
+#: eovpn/openvpn.py:251
+msgid "Connected to {}."
+msgstr "Connesso a {}."
+
+#: eovpn/openvpn.py:270
+msgid "Disconnected."
+msgstr "Disconnesso."
+
+#: eovpn/openvpn.py:286
+msgid "OpenVPN not found."
+msgstr "OpenVPN non trovato."
+
+#: eovpn/openvpn.py:359
+msgid "Invalid Remote"
+msgstr "Remote non valido"
+
+#: eovpn/openvpn.py:364
+msgid "Updating..."
+msgstr "In aggiornamento..."
+
+#: eovpn/openvpn.py:371 eovpn/openvpn.py:397
+msgid "Config(s) updated!"
+msgstr "Configurazione(i) aggiornate!"
+
+#: eovpn/openvpn.py:379
+msgid "No config(s) found!"
+msgstr "Nessuna configurazione(i) trovata!"
