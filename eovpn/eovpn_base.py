@@ -17,7 +17,7 @@ class Base:
     def __init__(self):
         self.APP_NAME = "eOVPN"
         self.APP_ID = "com.github.jkotra.eovpn"
-        self.APP_VERSION = "0.04"
+        self.APP_VERSION = "0.04.1"
         self.AUTHOR = "Jagadeesh Kotra"
         self.AUTHOR_MAIL = "jagadeesh@stdin.top"
         
