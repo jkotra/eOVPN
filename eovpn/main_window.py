@@ -130,9 +130,7 @@ class MainWindowSignalHandler(SettingsManager):
             statusbar_icon.set_from_pixbuf(img)
 
         if result is False:
-            
-            self.connect_btn.set_sensitive(False)        
-
+            self.connect_btn.set_sensitive(False) 
     #end
 
     def on_menu_exit_clicked(self, window):
@@ -245,20 +243,8 @@ class MainWindowSignalHandler(SettingsManager):
     def on_update_btn_clicked(self, button):
         self.ovpn.download_config(self.get_setting("remote"),
                                   self.get_setting("remote_savepath"),
-                                  self.config_storage)
-
-
-        if not self.get_setting("crt_set_explicit") and self.get_setting("crt") is None:
-            crt_re = re.compile(r'.crt')
-
-            files = os.listdir(self.get_setting("remote_savepath"))                       
-            crt = list(filter(crt_re.findall, files))
-
-            logger.debug("{}".format(crt))
-
-            if len(crt) >= 1 and self.get_setting("crt_set_explicit") != True:
-                self.set_setting("crt", os.path.join(self.get_setting("remote_savepath"),
-                                                    crt[-1]))
+                                  self.config_storage,
+                                  None)
             
 
     def on_open_vpn_running_kill_btn_clicked(self, dlg):

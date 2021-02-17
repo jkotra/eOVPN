@@ -208,7 +208,22 @@ class OpenVPN_eOVPN(SettingsManager):
 
         self.ovpn = re.compile('.ovpn')
         self.crt = re.compile(r'.crt|cert')
+
+    def __set_crt_auto(self):
+
+        if not self.get_setting("crt_set_explicit") and self.get_setting("crt") is None:
+            crt_re = re.compile(r'.crt')
+
+            files = os.listdir(self.get_setting("remote_savepath"))                       
+            crt = list(filter(crt_re.findall, files))
+
+            logger.debug("{}".format(crt))
+
+            if len(crt) >= 1 and self.get_setting("crt_set_explicit") != True:
+                self.set_setting("crt", os.path.join(self.get_setting("remote_savepath"),
+                                                    crt[-1]))        
     
+
     def __set_statusbar_icon(self, result: bool, connected: bool = False):
         if self.statusbar_icon is not None:
             if result and connected:
@@ -352,8 +367,8 @@ class OpenVPN_eOVPN(SettingsManager):
                 return True
             return False  
 
-
-    def download_config(self, remote, destination, storage):
+    #this function is used to update
+    def download_config(self, remote, destination, storage, callback):
         
 
         if remote == None or remote == "":
@@ -366,21 +381,24 @@ class OpenVPN_eOVPN(SettingsManager):
 
         def download():
 
+            result = None
             if self.download_config_to_dest_plain(remote, destination):
-                
-
                 self.__push_to_statusbar(gettext.gettext("Config(s) updated!"))
-
                 self.__set_statusbar_icon(True)
                 GLib.idle_add(self.load_configs_to_tree,
                               storage,
                               self.get_setting("remote_savepath"))
+                result = True
+                self.__set_crt_auto()              
             else:
 
                 self.__push_to_statusbar(gettext.gettext("No config(s) found!"))
                 self.__set_statusbar_icon(False)
+                result = False
 
             self.spinner.stop()
+            if callback is not None:
+                callback(result)
         
         if not os.path.exists(destination):
             os.mkdir(destination)

@@ -153,7 +153,8 @@ class SettingsWindowSignalHandler(SettingsManager):
         if initial_remote is None:
             self.ovpn.download_config(url,
                                 self.get_setting("remote_savepath"),
-                                self.config_storage)
+                                self.config_storage,
+                                None)
 
         #show settings saved notfication
         self.inapp_notification_label.set_text(gettext.gettext("Settings Saved."))
@@ -232,4 +233,9 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.save_btn.set_sensitive(True)
 
     def on_notifications_chkbox_toggled(self, toggle):
-        self.set_setting("notifications", toggle.get_active())    
+        self.set_setting("notifications", toggle.get_active())
+
+    def on_crt_file_reset_clicked(self, button):
+        self.crt_chooser.set_filename("")
+        self.set_setting("crt", None)
+        self.set_setting("crt_set_explicit", None)        
