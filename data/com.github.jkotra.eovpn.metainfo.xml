@@ -2,7 +2,7 @@
 <component type="desktop-application">
   <id>com.github.jkotra.eovpn</id>
   <metadata_license>FSFAP</metadata_license>
-  <project_license>GPL-2.0+</project_license>
+  <project_license>GPL-3.0+</project_license>
   <developer_name>Jagadeesh Kotra</developer_name>
   <name>eOVPN</name>
   <summary>OpenVPN Configuration Manager</summary>
