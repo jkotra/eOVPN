@@ -61,6 +61,7 @@ class MainWindowSignalHandler(SettingsManager):
         self.proto_label = self.builder.get_object("openvpn_proto")
 
         self.config_selected = None
+        self.config_connected = None
         self.selected_cursor = None
         self.is_connected = False
         self.no_network = False
@@ -103,6 +104,8 @@ class MainWindowSignalHandler(SettingsManager):
     def on_connect(self, result):
         logger.debug("result = {}".format(result))
         if result:
+            if self.get_setting("notifications"):
+                self.send_notification("Connected", "Connected to {}".format(self.get_setting("last_connected")))
             self.update_status_ip_loc_flag()
             self.set_setting("last_connected", self.config_selected)
             self.set_setting("last_connected_cursor", self.selected_cursor)
@@ -114,6 +117,8 @@ class MainWindowSignalHandler(SettingsManager):
     def on_disconnect(self, result):
         logger.debug("result = {}".format(result))
         if result:
+            if self.get_setting("notifications"):
+                self.send_notification("Disconnected", "Disconnected from {}".format(self.get_setting("last_connected")))
             self.update_status_ip_loc_flag()
 
     def on_version(self, result):

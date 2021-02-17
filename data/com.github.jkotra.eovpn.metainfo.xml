@@ -9,11 +9,15 @@
 
   <description>
     <p>
-
     eOVPN is a application to connect, manage and update(from a remote .zip) OpenVPN configurations.
-
-    </p>
+    </p>   
   </description>
+
+  <kudos>
+    <kudo>HiDpiIcon</kudo>
+    <kudo>ModernToolkit</kudo>
+    <kudo>Notifications</kudo>
+  </kudos>
 
   <launchable type="desktop-id">com.github.jkotra.eovpn.desktop</launchable>
 
@@ -37,7 +41,18 @@
 
   <releases>
 
-    <release version="0.03" date="2020-02-16">
+    <release version="0.03" date="2021-02-17">
+      <description>
+        <ul>
+          <li>Feature: Notification on Connect &gt; Disconnect</li>
+          <li>Redesign settings window.</li>
+          <li>Improve translations.</li>
+          <li>Various typo fixes.</li>
+        </ul>  
+      </description>
+    </release>        
+
+    <release version="0.03" date="2021-02-16">
       <description>
         <ul>
           <li>Support for translations.</li>
@@ -45,7 +60,7 @@
       </description>
     </release>        
 
-    <release version="0.02.1" date="2020-02-15">
+    <release version="0.02.1" date="2021-02-15">
       <description>
         <ul>
           <li>Fix bug with update if remote is empty</li>
@@ -53,13 +68,13 @@
       </description>
     </release>    
 
-    <release version="0.02" date="2020-02-14">
+    <release version="0.02" date="2021-02-14">
       <description>
         <p>Improve settings UI</p>
       </description>
     </release>
 
-    <release version="0.01" date="2020-02-10">
+    <release version="0.01" date="2021-02-10">
       <description>
         <p>Initial Release</p>
       </description>

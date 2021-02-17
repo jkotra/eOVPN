@@ -48,6 +48,8 @@ class SettingsWindowSignalHandler(SettingsManager):
         main_builder = self.get_builder("main.glade")
         self.config_storage = main_builder.get_object("config_storage")
 
+        self.save_btn = self.builder.get_object("settings_apply_btn")
+        self.save_btn.set_sensitive(False)
 
         self.req_auth = self.builder.get_object("req_auth")
         self.auth_user = self.builder.get_object("auth_user")
@@ -58,6 +60,7 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         self.valid_result_lbl = self.builder.get_object("openvpn_settings_statusbar")
         self.connect_on_launch = self.builder.get_object("connect_on_launch_chkbox")
+        self.notifications_chkbox = self.builder.get_object("notifications_chkbox")
 
         self.are_you_sure = self.builder.get_object("settings_reset_ask_sure")
 
@@ -73,6 +76,9 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         if self.get_setting("update_on_start"):
             self.update_on_start.set_active(True)
+
+        if self.get_setting("notifications"):
+            self.notifications_chkbox.set_active(True)    
         
         if self.get_setting("req_auth"):
             self.req_auth.set_active(True)
@@ -213,3 +219,9 @@ class SettingsWindowSignalHandler(SettingsManager):
 
     def on_settings_validate_btn_clicked(self, entry):
         self.ovpn.validate_remote(entry.get_text())
+
+    def save_btn_activate(self, editable):
+        self.save_btn.set_sensitive(True)
+
+    def on_notifications_chkbox_toggled(self, toggle):
+        self.set_setting("notifications", toggle.get_active())    

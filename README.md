@@ -16,7 +16,8 @@
 
 1. Open `Settings` from the menu.
 2. Fill in the required details:
-    * **Configuration Source**: This refers to a link that contains a zip file with OpenVPN configurations. Example: [IPVanish](https://www.ipvanish.com/software/configs/configs.zip), [NordVPN](https://downloads.nordcdn.com/configs/archives/servers/ovpn.zip)
+    * **Configuration Source**: This refers to a link that contains a zip file with OpenVPN configurations. 
+        * Example: [IPVanish](https://www.ipvanish.com/software/configs/configs.zip), [NordVPN](https://downloads.nordcdn.com/configs/archives/servers/ovpn.zip)
 
         * [`eOVPN` also supports local directory/folder/zip]
 
@@ -27,6 +28,8 @@
     * **OpenVPN CRT**: OpenVPN CRT/CA file. Will be automatically set on `Update` if such file exists in `remote`.
 
     * **Connect On Launch(*Checkbox*)**: If Checked, eOVPN will try to connect to the last connected server on application launch.
+
+    * **Notification on 'Connect '& 'Disconnect'**(*Checkbox*): If Checked, eOVPN will send system notifications on connect and disconnect events.
 
 
 3. click `Save`.

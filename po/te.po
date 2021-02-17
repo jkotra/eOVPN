@@ -1,9 +1,11 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: eOVPN\n"
-"POT-Creation-Date: 2021-02-17 16:10+0530\n"
-"PO-Revision-Date: 2021-02-17 16:16+0530\n"
+"POT-Creation-Date: 2021-02-17 18:40+0530\n"
+"PO-Revision-Date: 2021-02-17 18:42+0530\n"
+"Last-Translator: Jagadeesh Kotra <jagadeesh.01101011@gmail.com>\n"
 "Language-Team: \n"
+"Language: te\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,15 +14,12 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-KeywordsList: __push_to_statusbar\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"Last-Translator: Jagadeesh Kotra <jagadeesh.01101011@gmail.com>\n"
-"Language: te\n"
 "X-Poedit-SearchPath-0: eovpn\n"
 "X-Poedit-SearchPath-1: data\n"
 "X-Poedit-SearchPath-2: data/ui\n"
 "X-Poedit-SearchPathExcluded-0: __pycache__/*\n"
 
-#: data/com.github.jkotra.eovpn.desktop:3
-#: data/com.github.jkotra.eovpn.desktop:4
+#: data/com.github.jkotra.eovpn.desktop:3 data/com.github.jkotra.eovpn.desktop:4
 msgid "eOVPN"
 msgstr ""
 
@@ -46,13 +45,11 @@ msgstr "OpenVPN నేపథ్యంలో నడుస్తోంది!"
 
 #: data/ui/main.glade:20
 msgid ""
-"OpenVPN is still running in background. It must be killed before attempting "
-"to connect again. Kill it?"
-msgstr ""
-"OpenVPN ఇప్పటికీ నేపథ్యంలో నడుస్తోంది. మళ్లీ కనెక్ట్ చేయడానికి ప్రయత్నించే ముందు దీన్ని ఆపాలి. మీరు "
-"ఆపాలనుకుంటున్నారా?"
+"OpenVPN is still running in background. It must be killed before attempting to connect again. Kill "
+"it?"
+msgstr "OpenVPN ఇప్పటికీ నేపథ్యంలో నడుస్తోంది. మళ్లీ కనెక్ట్ చేయడానికి ప్రయత్నించే ముందు దీన్ని ఆపాలి. మీరు ఆపాలనుకుంటున్నారా?"
 
-#: data/ui/main.glade:32 data/ui/settings.glade:561
+#: data/ui/main.glade:32 data/ui/settings.glade:31
 msgid "Cancel"
 msgstr "రద్దు"
 
@@ -64,7 +61,7 @@ msgstr "ఆపండి"
 msgid "Update"
 msgstr "నవీకరణ చేయండి"
 
-#: data/ui/main.glade:117 data/ui/settings.glade:503
+#: data/ui/main.glade:117 data/ui/settings.glade:653
 msgid "Settings"
 msgstr "అప్లికేషన్ సెట్టింగులు"
 
@@ -76,7 +73,7 @@ msgstr "గురించి"
 msgid "Exit"
 msgstr "అప్లికేషన్ మూసివేయండి"
 
-#: data/ui/main.glade:190 eovpn/main_window.py:211
+#: data/ui/main.glade:190 eovpn/main_window.py:216
 msgid "Disconnected"
 msgstr "డిస్‌కనెక్ట్ చేయబడింది"
 
@@ -96,95 +93,103 @@ msgstr ""
 msgid "OpenVPN configuration"
 msgstr "OpenVPN కాన్ఫిగరేషన్"
 
-#: data/ui/main.glade:474 eovpn/main_window.py:218
+#: data/ui/main.glade:474 eovpn/main_window.py:223
 msgid "Connect!"
 msgstr "కనెక్ట్ చేయండి!"
 
-#: data/ui/settings.glade:58
-msgid "Settings Saved"
-msgstr "సెట్టింగులు సేవ్ చేయబడ్డాయి"
-
-#: data/ui/settings.glade:115
-msgid "General"
-msgstr "జనరల్"
-
-#: data/ui/settings.glade:148
-msgid "Configuration Source: "
-msgstr "కాన్ఫిగరేషన్ మూలం: "
-
-#: data/ui/settings.glade:162
-msgid "https://example.com/configs.zip"
-msgstr ""
-
-#: data/ui/settings.glade:173
-msgid "Validate"
-msgstr "ధృవీకరించండి"
-
-#: data/ui/settings.glade:202
-msgid "Update configuration(s) on start"
-msgstr "ప్రారంభంలో కాన్ఫిగరేషన్‌లను నవీకరించండి"
-
-#: data/ui/settings.glade:243
-msgid "Requires Authorization"
-msgstr "Authorization అవసరమా"
-
-#: data/ui/settings.glade:271
-msgid "Username:"
-msgstr "వినియోగదారు పేరు:"
-
-#: data/ui/settings.glade:309
-msgid "Password:"
-msgstr "పాస్వర్డ్:"
-
-#: data/ui/settings.glade:357
-msgid "Authorization"
-msgstr ""
-
-#: data/ui/settings.glade:379
-msgid "OpenVPN CRT:"
-msgstr ""
-
-#: data/ui/settings.glade:476
-msgid "Connect on Launch"
-msgstr "ప్రారంభించినప్పుడు కనెక్ట్ చేయండి"
-
-#: data/ui/settings.glade:507
-msgid "Save"
-msgstr "సేవ్ చేయండి"
-
-#: data/ui/settings.glade:519
-msgid "Reset"
-msgstr "రీసెట్ చేయండి"
-
-#: data/ui/settings.glade:547
+#: data/ui/settings.glade:17
 msgid "Are you sure?"
 msgstr "మీకు ఖచ్చితంగా తెలుసా?"
 
-#: data/ui/settings.glade:548
+#: data/ui/settings.glade:18
 msgid "All settings will be permanently deleted."
 msgstr "అన్ని సెట్టింగ్‌లు శాశ్వతంగా తొలగించబడతాయి."
 
-#: data/ui/settings.glade:576
+#: data/ui/settings.glade:46
 msgid "Yes"
 msgstr "అవును"
 
-#: eovpn/main_window.py:112
+#: data/ui/settings.glade:126
+msgid "Settings Saved"
+msgstr "సెట్టింగులు సేవ్ చేయబడ్డాయి"
+
+#: data/ui/settings.glade:182 data/ui/settings.glade:631
+msgid "General"
+msgstr "జనరల్"
+
+#: data/ui/settings.glade:215
+msgid "Configuration Source: "
+msgstr "కాన్ఫిగరేషన్ మూలం: "
+
+#: data/ui/settings.glade:229
+msgid "https://example.com/configs.zip"
+msgstr ""
+
+#: data/ui/settings.glade:241
+msgid "Validate"
+msgstr "ధృవీకరించండి"
+
+#: data/ui/settings.glade:294
+msgid "Update Configuration(s) on launch"
+msgstr "ప్రారంభంలో కాన్ఫిగరేషన్‌లను నవీకరించండి"
+
+#: data/ui/settings.glade:338
+msgid "Requires Authentication"
+msgstr "Authentication అవసరమా"
+
+#: data/ui/settings.glade:365
+msgid "Username:"
+msgstr "వినియోగదారు పేరు:"
+
+#: data/ui/settings.glade:403
+msgid "Password:"
+msgstr "పాస్వర్డ్:"
+
+#: data/ui/settings.glade:450
+msgid "Authentication"
+msgstr ""
+
+#: data/ui/settings.glade:472
+msgid "OpenVPN CRT:"
+msgstr ""
+
+#: data/ui/settings.glade:520
+msgid "Setup"
+msgstr "సెటప్"
+
+#: data/ui/settings.glade:561
+msgid "Notification on 'Connect '& 'Disconnect'"
+msgstr "'కనెక్ట్' & 'డిస్‌కనెక్ట్' పై నోటిఫికేషన్"
+
+#: data/ui/settings.glade:609
+msgid "Connect on Launch"
+msgstr "ప్రారంభించినప్పుడు కనెక్ట్ చేయండి"
+
+#: data/ui/settings.glade:657
+msgid "Save"
+msgstr "సేవ్ చేయండి"
+
+#: data/ui/settings.glade:669
+msgid "Reset"
+msgstr "రీసెట్ చేయండి"
+
+#: eovpn/main_window.py:115
 msgid "Failed to connect!"
 msgstr "కలవడం కుదరట్లేదు!"
 
-#: eovpn/main_window.py:177
+#: eovpn/main_window.py:182
 msgid "No Network"
 msgstr "నెట్‌వర్క్ లేదు"
 
-#: eovpn/main_window.py:193
+#: eovpn/main_window.py:198
 msgid "Connected"
 msgstr "కనెక్ట్ చేయబడింది"
 
-#: eovpn/main_window.py:206
+#: eovpn/main_window.py:211
 msgid "Disconnect!"
 msgstr "డిస్‌కనెక్ట్!"
 
-#: eovpn/main_window.py:284
+#: eovpn/main_window.py:289
 msgid "No config selected."
 msgstr "కాన్ఫిగర్ ఎంచుకోబడలేదు."
 

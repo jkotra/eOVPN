@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: eOVPN\n"
-"POT-Creation-Date: 2021-02-17 16:10+0530\n"
+"POT-Creation-Date: 2021-02-17 18:40+0530\n"
 "PO-Revision-Date: 2021-02-17 16:04+0530\n"
 "Last-Translator: Jagadeesh Kotra <jagadeesh.01101011@gmail.com>\n"
 "Language-Team: \n"
@@ -51,7 +51,7 @@ msgid ""
 "to connect again. Kill it?"
 msgstr ""
 
-#: data/ui/main.glade:32 data/ui/settings.glade:561
+#: data/ui/main.glade:32 data/ui/settings.glade:31
 msgid "Cancel"
 msgstr ""
 
@@ -63,7 +63,7 @@ msgstr ""
 msgid "Update"
 msgstr ""
 
-#: data/ui/main.glade:117 data/ui/settings.glade:503
+#: data/ui/main.glade:117 data/ui/settings.glade:653
 msgid "Settings"
 msgstr ""
 
@@ -75,7 +75,7 @@ msgstr ""
 msgid "Exit"
 msgstr ""
 
-#: data/ui/main.glade:190 eovpn/main_window.py:211
+#: data/ui/main.glade:190 eovpn/main_window.py:216
 msgid "Disconnected"
 msgstr ""
 
@@ -95,95 +95,103 @@ msgstr ""
 msgid "OpenVPN configuration"
 msgstr ""
 
-#: data/ui/main.glade:474 eovpn/main_window.py:218
+#: data/ui/main.glade:474 eovpn/main_window.py:223
 msgid "Connect!"
 msgstr ""
 
-#: data/ui/settings.glade:58
-msgid "Settings Saved"
-msgstr ""
-
-#: data/ui/settings.glade:115
-msgid "General"
-msgstr ""
-
-#: data/ui/settings.glade:148
-msgid "Configuration Source: "
-msgstr ""
-
-#: data/ui/settings.glade:162
-msgid "https://example.com/configs.zip"
-msgstr ""
-
-#: data/ui/settings.glade:173
-msgid "Validate"
-msgstr ""
-
-#: data/ui/settings.glade:202
-msgid "Update configuration(s) on start"
-msgstr ""
-
-#: data/ui/settings.glade:243
-msgid "Requires Authorization"
-msgstr ""
-
-#: data/ui/settings.glade:271
-msgid "Username:"
-msgstr ""
-
-#: data/ui/settings.glade:309
-msgid "Password:"
-msgstr ""
-
-#: data/ui/settings.glade:357
-msgid "Authorization"
-msgstr ""
-
-#: data/ui/settings.glade:379
-msgid "OpenVPN CRT:"
-msgstr ""
-
-#: data/ui/settings.glade:476
-msgid "Connect on Launch"
-msgstr ""
-
-#: data/ui/settings.glade:507
-msgid "Save"
-msgstr ""
-
-#: data/ui/settings.glade:519
-msgid "Reset"
-msgstr ""
-
-#: data/ui/settings.glade:547
+#: data/ui/settings.glade:17
 msgid "Are you sure?"
 msgstr ""
 
-#: data/ui/settings.glade:548
+#: data/ui/settings.glade:18
 msgid "All settings will be permanently deleted."
 msgstr ""
 
-#: data/ui/settings.glade:576
+#: data/ui/settings.glade:46
 msgid "Yes"
 msgstr ""
 
-#: eovpn/main_window.py:112
+#: data/ui/settings.glade:126
+msgid "Settings Saved"
+msgstr ""
+
+#: data/ui/settings.glade:182 data/ui/settings.glade:631
+msgid "General"
+msgstr ""
+
+#: data/ui/settings.glade:215
+msgid "Configuration Source: "
+msgstr ""
+
+#: data/ui/settings.glade:229
+msgid "https://example.com/configs.zip"
+msgstr ""
+
+#: data/ui/settings.glade:241
+msgid "Validate"
+msgstr ""
+
+#: data/ui/settings.glade:294
+msgid "Update Configuration(s) on launch"
+msgstr ""
+
+#: data/ui/settings.glade:338
+msgid "Requires Authentication"
+msgstr ""
+
+#: data/ui/settings.glade:365
+msgid "Username:"
+msgstr ""
+
+#: data/ui/settings.glade:403
+msgid "Password:"
+msgstr ""
+
+#: data/ui/settings.glade:450
+msgid "Authentication"
+msgstr ""
+
+#: data/ui/settings.glade:472
+msgid "OpenVPN CRT:"
+msgstr ""
+
+#: data/ui/settings.glade:520
+msgid "Setup"
+msgstr ""
+
+#: data/ui/settings.glade:561
+msgid "Notification on 'Connect '& 'Disconnect'"
+msgstr ""
+
+#: data/ui/settings.glade:609
+msgid "Connect on Launch"
+msgstr ""
+
+#: data/ui/settings.glade:657
+msgid "Save"
+msgstr ""
+
+#: data/ui/settings.glade:669
+msgid "Reset"
+msgstr ""
+
+#: eovpn/main_window.py:115
 msgid "Failed to connect!"
 msgstr ""
 
-#: eovpn/main_window.py:177
+#: eovpn/main_window.py:182
 msgid "No Network"
 msgstr ""
 
-#: eovpn/main_window.py:193
+#: eovpn/main_window.py:198
 msgid "Connected"
 msgstr ""
 
-#: eovpn/main_window.py:206
+#: eovpn/main_window.py:211
 msgid "Disconnect!"
 msgstr ""
 
-#: eovpn/main_window.py:284
+#: eovpn/main_window.py:289
 msgid "No config selected."
 msgstr ""
 
