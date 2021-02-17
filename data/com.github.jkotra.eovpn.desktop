@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=eOVPN
 GenericName=eOVPN
-Comment=OpenVPN manager
+Comment=OpenVPN Configuration Manager
 Icon=com.github.jkotra.eovpn
 Exec=eovpn %U
 Terminal=false

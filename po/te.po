@@ -1,17 +1,23 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2021-02-16 11:15+0530\n"
-"PO-Revision-Date: 2021-02-16 11:34+0530\n"
-"Last-Translator: \n"
+"Project-Id-Version: eOVPN\n"
+"POT-Creation-Date: 2021-02-17 16:10+0530\n"
+"PO-Revision-Date: 2021-02-17 16:16+0530\n"
 "Language-Team: \n"
-"Language: te\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.4.2\n"
-"X-Poedit-Basepath: .\n"
+"X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __push_to_statusbar\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Last-Translator: Jagadeesh Kotra <jagadeesh.01101011@gmail.com>\n"
+"Language: te\n"
+"X-Poedit-SearchPath-0: eovpn\n"
+"X-Poedit-SearchPath-1: data\n"
+"X-Poedit-SearchPath-2: data/ui\n"
+"X-Poedit-SearchPathExcluded-0: __pycache__/*\n"
 
 #: data/com.github.jkotra.eovpn.desktop:3
 #: data/com.github.jkotra.eovpn.desktop:4
@@ -19,8 +25,8 @@ msgid "eOVPN"
 msgstr ""
 
 #: data/com.github.jkotra.eovpn.desktop:5
-msgid "OpenVPN manager"
-msgstr ""
+msgid "OpenVPN Configuration Manager"
+msgstr "OpenVPN కాన్ఫిగరేషన్ మేనేజర్"
 
 #: data/ui/about.glade:12
 msgid "OpenVPN Configuration(s) Manager"
@@ -132,7 +138,7 @@ msgstr "పాస్వర్డ్:"
 
 #: data/ui/settings.glade:357
 msgid "Authorization"
-msgstr "అధికారం"
+msgstr ""
 
 #: data/ui/settings.glade:379
 msgid "OpenVPN CRT:"
@@ -182,38 +188,58 @@ msgstr "డిస్‌కనెక్ట్!"
 msgid "No config selected."
 msgstr "కాన్ఫిగర్ ఎంచుకోబడలేదు."
 
-#: eovpn/openvpn.py:229
+#: eovpn/openvpn.py:230
 msgid "Connecting.."
 msgstr "కనెక్ట్ చేస్తోంది.."
 
-#: eovpn/openvpn.py:235
+#: eovpn/openvpn.py:236
 msgid "Config requires authorization (auth-user-pass)"
 msgstr "Config అధికారం అవసరం (auth-user-pass)"
 
-#: eovpn/openvpn.py:251
+#: eovpn/openvpn.py:252
 msgid "Connected to {}."
 msgstr "{} కనెక్ట్ చేయబడింది."
 
-#: eovpn/openvpn.py:270
+#: eovpn/openvpn.py:271
 msgid "Disconnected."
 msgstr "డిస్‌కనెక్ట్ చేయబడింది."
 
-#: eovpn/openvpn.py:286
+#: eovpn/openvpn.py:287
 msgid "OpenVPN not found."
 msgstr "OpenVPN కనుగొనబడలేదు."
 
-#: eovpn/openvpn.py:359
+#: eovpn/openvpn.py:360
 msgid "Invalid Remote"
 msgstr "చెల్లని రిమోట్"
 
-#: eovpn/openvpn.py:364
+#: eovpn/openvpn.py:365
 msgid "Updating..."
 msgstr "నవీకరిస్తోంది."
 
-#: eovpn/openvpn.py:371 eovpn/openvpn.py:397
+#: eovpn/openvpn.py:372 eovpn/openvpn.py:398
 msgid "Config(s) updated!"
 msgstr "కాన్ఫిగరేషన్ (లు) నవీకరించబడ్డాయి!"
 
-#: eovpn/openvpn.py:379
+#: eovpn/openvpn.py:380
 msgid "No config(s) found!"
 msgstr "కాన్ఫిగరేషన్ (లు) కనుగొనబడలేదు!"
+
+#: eovpn/openvpn.py:416
+msgid "Success"
+msgstr ""
+
+#: eovpn/openvpn.py:416
+msgid "Valid Remote"
+msgstr "చెల్లుబాటు అయ్యే రిమోట్"
+
+#: eovpn/openvpn.py:417
+msgid "{} OpenVPN configuration's found."
+msgstr "{} OpenVPN కాన్ఫిగరేషన్ కనుగొనబడింది."
+
+#: eovpn/openvpn.py:421
+msgid "Validate Error"
+msgstr "ధృవీకరించు లోపం"
+
+#: eovpn/openvpn.py:421
+msgid "Error"
+msgstr "లోపం"

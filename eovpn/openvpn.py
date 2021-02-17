@@ -413,11 +413,12 @@ class OpenVPN_eOVPN(SettingsManager):
                     x_zip = zipfile.ZipFile(io.BytesIO(test_remote.content), "r")
                     configs = list( filter(self.ovpn.findall, x_zip.namelist() ) )
                     if len(configs) > 0:
-                        GLib.idle_add(self.message_dialog, "Success", "Valid Remote", "{} OpenVPN configuration's found.".format(len(configs)))
+                        GLib.idle_add(self.message_dialog, gettext.gettext("Success"), gettext.gettext("Valid Remote"), 
+                        gettext.gettext("{} OpenVPN configuration's found.").format(len(configs)))
                     else:
                         raise Exception("No configs found!")
             except Exception as e:
-                GLib.idle_add(self.message_dialog, "Validate Error", "Error", str(e))
+                GLib.idle_add(self.message_dialog, gettext.gettext("Validate Error"), gettext.gettext("Error"), str(e))
             self.spinner.stop()
         
         if os.path.isdir(os.path.expanduser(remote)):

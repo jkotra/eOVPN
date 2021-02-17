@@ -1,9 +1,10 @@
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"POT-Creation-Date: 2021-02-16 11:15+0530\n"
-"PO-Revision-Date: 2021-02-16 11:17+0530\n"
-"Last-Translator: \n"
+"Project-Id-Version: eOVPN\n"
+"POT-Creation-Date: 2021-02-17 16:10+0530\n"
+"PO-Revision-Date: 2021-02-17 16:04+0530\n"
+"Last-Translator: Jagadeesh Kotra <jagadeesh.01101011@gmail.com>\n"
 "Language-Team: \n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
@@ -25,7 +26,7 @@ msgid "eOVPN"
 msgstr ""
 
 #: data/com.github.jkotra.eovpn.desktop:5
-msgid "OpenVPN manager"
+msgid "OpenVPN Configuration Manager"
 msgstr ""
 
 #: data/ui/about.glade:12
@@ -186,38 +187,58 @@ msgstr ""
 msgid "No config selected."
 msgstr ""
 
-#: eovpn/openvpn.py:229
+#: eovpn/openvpn.py:230
 msgid "Connecting.."
 msgstr ""
 
-#: eovpn/openvpn.py:235
+#: eovpn/openvpn.py:236
 msgid "Config requires authorization (auth-user-pass)"
 msgstr ""
 
-#: eovpn/openvpn.py:251
+#: eovpn/openvpn.py:252
 msgid "Connected to {}."
 msgstr ""
 
-#: eovpn/openvpn.py:270
+#: eovpn/openvpn.py:271
 msgid "Disconnected."
 msgstr ""
 
-#: eovpn/openvpn.py:286
+#: eovpn/openvpn.py:287
 msgid "OpenVPN not found."
 msgstr ""
 
-#: eovpn/openvpn.py:359
+#: eovpn/openvpn.py:360
 msgid "Invalid Remote"
 msgstr ""
 
-#: eovpn/openvpn.py:364
+#: eovpn/openvpn.py:365
 msgid "Updating..."
 msgstr ""
 
-#: eovpn/openvpn.py:371 eovpn/openvpn.py:397
+#: eovpn/openvpn.py:372 eovpn/openvpn.py:398
 msgid "Config(s) updated!"
 msgstr ""
 
-#: eovpn/openvpn.py:379
+#: eovpn/openvpn.py:380
 msgid "No config(s) found!"
+msgstr ""
+
+#: eovpn/openvpn.py:416
+msgid "Success"
+msgstr ""
+
+#: eovpn/openvpn.py:416
+msgid "Valid Remote"
+msgstr ""
+
+#: eovpn/openvpn.py:417
+msgid "{} OpenVPN configuration's found."
+msgstr ""
+
+#: eovpn/openvpn.py:421
+msgid "Validate Error"
+msgstr ""
+
+#: eovpn/openvpn.py:421
+msgid "Error"
 msgstr ""
