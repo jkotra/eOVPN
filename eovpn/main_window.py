@@ -104,11 +104,13 @@ class MainWindowSignalHandler(SettingsManager):
     def on_connect(self, result):
         logger.debug("result = {}".format(result))
         if result:
-            if self.get_setting("notifications"):
-                self.send_notification("Connected", "Connected to {}".format(self.get_setting("last_connected")))
             self.update_status_ip_loc_flag()
             self.set_setting("last_connected", self.config_selected)
             self.set_setting("last_connected_cursor", self.selected_cursor)
+
+            #send notification
+            if self.get_setting("notifications"):
+                self.send_notification("Connected", "Connected to {}".format(self.get_setting("last_connected")))            
 
             logger.debug("saved to config: cursor={} config={}".format(self.config_selected, self.selected_cursor))
         else:
@@ -119,7 +121,7 @@ class MainWindowSignalHandler(SettingsManager):
         if result:
             if self.get_setting("notifications"):
                 self.send_notification("Disconnected", "Disconnected from {}".format(
-                    str(self.get_setting("last_connected")) #incase if reset settings while connected.
+                    self.get_setting("last_connected")
                     ))
             self.update_status_ip_loc_flag()
 

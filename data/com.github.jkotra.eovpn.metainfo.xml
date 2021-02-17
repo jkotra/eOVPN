@@ -41,7 +41,7 @@
 
   <releases>
 
-    <release version="0.05.5" date="2021-02-17">
+    <release version="0.05.6" date="2021-02-17">
       <description>
         <ul>
           <li>Feature: Notification on Connect &gt; Disconnect</li>
