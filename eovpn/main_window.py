@@ -118,7 +118,9 @@ class MainWindowSignalHandler(SettingsManager):
         logger.debug("result = {}".format(result))
         if result:
             if self.get_setting("notifications"):
-                self.send_notification("Disconnected", "Disconnected from {}".format(self.get_setting("last_connected")))
+                self.send_notification("Disconnected", "Disconnected from {}".format(
+                    str(self.get_setting("last_connected")) #incase if reset settings while connected.
+                    ))
             self.update_status_ip_loc_flag()
 
     def on_version(self, result):

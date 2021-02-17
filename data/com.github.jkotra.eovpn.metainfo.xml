@@ -41,13 +41,14 @@
 
   <releases>
 
-    <release version="0.04.1" date="2021-02-17">
+    <release version="0.05" date="2021-02-17">
       <description>
         <ul>
           <li>Feature: Notification on Connect &gt; Disconnect</li>
           <li>Redesign settings window.</li>
           <li>Improve translations.</li>
           <li>Various typo fixes.</li>
+          <li>Undo button on reset.</li>
         </ul>  
       </description>
     </release>        

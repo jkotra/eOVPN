@@ -116,10 +116,10 @@ class OpenVPN:
                     for word in line.split(" "):
 
                         if "AUTH_FAILED" in word:
-                            return "Authentication failed."
+                            return gettext.gettext("Authentication failed.")
 
                         elif "SIGTERM" in word:
-                            return "OpenVPN Killed!"
+                            return gettext.gettext("OpenVPN Killed!")
 
                         elif "ERROR:" in word:
                             return line.split(":")[-1]

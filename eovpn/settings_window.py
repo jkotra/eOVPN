@@ -12,6 +12,7 @@ import time
 from gi.repository import GLib
 from urllib.parse import urlparse
 import shutil
+import gettext
 
 logger = logging.getLogger(__name__)
 
@@ -34,11 +35,16 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.spinner = self.builder.get_object("settings_spinner")
         self.status_bar = self.builder.get_object("openvpn_settings_statusbar")
         self.ovpn = OpenVPN_eOVPN(spinner = self.spinner)
+
+        self.auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
+        self.settings_file = os.path.join(self.EOVPN_CONFIG_DIR, "settings.json")
         
         self.remote_addr_entry = self.builder.get_object("openvpn_config_remote_addr")
         self.update_on_start = self.builder.get_object("update_on_start")
 
         self.setting_saved_reveal = self.builder.get_object("reveal_settings_saved")
+        self.inapp_notification_label = self.builder.get_object("inapp_notification")
+        self.undo_reset_btn = self.builder.get_object("undo_reset") 
         #by default, it's not revealed (duh!)
         self.setting_saved_reveal.set_reveal_child(False)
         #only close the first time
@@ -150,6 +156,8 @@ class SettingsWindowSignalHandler(SettingsManager):
                                 self.config_storage)
 
         #show settings saved notfication
+        self.inapp_notification_label.set_text(gettext.gettext("Settings Saved."))
+        self.undo_reset_btn.hide()
         self.setting_saved_reveal.set_reveal_child(True)
         if self.reveal_delay_close == False:
             ThreadManager().create(self.close_revealer_after_sec, (5, self.setting_saved_reveal,), False)
@@ -178,30 +186,30 @@ class SettingsWindowSignalHandler(SettingsManager):
 
     def reset_settings(self):
 
+        #backup to /tmp, give user choice to undo
+        shutil.copytree(self.EOVPN_CONFIG_DIR, "/tmp/eovpn_reset_backup/", dirs_exist_ok=True)
+        shutil.rmtree(self.EOVPN_CONFIG_DIR)
+        os.mkdir(self.EOVPN_CONFIG_DIR)
+
         self.remote_addr_entry.set_text("")
         self.update_on_start.set_active(False)
+        self.connect_on_launch.set_active(False)
+        self.notifications_chkbox.set_active(False)
 
         self.req_auth.set_active(False)
         self.auth_user.set_text("")
         self.auth_pass.set_text("")
-
         self.crt_chooser.set_filename("")
-        
-        #remove config dir
-        if self.get_setting("remote_savepath") != None:
-            if os.path.exists(self.get_setting("remote_savepath")):
-                logger.debug("removing {}".format(self.get_setting("remote_savepath")))
-                shutil.rmtree(self.get_setting("remote_savepath"))
-                self.config_storage.clear()
 
+        self.inapp_notification_label.set_text(gettext.gettext("Settings deleted."))
+        self.undo_reset_btn.show()
+        self.setting_saved_reveal.set_reveal_child(True)
 
-        auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
-        if os.path.exists(auth_file):
-            logger.debug("removing {}".format(auth_file))
-            os.remove(auth_file)
-
-        subprocess.run(["rm", self.EOVPN_CONFIG_DIR + "/settings.json"])
-
+    def on_undo_reset_clicked(self, button):
+        shutil.copytree("/tmp/eovpn_reset_backup/", self.EOVPN_CONFIG_DIR, dirs_exist_ok=True)
+        self.update_settings_ui()
+        self.on_revealer_close_btn_clicked(None) #button is not actually used so it's okay.
+        self.undo_reset_btn.hide()
 
     def on_update_on_start_toggled(self, toggle):
         self.set_setting("update_on_start", toggle.get_active())
