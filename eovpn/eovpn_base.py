@@ -20,6 +20,10 @@ class Base:
         self.APP_VERSION = "0.03"
         self.AUTHOR = "Jagadeesh Kotra"
         self.AUTHOR_MAIL = "jagadeesh@stdin.top"
+        
+        self.TRANSLATORS = {
+            "Jagadeesh Kotra": ["Telugu"],
+            }
 
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")
         self.EOVPN_GRESOURCE_PREFIX = "/com/github/jkotra/" + self.APP_NAME.lower()
