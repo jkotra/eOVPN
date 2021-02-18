@@ -23,7 +23,7 @@
 
     * **Update On Start(*Checkbox*)**: If Checked, configurations are downloaded and updated from `remote` each time you open the app.
     
-    * **Requires Authorization**(*Checkbox*): Weather the configuration from remote requires authorization/Authentication. check the box and fill `Username` and `Password`
+    * **Requires Authentication**(*Checkbox*): Weather the configuration from remote requires Authentication. check the box and fill `Username` and `Password`
 
     * **OpenVPN CRT**: OpenVPN CRT/CA file. Will be automatically set on `Update` if such file exists in `remote`.
 
