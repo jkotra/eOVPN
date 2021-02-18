@@ -8,7 +8,6 @@ import os
 import time
 import logging
 from gi.repository import GLib
-import platform
 import psutil
 import shutil
 import gettext
@@ -336,41 +335,51 @@ class OpenVPN_eOVPN(SettingsManager):
             if f.endswith(".ovpn"):
                 storage.append([f])
     
-    def download_config_to_dest_plain(self, remote, destination):
+    def download_config_to_destination(self, remote, destination):
+        
+        def make_zip_from_b(content):
+            return zipfile.ZipFile(io.BytesIO(content), "r")
 
-        try:
-            test_remote = requests.get(remote, timeout=360)
-        except Exception as e:
-            logger.error(str(e))
-            return False
-
-        if test_remote.status_code == 200:
-
+        def download_zip(remote):
             try:
-                x_zip = zipfile.ZipFile(io.BytesIO(test_remote.content), "r")
-            except zipfile.BadZipFile:
+                remote_c = requests.get(remote, timeout=360)
+            except Exception as e:
+                logger.error(str(e))
                 return False
-                    
-            files_in_zip = x_zip.namelist()
+            
+            zip_file = make_zip_from_b(remote_c.content)
+            return zip_file
 
-            configs = list( filter(self.ovpn.findall, files_in_zip) )
-            certs = list( filter(self.crt.findall, files_in_zip ) )
-            all_files = configs + certs
-            if len(configs) > 0:
+        remote = os.path.expanduser(remote)
 
-                for file_name in all_files:
-                            
-                    file = x_zip.getinfo(file_name)
-                    file.filename = os.path.basename(file.filename) #remove nested dir
-                    logger.info(file.filename)
-                    x_zip.extract(file, destination)
-                return True
-            return False  
+        if os.path.isdir(remote) and remote.endswith("zip") == False:
+            shutil.copytree(remote, destination, dirs_exist_ok=True)
+            return True
+
+        elif os.path.isfile(remote) and remote.endswith("zip") == True:
+            zip_file = make_zip_from_b(open(remote, "rb").read())
+        else:
+            zip_file = download_zip(remote)
+        
+        #list of files inside zip
+        files_in_zip = zip_file.namelist()
+
+        configs = list(filter(self.ovpn.findall, files_in_zip))
+        certs = list(filter(self.crt.findall, files_in_zip ))
+        all_files = configs + certs
+        if len(configs) > 0:
+            for file_name in all_files:      
+                file = zip_file.getinfo(file_name)
+                file.filename = os.path.basename(file.filename) #remove nested dir
+                logger.info(file.filename)
+                zip_file.extract(file, destination)
+            return True
+
+        return False  
 
     #this function is used to update
-    def download_config(self, remote, destination, storage, callback):
+    def download_config_and_update_liststore(self, remote, destination, storage, callback):
         
-
         if remote == None or remote == "":
             self.__push_to_statusbar(gettext.gettext("Invalid Remote"))
             self.__set_statusbar_icon(False)
@@ -382,7 +391,8 @@ class OpenVPN_eOVPN(SettingsManager):
         def download():
 
             result = None
-            if self.download_config_to_dest_plain(remote, destination):
+
+            if self.download_config_to_destination(remote, destination):
                 self.__push_to_statusbar(gettext.gettext("Config(s) updated!"))
                 self.__set_statusbar_icon(True)
                 GLib.idle_add(self.load_configs_to_tree,
@@ -391,7 +401,6 @@ class OpenVPN_eOVPN(SettingsManager):
                 result = True
                 self.__set_crt_auto()              
             else:
-
                 self.__push_to_statusbar(gettext.gettext("No config(s) found!"))
                 self.__set_statusbar_icon(False)
                 result = False
@@ -402,20 +411,7 @@ class OpenVPN_eOVPN(SettingsManager):
         
         if not os.path.exists(destination):
             os.mkdir(destination)
-        
-        if os.path.isdir(os.path.expanduser(remote)):
-            
-            #this is a local directory
-            remote = os.path.expanduser(remote)
-            
-            shutil.copytree(remote, destination, dirs_exist_ok=True)
-            self.spinner.stop()
-            GLib.idle_add(self.load_configs_to_tree,
-                              storage,
-                              self.get_setting("remote_savepath"))
-            self.__push_to_statusbar(gettext.gettext("Config(s) updated!"))                  
-            return True
-        #else download config from remote
+
         ThreadManager().create(download, None, True)
 
 
@@ -423,34 +419,40 @@ class OpenVPN_eOVPN(SettingsManager):
     def validate_remote(self, remote):
 
         def remote_validate():
+
             self.spinner.start()
 
-            try:
-                test_remote = requests.get(remote, timeout=360)
-                if test_remote.status_code == 200:
-                    x_zip = zipfile.ZipFile(io.BytesIO(test_remote.content), "r")
-                    configs = list( filter(self.ovpn.findall, x_zip.namelist() ) )
-                    if len(configs) > 0:
-                        GLib.idle_add(self.message_dialog, gettext.gettext("Success"), gettext.gettext("Valid Remote"), 
-                        gettext.gettext("{} OpenVPN configuration's found.").format(len(configs)))
-                    else:
-                        raise Exception("No configs found!")
-            except Exception as e:
-                GLib.idle_add(self.message_dialog, gettext.gettext("Validate Error"), gettext.gettext("Error"), str(e))
+            tmp_path = "/tmp/eovpn_validate/"
+            if os.path.isdir(tmp_path):
+                shutil.rmtree(tmp_path)
+            else:
+                os.mkdir(tmp_path)    
+
+            res = self.download_config_to_destination(remote, tmp_path)
+            if res == False:
+                logger.debug("Cannot download / save from remote!")
+                return False
+
+            all_files = os.listdir(tmp_path)
+            print(all_files)
+
+            configs = list(filter(self.ovpn.findall, all_files))
+            if len(configs) > 0:
+                #show message dialog
+                GLib.idle_add(self.message_dialog, gettext.gettext("Success"),
+                 gettext.gettext("Valid Remote"), 
+                gettext.gettext("{} OpenVPN configuration's found.").format(len(configs)))
+            else:
+                GLib.idle_add(self.message_dialog, 
+                gettext.gettext("Validate Error"), 
+                gettext.gettext("Error"),
+                 gettext.gettext("Unknown error! check debug log for more information"))
+
             self.spinner.stop()
         
-        if os.path.isdir(os.path.expanduser(remote)):
-            remote = os.path.expanduser(remote)
-            configs = list( filter(self.ovpn.findall, os.listdir(remote) ) )
-            if len(configs) > 0:
-                GLib.idle_add(self.message_dialog, "Success", "Valid Source", "{} OpenVPN configuration's found.".format(len(configs)))
-            else:
-                raise Exception("No configs found!")
-        else:
-            ThreadManager().create(remote_validate, None, True)    
 
+        ThreadManager().create(remote_validate, None, True)    
 
-        
 
     def openvpn_config_set_protocol(self,config, label):
         proto = re.compile("proto [tcp|udp]*")
@@ -463,5 +465,4 @@ class OpenVPN_eOVPN(SettingsManager):
             label.set_text(protocol.upper())
             label.show()
         except Exception as e:
-            logger.error(str(e))    
-            
+            logger.error(str(e))

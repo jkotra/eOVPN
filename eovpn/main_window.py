@@ -243,7 +243,7 @@ class MainWindowSignalHandler(SettingsManager):
         logger.info("{} copied to clipboard.".format(ip))
 
     def on_update_btn_clicked(self, button):
-        self.ovpn.download_config(self.get_setting("remote"),
+        self.ovpn.download_config_and_update_liststore(self.get_setting("remote"),
                                   self.get_setting("remote_savepath"),
                                   self.config_storage,
                                   None)

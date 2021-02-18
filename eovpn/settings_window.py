@@ -151,7 +151,7 @@ class SettingsWindowSignalHandler(SettingsManager):
             f.close()
         
         if initial_remote is None:
-            self.ovpn.download_config(url,
+            self.ovpn.download_config_and_update_liststore(url,
                                 self.get_setting("remote_savepath"),
                                 self.config_storage,
                                 None)
@@ -191,6 +191,9 @@ class SettingsWindowSignalHandler(SettingsManager):
         shutil.copytree(self.EOVPN_CONFIG_DIR, "/tmp/eovpn_reset_backup/", dirs_exist_ok=True)
         shutil.rmtree(self.EOVPN_CONFIG_DIR)
         os.mkdir(self.EOVPN_CONFIG_DIR)
+
+        #remove config from liststorage
+        self.config_storage.clear()
 
         self.remote_addr_entry.set_text("")
         self.update_on_start.set_active(False)
