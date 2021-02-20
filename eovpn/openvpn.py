@@ -406,8 +406,10 @@ class OpenVPN_eOVPN(SettingsManager):
                 result = False
 
             self.spinner.stop()
+
             if callback is not None:
-                callback(result)
+                #using GLib will interact with main thread which seems to be needed for some widgets!
+                GLib.idle_add(callback, result)
         
         if not os.path.exists(destination):
             os.mkdir(destination)

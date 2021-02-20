@@ -92,6 +92,7 @@ class MainWindowSignalHandler(SettingsManager):
                 self.config_selected = self.get_setting("last_connected")
 
                 logger.debug("restored cursor = {} | config_selected = {}".format(i, self.config_selected))
+                self.menu_view_config.show()
 
                 if self.get_setting("connect_on_launch"):
                     if (self.is_connected is False) and (self.no_network is False):
@@ -134,7 +135,13 @@ class MainWindowSignalHandler(SettingsManager):
             statusbar_icon.set_from_pixbuf(img)
 
         if result is False:
-            self.connect_btn.set_sensitive(False) 
+            self.connect_btn.set_sensitive(False)
+
+    def on_update(self, result):
+        logger.debug(result)
+        if result:
+            self.config_tree.set_cursor(0)
+            self.config_tree.scroll_to_cell(0)
     #end
 
     def on_menu_exit_clicked(self, window):
@@ -249,7 +256,7 @@ class MainWindowSignalHandler(SettingsManager):
         self.ovpn.download_config_and_update_liststore(self.get_setting("remote"),
                                   self.get_setting("remote_savepath"),
                                   self.config_storage,
-                                  None)
+                                  self.on_update)
             
 
     def on_open_vpn_running_kill_btn_clicked(self, dlg):
