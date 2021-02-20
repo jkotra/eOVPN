@@ -48,7 +48,7 @@ pip install -r requirements.txt
 eOVPN uses [meson build system](https://mesonbuild.com/), to build the project:
 
 ```
-meson build
+meson build -Dprefix=/usr
 cd build
 ninja install
 ```
