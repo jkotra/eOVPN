@@ -160,14 +160,6 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.inapp_notification_label.set_text(gettext.gettext("Settings Saved."))
         self.undo_reset_btn.hide()
         self.setting_saved_reveal.set_reveal_child(True)
-        if self.reveal_delay_close == False:
-            ThreadManager().create(self.close_revealer_after_sec, (5, self.setting_saved_reveal,), False)
-
-    def close_revealer_after_sec(self, sec: int, revealer):
-        time.sleep(sec)
-        if self.setting_saved_reveal.get_reveal_child() and self.reveal_delay_close == False:
-            revealer.set_reveal_child(False)
-            self.reveal_delay_close = True
 
     def on_revealer_close_btn_clicked(self, btn):
         self.setting_saved_reveal.set_reveal_child(False)
