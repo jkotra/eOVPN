@@ -24,10 +24,10 @@
   <screenshots>
 
         <screenshot type="default">
-            <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/window.png</image>
+            <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/connected.png</image>
         </screenshot>
         <screenshot>
-            <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/connected.png</image>
+            <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/window.png</image>
         </screenshot>
 
   </screenshots>
@@ -40,6 +40,17 @@
   </provides>
 
   <releases>
+
+    <release version="0.07" date="2021-02-20">
+      <description>
+        <ul>
+          <li>Feature: View Config from menu.</li>
+          <li>Translation updates.</li>
+          <li>Backend updates / refactor.</li>
+          <li>small tweaks to improve UI</li>
+        </ul>
+      </description>
+    </release>       
 
     <release version="0.05.6" date="2021-02-17">
       <description>
