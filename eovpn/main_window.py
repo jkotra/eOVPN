@@ -66,6 +66,8 @@ class MainWindowSignalHandler(SettingsManager):
         self.is_connected = False
         self.no_network = False
 
+        self.menu_view_config = self.builder.get_object("view_config")
+
         self.connect_btn = self.builder.get_object("connect_btn")
         self.update_btn = self.builder.get_object("update_btn")
 
@@ -157,6 +159,7 @@ class MainWindowSignalHandler(SettingsManager):
 
         try:
             self.selected_cursor = path[-1].get_indices()[-1]
+            self.menu_view_config.show()
         except IndexError:
             return False
 
@@ -257,6 +260,27 @@ class MainWindowSignalHandler(SettingsManager):
     def on_open_vpn_running_cancel_btn_clicked(self, dlg):
         dlg.hide()
         return True
+
+    def on_view_config_clicked(self, user_data):
+        appchooser = Gtk.AppChooserDialog(content_type="text/plain")
+        appchooser.show()
+
+        def on_response(dialog, response):
+            if response == Gtk.ResponseType.OK:
+                app_info = dialog.get_app_info()
+                name = app_info.get_display_name()
+                description = app_info.get_description()
+                
+                uri = []
+                uri.append(
+                    "file://{savepath}/{config}".format(savepath=self.get_setting("remote_savepath"), config=self.config_selected)
+                    )
+                logger.debug("{}".format(uri))    
+                app_info.launch_uris(uri)
+
+            dialog.destroy()
+
+        appchooser.connect("response", on_response)    
 
     def on_connect_btn_clicked(self, button):
 

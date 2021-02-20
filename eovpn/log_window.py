@@ -20,7 +20,7 @@ class LogWindowSignalHandler(Base):
         
         def on_log_window_show(self, log_area):
             textbuf = Gtk.TextBuffer()
-            textbuf.set_text(open(self.EOVPN_CONFIG_DIR + "/session.log").read())
+            textbuf.set_text(open(self.EOVPN_CONFIG_DIR + "/session.log", "r+").read())
             log_area.set_buffer(textbuf)
 
         def on_log_window_delete_event(self, window, event):
