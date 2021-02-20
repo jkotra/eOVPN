@@ -269,25 +269,11 @@ class MainWindowSignalHandler(SettingsManager):
         return True
 
     def on_view_config_clicked(self, user_data):
-        appchooser = Gtk.AppChooserDialog(content_type="text/plain")
-        appchooser.show()
 
-        def on_response(dialog, response):
-            if response == Gtk.ResponseType.OK:
-                app_info = dialog.get_app_info()
-                name = app_info.get_display_name()
-                description = app_info.get_description()
-                
-                uri = []
-                uri.append(
-                    "file://{savepath}/{config}".format(savepath=self.get_setting("remote_savepath"), config=self.config_selected)
-                    )
-                logger.debug("{}".format(uri))    
-                app_info.launch_uris(uri)
+        url = "file://{savepath}/{config}".format(savepath=self.get_setting("remote_savepath"),
+                                                  config=self.config_selected)
+        Gio.AppInfo.launch_default_for_uri(url)
 
-            dialog.destroy()
-
-        appchooser.connect("response", on_response)    
 
     def on_connect_btn_clicked(self, button):
 
