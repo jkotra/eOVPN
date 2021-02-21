@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="static/connected.png" width="396" height="579" alt="eOVPN">
+<img src="static/connected.png" alt="eOVPN">
 
 
 </div>
@@ -11,6 +11,9 @@
 
 `eOVPN` is a application to connect, manage and update(from remote <i>.zip</i>) OpenVPN configurations.
 
+<a href='https://flathub.org/apps/details/com.github.jkotra.eovpn'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+
+---
 
 ## Setup
 
@@ -37,6 +40,16 @@
 
 ---
 
+### Debug
+
+To print out some useful information to `stdout`, use `EOVPN_DEBUG=DEBUG` as the prefix.
+
+```
+EOVPN_DEBUG=DEBUG flatpak run com.github.jkotra.eovpn
+```
+
+---
+
 ## Install
 
 ### Dependencies
@@ -49,22 +62,13 @@ eOVPN uses [meson build system](https://mesonbuild.com/), to build the project:
 
 ```
 meson build -Dprefix=/usr
-cd build
-ninja install
+ninja install -C build
 ```
 
 To uninstall:
 ```
 ninja uninstall
 ```
-
----
-
-## Flatpak
-
-
-<a href='https://flathub.org/apps/details/com.github.jkotra.eovpn'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
-
 
 ---
 
