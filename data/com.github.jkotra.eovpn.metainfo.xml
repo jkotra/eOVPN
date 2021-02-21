@@ -41,6 +41,14 @@
 
   <releases>
 
+    <release version="0.07.1" date="2021-02-21">
+      <description>
+        <ul>
+          <li>Bug fix: pass sys.argv to Gtk.Application</li>
+        </ul>
+      </description>
+    </release>      
+
     <release version="0.07" date="2021-02-20">
       <description>
         <ul>
