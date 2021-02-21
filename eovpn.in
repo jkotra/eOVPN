@@ -9,21 +9,14 @@ sys.path.insert(1, '@PYTHON_DIR@')
 pkgdatadir = '@PKG_DATADIR@'
 localedir = '@LOCALE_DIR@'
 
-
 from gi.repository import Gio
 
-import argparse
 import logging
 
-from eovpn.application import app
+from eovpn.application import launch_eovpn
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--debug', type=int, action="store", default = False, help="Debug level. 10 = DEBUG | 50 = CRITICAL" )
-args = parser.parse_args()
-
-if args.debug is not False:
-    assert type(args.debug) == int
-    logging.basicConfig(level=args.debug, format='%(levelname)s:%(name)s.py:%(funcName)s:%(message)s')
+if os.getenv("EOVPN_DEBUG") is not None:
+    logging.basicConfig(level=os.getenv("EOVPN_DEBUG"), format='%(levelname)s:%(name)s.py:%(funcName)s:%(message)s')
 
 
 if __name__ == "__main__":
@@ -33,9 +26,8 @@ if __name__ == "__main__":
     gettext.bindtextdomain('eovpn', localedir)
     gettext.textdomain('eovpn')
 
-
     resource = Gio.resource_load(os.path.join(pkgdatadir, 'com.github.jkotra.eovpn.gresource'))
     Gio.Resource._register(resource)
     
-    exit_status = app.run(None)
+    exit_status = launch_eovpn()
     sys.exit(exit_status)

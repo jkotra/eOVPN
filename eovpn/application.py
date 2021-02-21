@@ -19,14 +19,16 @@ class eovpn(Base):
         screen = Gdk.Screen.get_default()
         context.add_provider_for_screen(screen, css,
                                         Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
-        main_window = MainWindow(app)
-        main_window.show()                                
+        main_window = MainWindow(self.app)
+        main_window.show()                            
 
 
 def on_activate(app):
     main = eovpn(app)
     main.start()
 
-
-app = Gtk.Application(application_id='com.github.jkotra.eovpn')
-app.connect('activate', on_activate)
+def launch_eovpn():
+    app = Gtk.Application(application_id='com.github.jkotra.eovpn')
+    app.connect('activate', on_activate)
+    exit_code = app.run(sys.argv)
+    return exit_code
