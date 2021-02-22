@@ -24,17 +24,6 @@
 
         * [`eOVPN` also supports local directory/folder/zip]
 
-    * **Update On Start(*Checkbox*)**: If Checked, configurations are downloaded and updated from `remote` each time you open the app.
-    
-    * **Requires Authentication**(*Checkbox*): Weather the configuration from remote requires Authentication. check the box and fill `Username` and `Password`
-
-    * **OpenVPN CRT**: OpenVPN CRT/CA file. Will be automatically set on `Update` if such file exists in `remote`.
-
-    * **Connect On Launch(*Checkbox*)**: If Checked, eOVPN will try to connect to the last connected server on application launch.
-
-    * **Notification on 'Connect '& 'Disconnect'**(*Checkbox*): If Checked, eOVPN will send system notifications on connect and disconnect events.
-
-
 3. click `Save`.
     * If it's for the first time, Configurations are automatically updated else the user needs to click `Update` from the menu to reflect changes.
 

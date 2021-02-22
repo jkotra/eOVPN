@@ -9,7 +9,7 @@ import re
 import os
 from os import path
 import time
-from gi.repository import GLib
+from gi.repository import GLib, Gtk
 from urllib.parse import urlparse
 import shutil
 import gettext
@@ -40,7 +40,6 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.settings_file = os.path.join(self.EOVPN_CONFIG_DIR, "settings.json")
         
         self.remote_addr_entry = self.builder.get_object("openvpn_config_remote_addr")
-        self.update_on_start = self.builder.get_object("update_on_start")
 
         self.setting_saved_reveal = self.builder.get_object("reveal_settings_saved")
         self.inapp_notification_label = self.builder.get_object("inapp_notification")
@@ -65,8 +64,12 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.crt_chooser = self.builder.get_object("crt_chooser")
 
         self.valid_result_lbl = self.builder.get_object("openvpn_settings_statusbar")
-        self.connect_on_launch = self.builder.get_object("connect_on_launch_chkbox")
-        self.notifications_chkbox = self.builder.get_object("notifications_chkbox")
+
+        #General Tab
+
+        self.notification_switch = self.builder.get_object("notification_switch")
+        self.update_on_launch_switch = self.builder.get_object("update_on_launch_switch")
+        self.connect_on_launch_switch = self.builder.get_object("connect_on_launch_switch")
 
         self.are_you_sure = self.builder.get_object("settings_reset_ask_sure")
 
@@ -81,10 +84,10 @@ class SettingsWindowSignalHandler(SettingsManager):
             self.remote_addr_entry.set_text(remote)
 
         if self.get_setting("update_on_start"):
-            self.update_on_start.set_active(True)
+            self.update_on_launch_switch.set_state(True)
 
         if self.get_setting("notifications"):
-            self.notifications_chkbox.set_active(True)    
+            self.notification_switch.set_state(True)    
         
         if self.get_setting("req_auth"):
             self.req_auth.set_active(True)
@@ -104,10 +107,8 @@ class SettingsWindowSignalHandler(SettingsManager):
         if crt_path is not None:
             self.crt_chooser.set_filename(crt_path)
 
-        is_connect_on_launch = self.get_setting("connect_on_launch")
-
-        if is_connect_on_launch:
-            self.connect_on_launch.set_active(True)
+        if self.get_setting("connect_on_launch"):
+            self.connect_on_launch_switch.set_state(True)
 
 
     def on_settings_window_delete_event(self, window, event) -> bool:
@@ -188,9 +189,11 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.config_storage.clear()
 
         self.remote_addr_entry.set_text("")
-        self.update_on_start.set_active(False)
-        self.connect_on_launch.set_active(False)
-        self.notifications_chkbox.set_active(False)
+
+        # General Tab
+        self.update_on_launch_switch.set_state(False)
+        self.connect_on_launch_switch.set_state(False)
+        self.notification_switch.set_state(False)
 
         self.req_auth.set_active(False)
         self.auth_user.set_text("")
@@ -207,9 +210,6 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.on_revealer_close_btn_clicked(None) #button is not actually used so it's okay.
         self.undo_reset_btn.hide()
 
-    def on_update_on_start_toggled(self, toggle):
-        self.set_setting("update_on_start", toggle.get_active())
-
     def on_crt_chooser_file_set(self, chooser):
         self.set_setting("crt", chooser.get_filename())
         self.set_setting("crt_set_explicit", True)
@@ -218,19 +218,26 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.set_setting("req_auth", toggle.get_active())
         self.user_pass_box.set_sensitive(toggle.get_active())
 
-    def on_connect_on_launch_chkbox_toggled(self, toggle):
-        self.set_setting("connect_on_launch", toggle.get_active())
-
     def on_settings_validate_btn_clicked(self, entry):
         self.ovpn.validate_remote(entry.get_text())
 
     def save_btn_activate(self, editable):
         self.save_btn.set_sensitive(True)
 
-    def on_notifications_chkbox_toggled(self, toggle):
-        self.set_setting("notifications", toggle.get_active())
-
     def on_crt_file_reset_clicked(self, button):
         self.crt_chooser.set_filename("")
         self.set_setting("crt", None)
-        self.set_setting("crt_set_explicit", None)        
+        self.set_setting("crt_set_explicit", None)
+    
+    def on_show_password_btn_toggled(self, toggle):
+        self.auth_pass.set_visibility(toggle.get_active())
+
+    # General Tab
+    def on_notification_switch_state_set(self, switch, state):
+        self.set_setting("notifications", state)
+
+    def on_update_on_launch_switch_state_set(self, switch, state):
+        self.set_setting("update_on_start", state)
+
+    def on_connect_on_launch_switch_state_set(self, switch, state):
+        self.set_setting("connect_on_launch", state)     
