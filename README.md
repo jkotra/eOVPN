@@ -42,11 +42,9 @@
 
 ### Debug
 
-To print out some useful information to `stdout`, use `EOVPN_DEBUG=DEBUG` as the prefix.
+either use `--debug [LEVEL]` as a command-line argument or set `EOVPN_DEBUG=[LEVEL]` as an environment variable.
 
-```
-EOVPN_DEBUG=DEBUG flatpak run com.github.jkotra.eovpn
-```
+Refer: [Python Logging Levels](https://docs.python.org/3/library/logging.html#levels)
 
 ---
 

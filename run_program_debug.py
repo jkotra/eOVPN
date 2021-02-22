@@ -9,8 +9,6 @@ APP_NAME = "com.github.jkotra.eovpn"
 sys.path.insert(1, os.getcwd())
 sys.path.insert(1, os.getcwd() + "/eovpn/")
 
-logging.basicConfig(level=logging.DEBUG, format='%(levelname)s:%(name)s.py:%(funcName)s:%(message)s')
-
 from eovpn.application import launch_eovpn
 
 if __name__ == "__main__":

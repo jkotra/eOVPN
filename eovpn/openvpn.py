@@ -335,6 +335,7 @@ class OpenVPN_eOVPN(SettingsManager):
             if f.endswith(".ovpn"):
                 storage.append([f])
     
+    #this fuction saves the content of remote to destination folder.
     def download_config_to_destination(self, remote, destination):
         
         def make_zip_from_b(content):
@@ -345,7 +346,7 @@ class OpenVPN_eOVPN(SettingsManager):
                 remote_c = requests.get(remote, timeout=360)
             except Exception as e:
                 logger.error(str(e))
-                return False
+                raise(e)
             
             zip_file = make_zip_from_b(remote_c.content)
             return zip_file
@@ -377,7 +378,7 @@ class OpenVPN_eOVPN(SettingsManager):
 
         return False  
 
-    #this function is used to update
+    #this function is used to update from remote
     def download_config_and_update_liststore(self, remote, destination, storage, callback):
         
         if remote == None or remote == "":
@@ -391,8 +392,16 @@ class OpenVPN_eOVPN(SettingsManager):
         def download():
 
             result = None
+            
+            try:
+                download_res = self.download_config_to_destination(remote, destination)
+            except Exception as e:
+                self.spinner.stop()
+                logger.error(e)
+                self.statusbar.pop(1)
+                return False
 
-            if self.download_config_to_destination(remote, destination):
+            if download_res:
                 self.__push_to_statusbar(gettext.gettext("Config(s) updated!"))
                 self.__set_statusbar_icon(True)
                 GLib.idle_add(self.load_configs_to_tree,
@@ -429,14 +438,19 @@ class OpenVPN_eOVPN(SettingsManager):
                 shutil.rmtree(tmp_path)
             else:
                 os.mkdir(tmp_path)    
+            
+            try:
+                res = self.download_config_to_destination(remote, tmp_path)
+            except Exception as e:
+                logger.error(e)
+                self.spinner.stop()
+                return False    
 
-            res = self.download_config_to_destination(remote, tmp_path)
             if res == False:
-                logger.debug("Cannot download / save from remote!")
+                logger.debug("Cannot download / save from remote {}!".format(remote))
                 return False
 
             all_files = os.listdir(tmp_path)
-            print(all_files)
 
             configs = list(filter(self.ovpn.findall, all_files))
             if len(configs) > 0:
@@ -444,11 +458,6 @@ class OpenVPN_eOVPN(SettingsManager):
                 GLib.idle_add(self.message_dialog, gettext.gettext("Success"),
                  gettext.gettext("Valid Remote"), 
                 gettext.gettext("{} OpenVPN configuration's found.").format(len(configs)))
-            else:
-                GLib.idle_add(self.message_dialog, 
-                gettext.gettext("Validate Error"), 
-                gettext.gettext("Error"),
-                 gettext.gettext("Unknown error! check debug log for more information"))
 
             self.spinner.stop()
         
