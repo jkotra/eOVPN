@@ -41,6 +41,16 @@
 
   <releases>
 
+    <release version="0.10" date="2021-02-23">
+      <description>
+        <ul>
+          <li>Design: Redesigned Settings Window.</li>
+          <li>Feature: Open .ovpn directly. Support for "Open with Other Application"</li>
+          <li>Bugs: Several bug fixes and improvements.</li>
+        </ul>
+      </description>
+    </release>      
+
     <release version="0.07.1" date="2021-02-21">
       <description>
         <ul>
