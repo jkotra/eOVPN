@@ -11,7 +11,7 @@
 
 `eOVPN` is a application to connect, manage and update(from remote <i>.zip</i>) OpenVPN configurations.
 
-<a href='https://flathub.org/apps/details/com.github.jkotra.eovpn'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+<a href='https://flathub.org/apps/details/com.github.jkotra.eovpn'><img height='50' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 
 ---
 

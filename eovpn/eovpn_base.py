@@ -9,15 +9,23 @@ import logging
 import threading
 
 builder_record = {}
+eovpn_standalone = {"is_standalone": False, "path": None}
 
 logger = logging.getLogger(__name__)
+
+def set_standalone(path):
+    eovpn_standalone["is_standalone"] = True
+    eovpn_standalone["path"] = path
+
+def get_standalone():
+    return (eovpn_standalone["is_standalone"], eovpn_standalone["path"])
 
 class Base:
 
     def __init__(self):
         self.APP_NAME = "eOVPN"
         self.APP_ID = "com.github.jkotra.eovpn"
-        self.APP_VERSION = "0.07.1"
+        self.APP_VERSION = "0.10"
         self.AUTHOR = "Jagadeesh Kotra"
         self.AUTHOR_MAIL = "jagadeesh@stdin.top"
         
@@ -72,7 +80,7 @@ class Base:
         messagedialog.format_secondary_text(secondary_text)
         messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
         messagedialog.run()
-        messagedialog.hide()    
+        messagedialog.hide()   
 
 class ThreadManager:
     
