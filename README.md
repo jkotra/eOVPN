@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="static/connected.png" alt="eOVPN">
+<img src="static/connected.png" alt="eOVPN" height='500'>
 
 
 </div>
