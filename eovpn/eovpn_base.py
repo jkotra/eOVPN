@@ -68,9 +68,15 @@ class Base:
 
         return img
 
-    def send_notification(self, action, message):
-        Notify.init("eOVPN")
-        notif = Notify.Notification.new(action, message, "dialog-information")
+    def send_notification(self, action, message, connection_event=None):
+        Notify.init("com.github.jkotra.eovpn")
+        notif = Notify.Notification.new(action, message)
+        if connection_event is True:
+            notif.set_image_from_pixbuf(self.get_image("notification_connected.svg", "icons", (64, 64)))
+        elif connection_event is False:
+            notif.set_image_from_pixbuf(self.get_image("notification_disconnected.svg", "icons", (64,64)))     
+        else:
+            notif.set_image_from_pixbuf(self.get_image("com.github.jkotra.eovpn.svg", "icons", (64,64)))   
         notif.show()
 
     def message_dialog(self, title, primary_text, secondary_text):
