@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schemalist>
+	<schema path="/com/github/jkotra/eovpn/" id="com.github.jkotra.eovpn">
+
+		<key type="i" name="treeview-height">
+			<default>-1</default>
+			<summary>Height of treeview</summary>
+		</key>
+
+	</schema>
+</schemalist>

@@ -55,6 +55,7 @@ class MainWindowSignalHandler(SettingsManager):
 
         self.statusbar = self.builder.get_object("statusbar")
         self.spinner = self.builder.get_object("main_spinner")
+        self.paned = self.builder.get_object("main_paned")
         self.config_storage = self.builder.get_object("config_storage")
         self.config_tree = self.builder.get_object("config_treeview")
         self.statusbar_icon = self.builder.get_object("statusbar_icon")
@@ -68,6 +69,17 @@ class MainWindowSignalHandler(SettingsManager):
 
         self.standalone_mode = False
         self.standalone_path = None
+
+        #load_settings
+        self.settings = Gio.Settings.new(self.APP_ID)
+        paned_height = self.settings.get_int("treeview-height")
+        logger.debug("paned_height={}".format(paned_height))
+        
+        if paned_height != -1:
+            self.paned.set_position(paned_height)
+        else:
+            self.paned.set_position(350)
+
 
         self.menu_view_config = self.builder.get_object("view_config")
 
@@ -157,6 +169,12 @@ class MainWindowSignalHandler(SettingsManager):
             self.config_tree.set_cursor(0)
             self.config_tree.scroll_to_cell(0)
     #end
+
+    def on_mainwindow_destroy(self, application):
+        paned_height = self.paned.get_position()
+        logger.debug("saving paned_height={}".format(paned_height))
+        self.settings.set_int("treeview-height", paned_height)
+        return True
 
     def on_menu_exit_clicked(self, window):
         window.close()

@@ -15,4 +15,7 @@ print(datadir)
 if not destdir:
     print('Updating icon cache...')
     call(['gtk-update-icon-cache', '-qtf', path.join(datadir, 'icons', 'hicolor')])
+    print("Installing new Schemas")
+    call(['glib-compile-schemas', path.join(datadir, 'glib-2.0/schemas')])
+
 
