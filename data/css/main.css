@@ -1,8 +1,8 @@
 
 .badge_proto {
-    border-radius: 8px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+    background-color: green;
+    padding-top: 2px;
+    padding-bottom: 2px;
     padding-left: 4px;
     padding-right: 4px;
     color: white;

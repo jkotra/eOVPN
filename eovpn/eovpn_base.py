@@ -25,9 +25,10 @@ class Base:
     def __init__(self):
         self.APP_NAME = "eOVPN"
         self.APP_ID = "com.github.jkotra.eovpn"
-        self.APP_VERSION = "0.12"
+        self.APP_VERSION = "0.15"
         self.AUTHOR = "Jagadeesh Kotra"
         self.AUTHOR_MAIL = "jagadeesh@stdin.top"
+        self.AUTHOR_MAIL_SECONDARY = "jagadeesh.01101011@gmail.com"
         
         self.TRANSLATORS = {
             "Jagadeesh Kotra": ["Telugu"],

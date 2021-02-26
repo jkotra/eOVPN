@@ -17,6 +17,7 @@ import zipfile
 import time
 import datetime
 import psutil
+import socket
 import gettext
 
 logger = logging.getLogger(__name__)
@@ -64,6 +65,7 @@ class MainWindowSignalHandler(SettingsManager):
         self.config_selected = None
         self.config_connected = None
         self.selected_cursor = None
+        self.proto_override = None #consider true if it's either UDP or TCP
         self.is_connected = False
         self.no_network = False
 
@@ -79,10 +81,22 @@ class MainWindowSignalHandler(SettingsManager):
             self.paned.set_position(paned_height)
         else:
             self.paned.set_position(350)
+        
+        #connect_prefs
+        self.connect_prefs = self.builder.get_object("connect_prefs")
+        self.connect_popover = self.builder.get_object("connect_popover")
+        self.connect_prefs_ping_label = self.builder.get_object("connect_menu_ms")
+        self.proto_chooser_box = self.builder.get_object("proto_choose_box")
 
+        self.proto_choice = {"tcp": self.builder.get_object("on_connect_prefs_tcp_btn_tick"),
+                            "udp": self.builder.get_object("on_connect_prefs_udp_btn_tick")}
+
+        self.country_predetails = {"sep": self.builder.get_object("country_section_sep"),
+                                   "img": self.builder.get_object("connection_prefs_country_image"),
+                                   "name": self.builder.get_object("connection_prefs_country_name")}                    
+       
 
         self.menu_view_config = self.builder.get_object("view_config")
-
         self.connect_btn = self.builder.get_object("connect_btn")
         self.update_btn = self.builder.get_object("update_btn")
 
@@ -178,6 +192,58 @@ class MainWindowSignalHandler(SettingsManager):
 
     def on_menu_exit_clicked(self, window):
         window.close()
+    
+    def on_connect_prefs_tcp_btn_clicked(self, btn):
+        self.proto_override = "TCP"
+        self.proto_choice["tcp"].show()
+        self.proto_choice["udp"].hide()
+
+    def on_connect_prefs_udp_btn_clicked(self, btn):
+        self.proto_override = "UDP"
+        self.proto_choice["udp"].show()
+        self.proto_choice["tcp"].hide()
+  
+
+    #ping
+    def on_ping_clicked(self, spinner):
+        spinner.start()
+        openvpn_addr = None
+
+        def test_ping():
+
+            if self.config_selected is not None:
+                f = open(os.path.join(self.EOVPN_CONFIG_DIR, self.get_setting("remote_savepath"), self.config_selected)).read()
+                for line in f.split("\n"):
+                    if "remote" in line:
+                        openvpn_addr = line.split(" ")[1]
+                        break
+
+            logger.debug(openvpn_addr)
+            out = subprocess.run(["ping", "-c", "1", openvpn_addr], stdout=subprocess.PIPE)
+            out = out.stdout.decode('utf-8')
+
+            ping_re = re.compile(r"time=.*")
+            res = ping_re.findall(out)
+
+            self.connect_prefs_ping_label.set_label(res[-1].split("=")[-1])
+            self.connect_prefs_ping_label.show()
+            
+            ip = socket.gethostbyname(openvpn_addr)
+
+            ip_req = requests.get("http://ip-api.com/json/{}".format(ip))
+            ip_details = json.loads(ip_req.content)
+
+            country_id = ip_details['countryCode'].lower()
+            pic = self.get_country_image(country_id)
+            self.country_predetails["img"].set_from_pixbuf(pic)
+            self.country_predetails["name"].set_label(ip_details['country'])
+
+            for widget in self.country_predetails.keys():
+                self.country_predetails[widget].show()
+
+            spinner.stop()
+
+        ThreadManager().create(test_ping, (), True)    
 
     def on_settings_btn_clicked(self, button):
         settings_window = SettingsWindow()
@@ -199,6 +265,13 @@ class MainWindowSignalHandler(SettingsManager):
         try:
             self.selected_cursor = path[-1].get_indices()[-1]
             self.menu_view_config.show()
+
+            #hide ping in connect_prefs
+            self.connect_prefs_ping_label.hide()
+
+            #hide all country details section.
+            for widget in self.country_predetails.keys():
+                self.country_predetails[widget].hide()
         except IndexError:
             return False
 
@@ -257,6 +330,8 @@ class MainWindowSignalHandler(SettingsManager):
             self.connect_btn.set_label(gettext.gettext("Disconnect!"))
             self.is_connected = True
 
+            self.proto_chooser_box.set_sensitive(False)
+
         else:
 
             self.status_label.set_text(gettext.gettext("Disconnected"))
@@ -270,6 +345,8 @@ class MainWindowSignalHandler(SettingsManager):
             
             logger.info("connection status = False")
             self.is_connected = False
+            
+            self.proto_chooser_box.set_sensitive(True)
 
         self.ip_label.set_text(ip['query'])
         
@@ -326,6 +403,19 @@ class MainWindowSignalHandler(SettingsManager):
 
         try:
             config_file = os.path.join(self.get_setting("remote_savepath"), self.config_selected)
+            if self.proto_override is not None:
+                config_content = open(config_file, "r").read()
+                for line in config_content.split("\n"):
+                    if "proto" in line:
+
+                        config_content = config_content.replace(line, "proto " + self.proto_override.lower())
+
+                        f = open(config_file, "w")
+                        f.write(config_content)
+                        f.close()
+                        logger.debug("proto override to {}".format(self.proto_override.lower()))
+
+                        break
         except TypeError:
             self.statusbar.push(1, gettext.gettext("No config selected."))
             self.statusbar_icon.set_from_icon_name("dialog-warning-symbolic", 1)
