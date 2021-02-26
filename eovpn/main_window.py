@@ -206,17 +206,16 @@ class MainWindowSignalHandler(SettingsManager):
 
     #ping
     def on_ping_clicked(self, spinner):
-        spinner.start()
+
         openvpn_addr = None
 
         def test_ping():
-
-            if self.config_selected is not None:
-                f = open(os.path.join(self.EOVPN_CONFIG_DIR, self.get_setting("remote_savepath"), self.config_selected)).read()
-                for line in f.split("\n"):
-                    if "remote" in line:
-                        openvpn_addr = line.split(" ")[1]
-                        break
+            
+            f = open(os.path.join(self.EOVPN_CONFIG_DIR, self.get_setting("remote_savepath"), self.config_selected)).read()
+            for line in f.split("\n"):
+                if "remote" in line:
+                    openvpn_addr = line.split(" ")[1]
+                    break
 
             logger.debug(openvpn_addr)
             out = subprocess.run(["ping", "-c", "1", openvpn_addr], stdout=subprocess.PIPE)
@@ -229,9 +228,11 @@ class MainWindowSignalHandler(SettingsManager):
             self.connect_prefs_ping_label.show()
             
             ip = socket.gethostbyname(openvpn_addr)
+            logger.debug(ip)
 
             ip_req = requests.get("http://ip-api.com/json/{}".format(ip))
             ip_details = json.loads(ip_req.content)
+            logger.debug(ip_details)
 
             country_id = ip_details['countryCode'].lower()
             pic = self.get_country_image(country_id)
@@ -243,7 +244,15 @@ class MainWindowSignalHandler(SettingsManager):
 
             spinner.stop()
 
-        ThreadManager().create(test_ping, (), True)    
+        if self.config_selected is not None:
+            file = os.path.join(self.EOVPN_CONFIG_DIR, self.get_setting("remote_savepath"), self.config_selected)
+            if os.path.isfile(file):
+                spinner.start()
+                ThreadManager().create(test_ping, (), True)
+            else:
+                logger.debug("config file dont exist!")
+        else:
+            logger.debug("self.config_selected is None")                
 
     def on_settings_btn_clicked(self, button):
         settings_window = SettingsWindow()
@@ -345,7 +354,7 @@ class MainWindowSignalHandler(SettingsManager):
             
             logger.info("connection status = False")
             self.is_connected = False
-            
+
             self.proto_chooser_box.set_sensitive(True)
 
         self.ip_label.set_text(ip['query'])

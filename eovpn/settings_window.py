@@ -52,6 +52,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         #load tree from mainwindow
         main_builder = self.get_builder("main.glade")
         self.config_storage = main_builder.get_object("config_storage")
+        self.menu_view_config = main_builder.get_object("view_config")
 
         self.save_btn = self.builder.get_object("settings_apply_btn")
         self.save_btn.set_sensitive(False)
@@ -187,6 +188,7 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         #remove config from liststorage
         self.config_storage.clear()
+        self.menu_view_config.hide()
 
         self.remote_addr_entry.set_text("")
 
