@@ -195,12 +195,12 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
+          <object class="GtkBox" id="connect_prefs_country_details">
             <property name="can-focus">False</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkSeparator" id="country_section_sep">
+                <property name="visible">True</property>
                 <property name="can-focus">False</property>
               </object>
               <packing>
@@ -212,8 +212,9 @@
             </child>
             <child>
               <object class="GtkImage" id="connection_prefs_country_image">
+                <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="icon-name">mark-location</property>
+                <property name="icon-name">mark-location-symbolic</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -223,6 +224,7 @@
             </child>
             <child>
               <object class="GtkLabel" id="connection_prefs_country_name">
+                <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Country_Name</property>
                 <attributes>

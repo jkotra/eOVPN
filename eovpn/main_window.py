@@ -91,7 +91,8 @@ class MainWindowSignalHandler(SettingsManager):
         self.proto_choice = {"tcp": self.builder.get_object("on_connect_prefs_tcp_btn_tick"),
                             "udp": self.builder.get_object("on_connect_prefs_udp_btn_tick")}
 
-        self.country_predetails = {"sep": self.builder.get_object("country_section_sep"),
+        self.country_predetails = {"box": self.builder.get_object("connect_prefs_country_details"),
+                                   "sep": self.builder.get_object("country_section_sep"),
                                    "img": self.builder.get_object("connection_prefs_country_image"),
                                    "name": self.builder.get_object("connection_prefs_country_name")}                    
        
@@ -239,8 +240,7 @@ class MainWindowSignalHandler(SettingsManager):
             self.country_predetails["img"].set_from_pixbuf(pic)
             self.country_predetails["name"].set_label(ip_details['country'])
 
-            for widget in self.country_predetails.keys():
-                self.country_predetails[widget].show()
+            self.country_predetails["box"].show()
 
             spinner.stop()
 
@@ -279,8 +279,8 @@ class MainWindowSignalHandler(SettingsManager):
             self.connect_prefs_ping_label.hide()
 
             #hide all country details section.
-            for widget in self.country_predetails.keys():
-                self.country_predetails[widget].hide()
+            self.country_predetails["box"].hide()
+
         except IndexError:
             return False
 
