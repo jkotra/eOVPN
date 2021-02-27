@@ -13,6 +13,8 @@
 
 <a href='https://flathub.org/apps/details/com.github.jkotra.eovpn'><img height='50' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 
+<a href="https://www.buymeacoffee.com/jkotra"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=jkotra&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff"></a>
+
 ---
 
 ## Setup

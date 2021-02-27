@@ -75,12 +75,12 @@ class MainWindowSignalHandler(SettingsManager):
         #load_settings
         self.settings = Gio.Settings.new(self.APP_ID)
         paned_height = self.settings.get_int("treeview-height")
-        logger.debug("paned_height={}".format(paned_height))
         
         if paned_height != -1:
             self.paned.set_position(paned_height)
         else:
-            self.paned.set_position(350)
+            self.paned.set_position(250)
+        logger.debug("GtkPaned position={}".format(self.paned.get_position()))
         
         #connect_prefs
         self.connect_prefs = self.builder.get_object("connect_prefs")

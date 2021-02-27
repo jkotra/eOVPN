@@ -41,6 +41,14 @@
 
   <releases>
 
+    <release version="0.16" date="2021-02-27">
+      <description>
+        <ul>
+          <li>Bug Fix: Reset GtkPaned position on reset.</li>
+        </ul>
+      </description>
+    </release>          
+
     <release version="0.15" date="2021-02-27">
       <description>
         <ul>

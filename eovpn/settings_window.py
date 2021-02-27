@@ -9,7 +9,7 @@ import re
 import os
 from os import path
 import time
-from gi.repository import GLib, Gtk
+from gi.repository import GLib, Gtk, Gio
 from urllib.parse import urlparse
 import shutil
 import gettext
@@ -53,6 +53,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         main_builder = self.get_builder("main.glade")
         self.config_storage = main_builder.get_object("config_storage")
         self.menu_view_config = main_builder.get_object("view_config")
+        self.paned = main_builder.get_object("main_paned")
 
         self.save_btn = self.builder.get_object("settings_apply_btn")
         self.save_btn.set_sensitive(False)
@@ -189,6 +190,11 @@ class SettingsWindowSignalHandler(SettingsManager):
         #remove config from liststorage
         self.config_storage.clear()
         self.menu_view_config.hide()
+
+        #remote GtkPaned size from Gsetting.
+        settings = Gio.Settings.new(self.APP_ID)
+        settings.reset("treeview-height")
+        self.paned.set_position(250)
 
         self.remote_addr_entry.set_text("")
 
