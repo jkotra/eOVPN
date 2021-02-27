@@ -219,7 +219,18 @@ class MainWindowSignalHandler(SettingsManager):
                     break
 
             logger.debug(openvpn_addr)
-            out = subprocess.run(["ping", "-c", "1", openvpn_addr], stdout=subprocess.PIPE)
+
+            commands = []
+            if os.getenv("FLATPAK_ID") is not None:
+                commands.append("flatpak-spawn")
+                commands.append("--host")
+
+            commands.append("ping")
+            commands.append("-c")
+            commands.append("1")
+            commands.append(openvpn_addr)
+
+            out = subprocess.run(commands, stdout=subprocess.PIPE)
             out = out.stdout.decode('utf-8')
 
             ping_re = re.compile(r"time=.*")
