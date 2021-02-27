@@ -41,6 +41,15 @@
 
   <releases>
 
+    <release version="0.15" date="2021-02-27">
+      <description>
+        <ul>
+          <li>Feature: Connect Preferences Popover - Ping, Country lookup.</li>
+          <li>UI: fix several padding issues</li>
+        </ul>
+      </description>
+    </release>         
+
     <release version="0.12" date="2021-02-25">
       <description>
         <ul>
