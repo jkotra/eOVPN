@@ -16,13 +16,14 @@ import gettext
 
 logger = logging.getLogger(__name__)
 
-class SettingsWindow(Base):
+class SettingsWindow(Base, Gtk.Builder):
     def __init__(self):
-        super(SettingsWindow, self).__init__()
+        super().__init__()
+        Gtk.Builder.__init__(self)
 
-        self.builder = self.get_builder("settings.glade")
-        self.builder.connect_signals(SettingsWindowSignalHandler(self.builder))
-        self.window = self.builder.get_object("settings_window")
+        self.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "settings.glade")
+        self.connect_signals(SettingsWindowSignalHandler(self))
+        self.window = self.get_object("settings_window")
 
     def show(self):
         self.window.show()    
@@ -50,7 +51,8 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.reveal_delay_close = False
         
         #load tree from mainwindow
-        main_builder = self.get_builder("main.glade")
+        main_builder = Gtk.Builder()
+        main_builder.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "main.glade")
         self.config_storage = main_builder.get_object("config_storage")
         self.menu_view_config = main_builder.get_object("view_config")
         self.paned = main_builder.get_object("main_paned")

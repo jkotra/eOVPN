@@ -1,14 +1,15 @@
 from .eovpn_base import Base
 from gi.repository import Gtk
 
-class LogWindow(Base):
+class LogWindow(Base, Gtk.Builder):
     def __init__(self):
-        super(LogWindow, self).__init__()
+        super().__init__()
+        Gtk.Builder.__init__(self)
 
-        self.builder = self.get_builder("log.glade")
-        self.builder.connect_signals(LogWindowSignalHandler())
-        self.window = self.builder.get_object("log_window")
-        self.log_area = self.builder.get_object("log_area")
+        self.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "log.glade")
+        self.connect_signals(LogWindowSignalHandler())
+
+        self.window = self.get_object("log_window")
 
     def show(self):
         self.window.show()

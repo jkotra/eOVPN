@@ -8,7 +8,6 @@ import json
 import logging
 import threading
 
-builder_record = {}
 eovpn_standalone = {"is_standalone": False, "path": None}
 
 logger = logging.getLogger(__name__)
@@ -37,15 +36,6 @@ class Base:
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")
         self.EOVPN_GRESOURCE_PREFIX = "/com/github/jkotra/" + self.APP_NAME.lower()
         self.EOVPN_CSS = self.EOVPN_GRESOURCE_PREFIX + "/css/main.css"
-    
-    def get_builder(self, ui_resource_path):
-        if ui_resource_path not in builder_record.keys():
-            builder = Gtk.Builder()
-            builder.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + ui_resource_path)
-            builder_record[ui_resource_path] = builder
-            return builder
-        else:
-            return builder_record[ui_resource_path]
     
     def get_logo(self):
         img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/com.github.jkotra.eovpn.svg", -1, 128, True)

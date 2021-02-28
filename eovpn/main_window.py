@@ -22,13 +22,15 @@ import gettext
 
 logger = logging.getLogger(__name__)
 
-class MainWindow(Base):
+class MainWindow(Base, Gtk.Builder):
     def __init__(self, app):
-        super(MainWindow, self).__init__()
+        super().__init__()
+        Gtk.Builder.__init__(self)
         self.app = app
-        self.builder = self.get_builder("main.glade")
-        self.builder.connect_signals(MainWindowSignalHandler(self.builder))
-        self.window = self.builder.get_object("mainwindow")
+        
+        self.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "main.glade")
+        self.connect_signals(MainWindowSignalHandler(self))
+        self.window = self.get_object("mainwindow")
 
         self.window.set_title("eOVPN")
         self.window.set_icon_name(self.APP_ID)

@@ -1,11 +1,14 @@
 from .eovpn_base import Base
+from gi.repository import Gtk
 
-class AboutWindow(Base):
+class AboutWindow(Base, Gtk.Builder):
     def __init__(self):
-        super(AboutWindow, self).__init__()
-        self.builder = self.get_builder("about.glade")
-        self.builder.connect_signals(AboutWindowSignalHandler())
-        self.window = self.builder.get_object("about_dlg")
+        super().__init__()
+        Gtk.Builder.__init__(self)
+
+        self.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "about.glade")
+        self.connect_signals(AboutWindowSignalHandler())
+        self.window = self.get_object("about_dlg")
         self.window.set_version(self.APP_VERSION)
         
         translation_credits = ""
