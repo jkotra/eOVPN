@@ -123,8 +123,6 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         initial_remote = self.get_setting("remote")
 
-        #to set sensitive based on remote value
-        _builder = self.get_builder("main.glade")
         
         url = self.remote_addr_entry.get_text().strip()
 
