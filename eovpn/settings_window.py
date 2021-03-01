@@ -1,4 +1,4 @@
-from .eovpn_base import Base, SettingsManager, ThreadManager
+from .eovpn_base import Base, SettingsManager, ThreadManager, builder_record
 from .openvpn import OpenVPN_eOVPN
 import requests
 import typing
@@ -51,8 +51,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.reveal_delay_close = False
         
         #load tree from mainwindow
-        main_builder = Gtk.Builder()
-        main_builder.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "main.glade")
+        main_builder = builder_record["main"]
         self.config_storage = main_builder.get_object("config_storage")
         self.menu_view_config = main_builder.get_object("view_config")
         self.paned = main_builder.get_object("main_paned")

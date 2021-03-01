@@ -9,6 +9,7 @@ import logging
 import threading
 
 eovpn_standalone = {"is_standalone": False, "path": None}
+builder_record = {}
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class Base:
     def __init__(self):
         self.APP_NAME = "eOVPN"
         self.APP_ID = "com.github.jkotra.eovpn"
-        self.APP_VERSION = "0.17.1"
+        self.APP_VERSION = "0.17.2"
         self.AUTHOR = "Jagadeesh Kotra"
         self.AUTHOR_MAIL = "jagadeesh@stdin.top"
         self.AUTHOR_MAIL_SECONDARY = "jagadeesh.01101011@gmail.com"

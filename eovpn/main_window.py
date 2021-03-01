@@ -1,6 +1,6 @@
 from gi.repository import Gtk, GLib, Gdk, GdkPixbuf, Gio
 
-from .eovpn_base import Base, SettingsManager, ThreadManager, get_standalone
+from .eovpn_base import Base, SettingsManager, ThreadManager, get_standalone, builder_record
 from .settings_window import SettingsWindow
 from .log_window import LogWindow
 from .about_dialog import AboutWindow
@@ -29,6 +29,7 @@ class MainWindow(Base, Gtk.Builder):
         self.app = app
         
         self.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "main.glade")
+        builder_record["main"] = self
         self.connect_signals(MainWindowSignalHandler(self))
         self.window = self.get_object("mainwindow")
 

@@ -41,7 +41,7 @@
 
   <releases>
 
-    <release version="0.17.1" date="2021-03-01">
+    <release version="0.17.2" date="2021-03-01">
       <description>
         <ul>
           <li>Backend: optimizations.</li>
