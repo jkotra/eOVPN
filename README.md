@@ -41,6 +41,14 @@ Refer: [Python Logging Levels](https://docs.python.org/3/library/logging.html#le
 
 ## Install
 
+### Flatpak
+
+Flatpak is **recommended** for stable performance. `eOVPN` is distributed through flathub.
+
+<a href='https://flathub.org/apps/details/com.github.jkotra.eovpn'><img height='50' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+
+---
+
 ### Dependencies
 
 ```
