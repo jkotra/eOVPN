@@ -41,13 +41,18 @@ Refer: [Python Logging Levels](https://docs.python.org/3/library/logging.html#le
 
 ## Install
 
-### Flatpak
+<br>
+<br>
 
-Flatpak is **recommended** for stable performance. `eOVPN` is distributed through flathub.
+### Flatpak (**Recommended**)
+
 
 <a href='https://flathub.org/apps/details/com.github.jkotra.eovpn'><img height='50' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 
 ---
+
+
+### Local (For Developers)
 
 ### Dependencies
 
@@ -64,7 +69,7 @@ ninja install -C build
 
 To uninstall:
 ```
-ninja uninstall
+sudo ninja uninstall -C build
 ```
 
 ---
