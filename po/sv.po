@@ -1,0 +1,310 @@
+# Swedish translation for eOVPN.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the eOVPN package.
+# Åke Engelbrektson <eson@svenskasprakfiler.se>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: eOVPN\n"
+"POT-Creation-Date: 2021-02-27 18:09+0530\n"
+"PO-Revision-Date: 2021-03-03 08:10+0100\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __push_to_statusbar\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Last-Translator: Åke Engelbrektson <eson@svenskasprakfiler.se>\n"
+"Language: sv\n"
+"X-Poedit-SearchPath-0: eovpn\n"
+"X-Poedit-SearchPath-1: data\n"
+"X-Poedit-SearchPath-2: data/ui\n"
+"X-Poedit-SearchPathExcluded-0: __pycache__/*\n"
+
+#: data/com.github.jkotra.eovpn.desktop:3
+#: data/com.github.jkotra.eovpn.desktop:4
+msgid "eOVPN"
+msgstr "eOVPN"
+
+#: data/com.github.jkotra.eovpn.desktop:5
+msgid "OpenVPN Configuration Manager"
+msgstr "OpenVPN konfigurationshanterare"
+
+#: data/com.github.jkotra.eovpn.gschema.xml:7
+msgid "Height of treeview"
+msgstr "Höjd på trädvy"
+
+#: data/ui/about.glade:12
+msgid "OpenVPN Configuration(s) Manager"
+msgstr "OpenVPN konfigurationshanterare"
+
+#: data/ui/log.glade:7 data/ui/main.glade:334
+msgid "Log"
+msgstr "Logg"
+
+#: data/ui/log.glade:50
+msgid "Close"
+msgstr "Stäng"
+
+#: data/ui/main.glade:33
+msgid "Ping"
+msgstr "Pinga"
+
+#: data/ui/main.glade:45
+msgid "ms"
+msgstr "ms"
+
+#: data/ui/main.glade:110
+msgid "TCP"
+msgstr "TCP"
+
+#: data/ui/main.glade:155
+msgid "UDP"
+msgstr "UDP"
+
+#: data/ui/main.glade:229
+msgid "Country_Name"
+msgstr "Land"
+
+#: data/ui/main.glade:255
+msgid "OpenVPN is running in background!"
+msgstr "OpenVPN körs i bakgrunden!"
+
+#: data/ui/main.glade:256
+msgid ""
+"OpenVPN is still running in background. It must be killed before attempting "
+"to connect again. Kill it?"
+msgstr ""
+"OpenVPN körs fortfarande i bakgrunden. Den måste stoppas innan du försöker "
+"ansluta igen. Vill du stoppa den?"
+
+#: data/ui/main.glade:268 data/ui/settings.glade:805
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: data/ui/main.glade:282
+msgid "Kill"
+msgstr "Stoppa"
+
+#: data/ui/main.glade:318
+msgid "View Config"
+msgstr "Visa konfiguration"
+
+#: data/ui/main.glade:350
+msgid "Update"
+msgstr "Uppdatera"
+
+#: data/ui/main.glade:368
+msgid "Settings"
+msgstr "Inställningar"
+
+#: data/ui/main.glade:386
+msgid "About"
+msgstr "Om"
+
+#: data/ui/main.glade:404
+msgid "Exit"
+msgstr "Avsluta"
+
+#: data/ui/main.glade:442 eovpn/main_window.py:357
+msgid "Disconnected"
+msgstr "Kopplade ifrån"
+
+#: data/ui/main.glade:489
+msgid "IP: 127.0.0.1"
+msgstr "IP: 127.0.0.1"
+
+#: data/ui/main.glade:539
+msgid "Location: Earth"
+msgstr "Plats: Jorden"
+
+#: data/ui/main.glade:628
+msgid "TCP/UDP"
+msgstr "TCP/UDP"
+
+#: data/ui/main.glade:701
+msgid "OpenVPN configuration"
+msgstr "OpenVPN konfiguration"
+
+#: data/ui/main.glade:732 eovpn/main_window.py:364
+msgid "Connect!"
+msgstr "Anslut!"
+
+#: data/ui/settings.glade:65
+msgid "Undo"
+msgstr "Ångra"
+
+#: data/ui/settings.glade:129
+msgid "Configuration Source: "
+msgstr "Konfigurationskälla: "
+
+#: data/ui/settings.glade:143
+msgid "https://example.com/configs.zip"
+msgstr "https://example.com/configs.zip"
+
+#: data/ui/settings.glade:155
+msgid "Validate"
+msgstr "Validera"
+
+#: data/ui/settings.glade:202
+msgid "Requires Authentication"
+msgstr "Kräver autentisering"
+
+#: data/ui/settings.glade:231
+msgid "Username"
+msgstr "Användarnamn"
+
+#: data/ui/settings.glade:281
+msgid "Password"
+msgstr "Lösenord"
+
+#: data/ui/settings.glade:335
+msgid "Show Password"
+msgstr "Visa lösenord"
+
+#: data/ui/settings.glade:358
+msgid "Authentication"
+msgstr "Autentisering"
+
+#: data/ui/settings.glade:381
+msgid "OpenVPN CRT:"
+msgstr "OpenVPN CRT:"
+
+#: data/ui/settings.glade:455
+msgid "Setup"
+msgstr "Konfigurera"
+
+#: data/ui/settings.glade:490
+msgid "Notifications"
+msgstr "Avisering"
+
+#: data/ui/settings.glade:506
+msgid "Send Notification on Connect AND Disconnect Event."
+msgstr "Avisera vid anslutnings- och bortkopplingshändelser."
+
+#: data/ui/settings.glade:565
+msgid "Update on Launch"
+msgstr "Uppdatera vid start"
+
+#: data/ui/settings.glade:581
+msgid "Update Configuration(s) from remote on launch."
+msgstr "Uppdatera konfiguration(er) från fjärradress vid start."
+
+#: data/ui/settings.glade:640
+msgid "Connect on Launch"
+msgstr "Anslut vid start"
+
+#: data/ui/settings.glade:656
+msgid "Connect to last connected config on Launch."
+msgstr "Anslut till senast anslutna konfiguration vid start."
+
+#: data/ui/settings.glade:707
+msgid "General"
+msgstr "Allmänt"
+
+#: data/ui/settings.glade:741
+msgid "Save"
+msgstr "Spara"
+
+#: data/ui/settings.glade:753
+msgid "Reset"
+msgstr "Återställ"
+
+#: data/ui/settings.glade:791
+msgid "Are you sure?"
+msgstr "Är du säker?"
+
+#: data/ui/settings.glade:792
+msgid "All settings will be permanently deleted."
+msgstr "Alla inställningar kommer att tas bort permanent."
+
+#: data/ui/settings.glade:820
+msgid "Yes"
+msgstr "Ja"
+
+#: eovpn/main_window.py:161
+msgid "Failed to connect!"
+msgstr "Kunde inte ansluta!"
+
+#: eovpn/main_window.py:319
+msgid "No Network"
+msgstr "Inget nätverk"
+
+#: eovpn/main_window.py:335
+msgid "Connected"
+msgstr "Ansluten"
+
+#: eovpn/main_window.py:350
+msgid "Disconnect!"
+msgstr "Koppla ifrån!"
+
+#: eovpn/main_window.py:440
+msgid "No config selected."
+msgstr "Ingen konfiguration vald."
+
+#: eovpn/openvpn.py:118
+msgid "Authentication failed."
+msgstr "Autentisering misslyckades."
+
+#: eovpn/openvpn.py:121
+msgid "OpenVPN Killed!"
+msgstr "OpenVPN stoppad!"
+
+#: eovpn/openvpn.py:244
+msgid "Connecting.."
+msgstr "Ansluter..."
+
+#: eovpn/openvpn.py:250
+msgid "Config requires authorization (auth-user-pass)"
+msgstr "Konfiguration kräver auktorisering (auth-user-pass)"
+
+#: eovpn/openvpn.py:266
+msgid "Connected to {}."
+msgstr "Ansluten till {}."
+
+#: eovpn/openvpn.py:285
+msgid "Disconnected."
+msgstr "Frånkopplad."
+
+#: eovpn/openvpn.py:301
+msgid "OpenVPN not found."
+msgstr "OpenVPN hittades inte."
+
+#: eovpn/openvpn.py:385
+msgid "Invalid Remote"
+msgstr "Ogiltig fjärradress"
+
+#: eovpn/openvpn.py:390
+msgid "Updating..."
+msgstr "Uppdaterar..."
+
+#: eovpn/openvpn.py:405
+msgid "Config(s) updated!"
+msgstr "Konfiguration(er) uppdaterad(e)!"
+
+#: eovpn/openvpn.py:413
+msgid "No config(s) found!"
+msgstr "Ingen konfiguration hittades!"
+
+#: eovpn/openvpn.py:458
+msgid "Success"
+msgstr "Klart"
+
+#: eovpn/openvpn.py:459
+msgid "Valid Remote"
+msgstr "Giltig fjärradress"
+
+#: eovpn/openvpn.py:460
+msgid "{} OpenVPN configuration's found."
+msgstr "{} OpenVPN-konfiguration(er) hittades."
+
+#: eovpn/settings_window.py:163
+msgid "Settings Saved."
+msgstr "Inställningar sparade."
+
+#: eovpn/settings_window.py:211
+msgid "Settings deleted."
+msgstr "Inställningar borttagna."
