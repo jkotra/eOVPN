@@ -52,7 +52,7 @@ Refer: [Python Logging Levels](https://docs.python.org/3/library/logging.html#le
 ---
 
 
-### Local (For Developers)
+### Native (For Developers)
 
 ### Dependencies
 
