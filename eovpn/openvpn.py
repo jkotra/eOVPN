@@ -206,17 +206,16 @@ class OpenVPN_eOVPN(SettingsManager):
         self.statusbar_icon = statusbar_icon
 
         self.ovpn = re.compile('.ovpn')
-        self.crt = re.compile(r'.crt|cert')
+        self.crt = re.compile(r'.crt|cert|pem')
 
     def __set_crt_auto(self):
 
         if not self.get_setting("crt_set_explicit") and self.get_setting("crt") is None:
-            crt_re = re.compile(r'.crt')
 
             files = os.listdir(self.get_setting("remote_savepath"))                       
-            crt = list(filter(crt_re.findall, files))
+            crt = list(filter(self.crt.findall, files))
 
-            logger.debug("{}".format(crt))
+            logger.debug("self.crt.findall = {}".format(crt))
 
             if len(crt) >= 1 and self.get_setting("crt_set_explicit") != True:
                 self.set_setting("crt", os.path.join(self.get_setting("remote_savepath"),
@@ -354,10 +353,12 @@ class OpenVPN_eOVPN(SettingsManager):
         remote = os.path.expanduser(remote)
 
         if os.path.isdir(remote) and remote.endswith("zip") == False:
+            logger.debug("remote is a local directory!")
             shutil.copytree(remote, destination, dirs_exist_ok=True)
             return True
 
         elif os.path.isfile(remote) and remote.endswith("zip") == True:
+            logger.debug("remote is a local zip file!")
             zip_file = make_zip_from_b(open(remote, "rb").read())
         else:
             zip_file = download_zip(remote)
