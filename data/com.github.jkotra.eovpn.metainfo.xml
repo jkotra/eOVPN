@@ -41,6 +41,14 @@
 
   <releases>
 
+    <release version="0.17.5" date="2021-03-07">
+      <description>
+        <ul>
+          <li>Update Translations.</li>
+        </ul>
+      </description>
+    </release>        
+
     <release version="0.17.2" date="2021-03-01">
       <description>
         <ul>
