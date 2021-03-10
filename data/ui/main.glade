@@ -363,8 +363,6 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="margin-start">4</property>
-            <property name="margin-end">4</property>
             <property name="text" translatable="yes">Settings</property>
             <property name="centered">True</property>
             <signal name="clicked" handler="on_settings_btn_clicked" swapped="no"/>
@@ -381,8 +379,6 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="margin-start">4</property>
-            <property name="margin-end">4</property>
             <property name="text" translatable="yes">About</property>
             <property name="centered">True</property>
             <signal name="clicked" handler="on_about_btn_clicked" swapped="no"/>
@@ -399,8 +395,6 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="margin-start">4</property>
-            <property name="margin-end">4</property>
             <property name="text" translatable="yes">Exit</property>
             <property name="centered">True</property>
             <signal name="clicked" handler="on_menu_exit_clicked" object="mainwindow" swapped="no"/>
