@@ -477,7 +477,10 @@ class MainWindowSignalHandler(SettingsManager):
         crt = None
 
         if os.path.isfile(os.path.join(working_dir, "auth.txt")):
-            auth_file = os.path.join(working_dir, "auth.txt")
+            auth_file = os.path.join(working_dir, "auth.txt") #1st preference
+        else:
+            if self.get_setting("req_auth"):
+                auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt") #2nd preference
 
         crt_re = re.compile(r'.crt|cert')
         files = os.listdir(working_dir)                       

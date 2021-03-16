@@ -187,6 +187,7 @@ class OpenVPN:
             return False
   
         out = out.stdout.decode('utf-8')
+        logger.info("openvpn version output: " + out)
         ver = opvpn_ver.findall(out)
 
         if len(ver) > 0:
@@ -255,7 +256,6 @@ class OpenVPN_eOVPN(SettingsManager):
 
         if type(connection_result) is not bool:
             # this is a error message
-
             self.__push_to_statusbar(connection_result)
             self.__set_statusbar_icon(False, False)
             self.spinner.stop()
