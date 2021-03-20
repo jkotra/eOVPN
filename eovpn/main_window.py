@@ -5,6 +5,7 @@ from .settings_window import SettingsWindow
 from .log_window import LogWindow
 from .about_dialog import AboutWindow
 from .openvpn import OpenVPN_eOVPN, is_openvpn_running
+from .ip_lookup.lookup import LocationDetails
 import requests
 import os
 import typing
@@ -56,6 +57,8 @@ class MainWindowSignalHandler(SettingsManager):
         self.country_image = self.builder.get_object("country_image")
         self.ip_label = self.builder.get_object("ip_lbl")
         self.location_label = self.builder.get_object("location_lbl")
+        self.connect_btn = self.builder.get_object("connect_btn")
+        self.update_btn = self.builder.get_object("update_btn")
 
         self.statusbar = self.builder.get_object("statusbar")
         self.spinner = self.builder.get_object("main_spinner")
@@ -90,6 +93,13 @@ class MainWindowSignalHandler(SettingsManager):
         self.connect_popover = self.builder.get_object("connect_popover")
         self.connect_prefs_ping_label = self.builder.get_object("connect_menu_ms")
         self.proto_chooser_box = self.builder.get_object("proto_choose_box")
+        
+        self.connection_details_widgets = { "ip_label": self.ip_label,
+                                            "status_label": self.status_label,
+                                            "location_label": self.location_label,
+                                            "country_image": self.country_image,
+                                            "is_connected": self.is_connected,
+                                            "connect_btn": self.connect_btn}
 
         self.proto_choice = {"tcp": self.builder.get_object("on_connect_prefs_tcp_btn_tick"),
                             "udp": self.builder.get_object("on_connect_prefs_udp_btn_tick")}
@@ -101,8 +111,6 @@ class MainWindowSignalHandler(SettingsManager):
        
 
         self.menu_view_config = self.builder.get_object("view_config")
-        self.connect_btn = self.builder.get_object("connect_btn")
-        self.update_btn = self.builder.get_object("update_btn")
 
         #reset session.log
         if os.path.exists(self.EOVPN_CONFIG_DIR) != True:
@@ -244,16 +252,9 @@ class MainWindowSignalHandler(SettingsManager):
             
             ip = socket.gethostbyname(openvpn_addr)
             logger.debug(ip)
-
-            ip_req = requests.get("http://ip-api.com/json/{}".format(ip))
-            ip_details = json.loads(ip_req.content)
-            logger.debug(ip_details)
-
-            country_id = ip_details['countryCode'].lower()
-            pic = self.get_country_image(country_id)
-            self.country_predetails["img"].set_from_pixbuf(pic)
-            self.country_predetails["name"].set_label(ip_details['country'])
-
+            
+            LocationDetails().set_ping_ip_details(ip, self.country_predetails)
+            
             self.country_predetails["box"].show()
 
             spinner.stop()
@@ -308,77 +309,22 @@ class MainWindowSignalHandler(SettingsManager):
 
     def update_status_ip_loc_flag(self) -> None:
 
-        ctx = self.status_label.get_style_context()
-
-        try:
-            ip = requests.get("http://ip-api.com/json/")
-            logger.debug(ip.content)
-            
-        except Exception as e:
-            logging.warning(e)
-
-            #set no network label and uno image as country.
-            ctx.add_class("bg_black")
-            self.status_label.set_text(gettext.gettext("No Network"))
-            uno = self.get_country_image("uno")
-            self.country_image.set_from_pixbuf(uno)
-            self.no_network = True
-
-            self.connect_btn.set_sensitive(False)
-            return False
-
-        if ip.status_code != 200:
-            return None
-        else:
-            ip = json.loads(ip.content)    
+        LocationDetails().set(self.connection_details_widgets, self.ovpn.get_connection_status_eovpn())
         
-        
-
         if self.ovpn.get_connection_status_eovpn():
-            self.status_label.set_text(gettext.gettext("Connected"))
-            
-            ctx.remove_class("bg_red")
-            ctx.add_class("bg_green")
-            
             if self.config_selected != None:
                 self.ovpn.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
                                                   self.get_setting("remote_savepath"),
                                                   self.config_selected), self.proto_label)
-            
             if self.standalone_mode:
                 self.ovpn.openvpn_config_set_protocol(self.standalone_path, self.proto_label)
-
-            logger.info("connection status = True")
-            #change btn text (this also changes signal we set for standalone mode, which should work fine!)
-            self.connect_btn.set_label(gettext.gettext("Disconnect!"))
-            self.is_connected = True
-
             self.proto_chooser_box.set_sensitive(False)
-
+            self.is_connected = True
         else:
-
-            self.status_label.set_text(gettext.gettext("Disconnected"))
-            
-            ctx.remove_class("bg_green")
-            ctx.add_class("bg_red")
-
             self.proto_label.hide()
-
-            self.connect_btn.set_label(gettext.gettext("Connect!"))
-            
-            logger.info("connection status = False")
+            self.proto_chooser_box.set_sensitive(True)
             self.is_connected = False
 
-            self.proto_chooser_box.set_sensitive(True)
-
-        self.ip_label.set_text(ip['query'])
-        
-        self.location_label.set_text(ip['country'])
-        logger.info("location={}".format(ip['country']))
-
-        country_id = ip['countryCode'].lower()
-        pic = self.get_country_image(country_id)
-        self.country_image.set_from_pixbuf(pic)
 
     def on_copy_btn_clicked(self, ip):
         ip = ip.get_text()

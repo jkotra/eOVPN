@@ -39,10 +39,7 @@ Refer: [Python Logging Levels](https://docs.python.org/3/library/logging.html#le
 
 ---
 
-## Install
-
-<br>
-<br>
+# Install
 
 ### Flatpak (**Recommended**)
 

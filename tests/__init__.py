@@ -6,3 +6,4 @@ import os
 sys.path.insert(1, os.getcwd() + "/eovpn/")
 
 from .openvpn import *
+from .ip_lookup import *
