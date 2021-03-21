@@ -9,3 +9,4 @@ build-dir
 *.crt
 tests/data/**
 *.mo
+gschemas.compiled

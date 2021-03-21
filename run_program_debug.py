@@ -8,17 +8,19 @@ APP_NAME = "com.github.jkotra.eovpn"
 
 sys.path.insert(1, os.getcwd())
 sys.path.insert(1, os.getcwd() + "/eovpn/")
+os.environ["GSETTINGS_SCHEMA_DIR"] = "data/"
 
 from eovpn.application import launch_eovpn
 
 if __name__ == "__main__":
 
     if not os.path.exists("build"):
-        subprocess.run(["meson", "build"])
+        subprocess.run(["meson", "build", "-Dprefix=/usr"])
     try:
         gre_path = "build/data/com.github.jkotra.eovpn.gresource"
         subprocess.run(["ninja", "-C", "build"])
         resource = Gio.resource_load(gre_path)
+        subprocess.run(["glib-compile-schemas", "data/"])
     except Exception as e:
         print(e)
         exit(1)
