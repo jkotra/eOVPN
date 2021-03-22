@@ -49,7 +49,17 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.setting_saved_reveal.set_reveal_child(False)
         #only close the first time
         self.reveal_delay_close = False
-        
+
+        #radio button chooser
+        self.nm_radio = self.builder.get_object("nm_radio_btn")
+        self.ovpn_radio = self.builder.get_object("ovpn_radio_btn")
+
+        self.nm_logo = self.builder.get_object("nm_logo")
+        self.nm_logo.set_from_pixbuf(self.get_image("nm_black.svg", "icons", (48, 48)))
+
+        self.ovpn_logo = self.builder.get_object("ovpn_logo")
+        self.ovpn_logo.set_from_pixbuf(self.get_image("openvpn_black.svg", "icons", (48, 48)))
+
         #load tree from mainwindow
         main_builder = builder_record["main"]
         self.config_storage = main_builder.get_object("config_storage")
@@ -78,13 +88,46 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         self.update_settings_ui()
     
-    def push_to_statusbar(self, message):
-        pass
+    def nm_radio_button_toggled_cb(self, radio_btn):
+        if radio_btn.get_active():
+            self.set_setting("manager", "networkmanager")
+            self.radio_btn_color_swap(nm=True)
+
+
+    def ovpn_radio_btn_toggled_cb(self, radio_btn):
+        if radio_btn.get_active():
+            self.set_setting("manager", "openvpn")
+            self.radio_btn_color_swap(openvpn=True)
+            
     
+    def radio_btn_color_swap(self, nm=False, openvpn=False):
+        if nm:
+            self.ovpn_logo.set_from_pixbuf(self.get_image("openvpn_black.svg", "icons", (48, 48)))
+            self.nm_logo.set_from_pixbuf(self.get_image("nm.svg", "icons", (48, 48)))
+
+        if openvpn:
+            self.ovpn_logo.set_from_pixbuf(self.get_image("openvpn.svg", "icons", (48, 48)))
+            self.nm_logo.set_from_pixbuf(self.get_image("nm_black.svg", "icons", (48, 48)))
+
+
     def update_settings_ui(self):
         remote = self.get_setting("remote")
         if remote is not None:
             self.remote_addr_entry.set_text(remote)
+        
+
+        mgr = self.get_setting("manager")
+        if mgr == "networkmanager":
+            self.nm_radio.set_active(True)
+            self.radio_btn_color_swap(nm=True)
+
+        elif mgr == "openvpn":
+            self.ovpn_radio.set_active(True)
+            self.radio_btn_color_swap(openvpn=True)
+        else:
+            self.nm_radio.set_active(False)
+            self.ovpn_radio.set_active(False)
+
 
         if self.get_setting("update_on_start"):
             self.update_on_launch_switch.set_state(True)
@@ -185,6 +228,13 @@ class SettingsWindowSignalHandler(SettingsManager):
         shutil.copytree(self.EOVPN_CONFIG_DIR, "/tmp/eovpn_reset_backup/", dirs_exist_ok=True)
         shutil.rmtree(self.EOVPN_CONFIG_DIR)
         os.mkdir(self.EOVPN_CONFIG_DIR)
+        
+        #default settings (TODO: check if networkmanager is supported)
+        default = {"notifications": True, "manager": "openvpn"}
+        default = json.dumps(default, indent=2)
+        f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), "w+")
+        f.write(default)
+        f.close()
 
         #remove config from liststorage
         self.config_storage.clear()
@@ -196,6 +246,9 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.paned.set_position(250)
 
         self.remote_addr_entry.set_text("")
+
+        self.nm_radio.set_active(False)
+        self.ovpn_radio.set_active(False)
 
         # General Tab
         self.update_on_launch_switch.set_state(False)
@@ -210,6 +263,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.inapp_notification_label.set_text(gettext.gettext("Settings deleted."))
         self.undo_reset_btn.show()
         self.setting_saved_reveal.set_reveal_child(True)
+        self.update_settings_ui()
 
     def on_undo_reset_clicked(self, button):
         shutil.copytree("/tmp/eovpn_reset_backup/", self.EOVPN_CONFIG_DIR, dirs_exist_ok=True)
