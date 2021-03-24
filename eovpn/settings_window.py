@@ -238,7 +238,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         os.mkdir(self.EOVPN_CONFIG_DIR)
         
         is_nm_supported = NetworkManager().get_version()
-        logger.info("is_nm_supported={}".format(is_nm_supported))
+        logger.info("[reset] is_nm_supported={}".format(is_nm_supported))
         default = {"notifications": True, "manager": "networkmanager" if (is_nm_supported != None) else "openvpn"}
         default = json.dumps(default, indent=2)
         f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), "w+")

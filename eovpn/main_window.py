@@ -6,6 +6,7 @@ from .log_window import LogWindow
 from .about_dialog import AboutWindow
 from .connection_manager import eOVPNConnectionManager
 from .openvpn import is_openvpn_running
+from .networkmanager.bindings import NetworkManager
 from .utils import download_remote_to_destination, load_configs_to_tree
 from .ip_lookup.lookup import LocationDetails
 import requests
@@ -117,6 +118,12 @@ class MainWindowSignalHandler(SettingsManager):
         #reset session.log
         if os.path.exists(self.EOVPN_CONFIG_DIR) != True:
             os.mkdir(self.EOVPN_CONFIG_DIR)
+
+        #if manager is None, set it according to compatibility (NM preferered)
+        is_nm_supported = NetworkManager().get_version()
+        logger.info("[startup] is_nm_supported={}".format(is_nm_supported))
+        if self.get_setting("manager") is None:
+            self.set_setting("manager", "networkmanager" if (is_nm_supported != None) else "openvpn")
 
         self.conn_mgr = eOVPNConnectionManager(self.statusbar, self.statusbar_icon, self.spinner)
         self.conn_mgr.get_version(callback=self.on_version)
