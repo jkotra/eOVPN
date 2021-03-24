@@ -130,18 +130,19 @@ def validate_remote(remote, spinner = None):
 
     ThreadManager().create(remote_validate, None, True)    
         
-def __set_crt_auto():
+def set_crt_auto():
 
     settings = SettingsManager()
 
     if not settings.get_setting("crt_set_explicit") and settings.get_setting("crt") is None:
 
         files = os.listdir(settings.get_setting("remote_savepath"))                       
-        crt = list(filter(crt.findall, files))
+        crt_found = list(filter(crt.findall, files))
+        print(crt_found)
 
-        logger.debug("crt.findall = {}".format(crt))
+        logger.debug("crt.findall = {}".format(crt_found))
 
-        if len(crt) >= 1 and settings.get_setting("crt_set_explicit") != True:
+        if len(crt_found) >= 1 and settings.get_setting("crt_set_explicit") != True:
             settings.set_setting("crt", os.path.join(settings.get_setting("remote_savepath"),
-                                                 crt[-1]))        
+                                                 crt_found[-1]))        
             

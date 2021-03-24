@@ -1,6 +1,6 @@
 from .eovpn_base import Base, SettingsManager, ThreadManager, builder_record
 from .connection_manager import eOVPNConnectionManager
-from .utils import validate_remote, load_configs_to_tree, download_remote_to_destination, message_dialog
+from .utils import validate_remote, load_configs_to_tree, download_remote_to_destination, message_dialog, set_crt_auto
 from .networkmanager.bindings import NetworkManager
 import requests
 import typing
@@ -206,7 +206,9 @@ class SettingsWindowSignalHandler(SettingsManager):
         if initial_remote is None:
             download_remote_to_destination(url, self.get_setting("remote_savepath"))
             load_configs_to_tree(self.config_storage ,self.get_setting("remote_savepath"))
-
+        
+        set_crt_auto()
+        
         #show settings saved notfication
         self.inapp_notification_label.set_text(gettext.gettext("Settings Saved."))
         self.undo_reset_btn.hide()
