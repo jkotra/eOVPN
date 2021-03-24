@@ -15,11 +15,12 @@ add_cb(NMClient *client, GAsyncResult *result, GMainLoop *loop)
     nm_client_add_connection_finish(client, result, &err);
     if (err != NULL)
     {
-        g_print("Error: %s\n", err->message);
+        /* https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html#g-printerr */
+        g_printerr("Error: %s\n", err->message);
     }
     else
     {
-        g_print("Connection Added.\n");
+        g_message("[NM] Connection Added!");
     }
 
     g_main_loop_quit(loop);
@@ -96,8 +97,15 @@ add_connection(char *config_name, char *username, char *password, char *ca, int 
 
 static void activate_cb(NMClient *client, GAsyncResult *result, GMainLoop *loop)
 {
-
-    nm_client_activate_connection_finish(client, result, NULL);
+    
+    GError *err = NULL;
+    nm_client_activate_connection_finish(client, result, &err);
+    if (err != NULL){
+        g_printerr("Error: %s\n", err->message);
+    }
+    else{
+        g_message("[NM] Connection Connected!");
+    }
 
     g_main_loop_quit(loop);
 }
@@ -130,8 +138,15 @@ int activate_connection(char *uuid)
 
 static void disconnect_cb(NMClient *client, GAsyncResult *result, GMainLoop *loop)
 {
-
-    nm_client_deactivate_connection_finish(client, result, NULL);
+    
+    GError *err = NULL;
+    nm_client_deactivate_connection_finish(client, result, &err);
+    if (err != NULL){
+        g_printerr("Error: %s\n", err->message);
+    }
+    else{
+        g_message("[NM] Connection Disconnected!");
+    }
     g_main_loop_quit(loop);
 }
 
@@ -165,8 +180,15 @@ int disconnect(char *uuid, int debug)
 
 static void delete_cb(NMRemoteConnection *conn, GAsyncResult *result, GMainLoop *loop)
 {
-
-    nm_remote_connection_delete_finish(conn, result, NULL);
+    
+    GError *err = NULL;
+    nm_remote_connection_delete_finish(conn, result, &err);
+    if (err != NULL){
+        g_printerr("Error: %s\n", err->message);
+    }
+    else{
+        g_message("[NM] Connection Deleted!");
+    }
     g_main_loop_quit(loop);
 }
 

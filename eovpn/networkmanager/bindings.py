@@ -22,6 +22,8 @@ class NetworkManager:
         self.debug = int(debug)
         self.uuid = None
 
+        self.VPN_ACTIVATED = 5
+
     def add_connection(self, config: str, username:str = None, password: str = None, ca: str = None) -> str:
 
         # arguments must be encode before being passed to this function!
@@ -92,7 +94,7 @@ class NetworkManager:
         res = self.eovpn_nm.is_vpn_activated(self.uuid)
         logger.debug("eovpn_nm.is_vpn_activated = {}".format(res))
 
-        if res == 5:
+        if res == self.VPN_ACTIVATED:
             return True
         else:
-            return res       
+            return res
