@@ -112,10 +112,18 @@ class eOVPNConnectionManager(SettingsManager):
             def delay_call_nm():
                 res = self.nm_manager.is_vpn_activated()
                 logger.debug("[NM] is_vpn_activated()={}".format(res))
-                if res:
+                if res is True:
                     callback(connection_result)
                     self.spinner.stop()
-                return not(res)
+                if res == -1: #signifies error
+                    self.__set_statusbar_icon(False)
+                    self.spinner.stop()
+                    callback(False)
+                    self.nm_manager.delete_connection(uuid)
+                    return False
+                
+                res = False if (res is True) else True
+                return res #True to continue looping
 
             GLib.timeout_add_seconds(1, delay_call_nm)
         else:

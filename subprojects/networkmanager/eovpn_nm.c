@@ -254,7 +254,7 @@ int is_vpn_running(void)
     return false;
 }
 
-int is_vpn_activated(void)
+int is_vpn_activated(char *uuid)
 {
 
     /*
@@ -264,19 +264,28 @@ int is_vpn_activated(void)
     */
 
     NMClient *client = nm_client_new(NULL, NULL);
-    NMActiveConnection *ac = nm_client_get_primary_connection(client);
-
-    const char *conn_type = nm_active_connection_get_connection_type(ac);
-    if (strcmp("vpn", conn_type) == 0)
+    const GPtrArray *arr = nm_client_get_active_connections(client);
+    g_assert(arr != NULL);
+    NMActiveConnection *target = NULL;
+    
+    for (size_t i = 0; i < arr->len; i++)
     {
-        NMVpnConnectionState state = nm_vpn_connection_get_vpn_state(NM_VPN_CONNECTION(ac));
-        if (state == NM_VPN_CONNECTION_STATE_ACTIVATED)
+
+        const char *current_uuid = nm_active_connection_get_uuid(arr->pdata[i]);
+
+        if (strcmp(uuid, current_uuid) == 0)
         {
-            return true;
+            target = arr->pdata[i];
+            break;
         }
     }
 
-    return false;
+    if (target == NULL){
+        return -1;
+    }
+
+    NMVpnConnectionState state = nm_vpn_connection_get_vpn_state(NM_VPN_CONNECTION(target));
+    return state;
 }
 
 

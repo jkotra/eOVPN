@@ -3,6 +3,7 @@ import sys
 from gi.repository import Gio
 import subprocess
 import logging
+import shutil
 
 APP_NAME = "com.github.jkotra.eovpn"
 
@@ -14,13 +15,14 @@ from eovpn.application import launch_eovpn
 
 if __name__ == "__main__":
     
-    if not os.path.exists("eovpn/networkmanager/libeovpn_nm.so"):
-        subprocess.run(["cp", "build/subprojects/networkmanager/libeovpn_nm.so", "eovpn/networkmanager/"])
     if not os.path.exists("build"):
         subprocess.run(["meson", "build", "-Dprefix=/usr"])
     try:
         gre_path = "build/data/com.github.jkotra.eovpn.gresource"
         subprocess.run(["ninja", "-C", "build"])
+        print("copying libeovpn_nm.so to eovpn/networkmanager/")
+        shutil.copyfile("build/subprojects/networkmanager/libeovpn_nm.so",
+                        "eovpn/networkmanager/libeovpn_nm.so")
         resource = Gio.resource_load(gre_path)
         subprocess.run(["glib-compile-schemas", "data/"])
     except Exception as e:

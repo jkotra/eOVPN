@@ -20,6 +20,7 @@ class NetworkManager:
         #load .so file
         self.eovpn_nm = CDLL(path)
         self.debug = int(debug)
+        self.uuid = None
 
     def add_connection(self, config: str, username:str = None, password: str = None, ca: str = None) -> str:
 
@@ -31,6 +32,7 @@ class NetworkManager:
         uuid = self.eovpn_nm.add_connection(config, username, password, ca, self.debug)
         
         if uuid is not None:
+            self.uuid = uuid
             return uuid
         
     def activate_connection(self, uuid: str) -> bool:
@@ -87,8 +89,12 @@ class NetworkManager:
 
     def is_vpn_activated(self) -> bool:
         self.eovpn_nm.is_vpn_activated.restype = ctypes.c_int
+        self.eovpn_nm.is_vpn_activated.argtypes = [ctypes.c_char_p]
 
-        if self.eovpn_nm.is_vpn_activated():
+        res = self.eovpn_nm.is_vpn_activated(self.uuid)
+        logger.debug("eovpn_nm.is_vpn_activated = {}".format(res))
+
+        if res == 5:
             return True
         else:
-            return False
+            return res       
