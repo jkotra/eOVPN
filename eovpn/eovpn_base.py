@@ -71,15 +71,6 @@ class Base:
             notif.set_image_from_pixbuf(self.get_image("com.github.jkotra.eovpn.svg", "icons", (64,64)))   
         notif.show()
 
-    def message_dialog(self, title, primary_text, secondary_text):
-        messagedialog = Gtk.MessageDialog(message_format="MessageDialog")
-        messagedialog.set_title(title)
-        messagedialog.set_markup("<span size='12000'><b>{}</b></span>".format(primary_text))
-        messagedialog.format_secondary_text(secondary_text)
-        messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-        messagedialog.run()
-        messagedialog.hide()   
-
 class ThreadManager:
     
     def create(self, function_to_run, arguments, is_daemon=False, join=False):

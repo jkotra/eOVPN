@@ -1,5 +1,7 @@
 from .eovpn_base import Base, SettingsManager, ThreadManager, builder_record
-from .openvpn import OpenVPN_eOVPN
+from .connection_manager import eOVPNConnectionManager
+from .utils import validate_remote, load_configs_to_tree, download_remote_to_destination
+from .networkmanager.bindings import NetworkManager
 import requests
 import typing
 import json
@@ -35,7 +37,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.builder = builder
         self.spinner = self.builder.get_object("settings_spinner")
         self.status_bar = self.builder.get_object("openvpn_settings_statusbar")
-        self.ovpn = OpenVPN_eOVPN(spinner = self.spinner)
+        self.ovpn = eOVPNConnectionManager(spinner = self.spinner)
 
         self.auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
         self.settings_file = os.path.join(self.EOVPN_CONFIG_DIR, "settings.json")
@@ -55,10 +57,13 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.ovpn_radio = self.builder.get_object("ovpn_radio_btn")
 
         self.nm_logo = self.builder.get_object("nm_logo")
-        self.nm_logo.set_from_pixbuf(self.get_image("nm_black.svg", "icons", (48, 48)))
+        self.nm_logo.set_from_pixbuf(self.get_image("nm.svg", "icons", (48, 48)))
 
         self.ovpn_logo = self.builder.get_object("ovpn_logo")
-        self.ovpn_logo.set_from_pixbuf(self.get_image("openvpn_black.svg", "icons", (48, 48)))
+        self.ovpn_logo.set_from_pixbuf(self.get_image("openvpn.svg", "icons", (48, 48)))
+
+        self.on_mgr_change_revealer = self.builder.get_object("on_manager_change_revealer")
+        self.initial_manager = self.get_setting("manager")
 
         #load tree from mainwindow
         main_builder = builder_record["main"]
@@ -91,23 +96,18 @@ class SettingsWindowSignalHandler(SettingsManager):
     def nm_radio_button_toggled_cb(self, radio_btn):
         if radio_btn.get_active():
             self.set_setting("manager", "networkmanager")
-            self.radio_btn_color_swap(nm=True)
-
+            if self.initial_manager == "networkmanager":
+                self.on_mgr_change_revealer.set_reveal_child(False)
+            else:
+                self.on_mgr_change_revealer.set_reveal_child(True)
 
     def ovpn_radio_btn_toggled_cb(self, radio_btn):
         if radio_btn.get_active():
             self.set_setting("manager", "openvpn")
-            self.radio_btn_color_swap(openvpn=True)
-            
-    
-    def radio_btn_color_swap(self, nm=False, openvpn=False):
-        if nm:
-            self.ovpn_logo.set_from_pixbuf(self.get_image("openvpn_black.svg", "icons", (48, 48)))
-            self.nm_logo.set_from_pixbuf(self.get_image("nm.svg", "icons", (48, 48)))
-
-        if openvpn:
-            self.ovpn_logo.set_from_pixbuf(self.get_image("openvpn.svg", "icons", (48, 48)))
-            self.nm_logo.set_from_pixbuf(self.get_image("nm_black.svg", "icons", (48, 48)))
+            if self.initial_manager == "openvpn":
+                self.on_mgr_change_revealer.set_reveal_child(False)
+            else:
+                self.on_mgr_change_revealer.set_reveal_child(True)
 
 
     def update_settings_ui(self):
@@ -119,11 +119,9 @@ class SettingsWindowSignalHandler(SettingsManager):
         mgr = self.get_setting("manager")
         if mgr == "networkmanager":
             self.nm_radio.set_active(True)
-            self.radio_btn_color_swap(nm=True)
 
         elif mgr == "openvpn":
             self.ovpn_radio.set_active(True)
-            self.radio_btn_color_swap(openvpn=True)
         else:
             self.nm_radio.set_active(False)
             self.ovpn_radio.set_active(False)
@@ -196,10 +194,8 @@ class SettingsWindowSignalHandler(SettingsManager):
             f.close()
         
         if initial_remote is None:
-            self.ovpn.download_config_and_update_liststore(url,
-                                self.get_setting("remote_savepath"),
-                                self.config_storage,
-                                None)
+            download_remote_to_destination(url, self.get_setting("remote_savepath"))
+            load_configs_to_tree(self.config_storage ,self.get_setting("remote_savepath"))
 
         #show settings saved notfication
         self.inapp_notification_label.set_text(gettext.gettext("Settings Saved."))
@@ -229,8 +225,9 @@ class SettingsWindowSignalHandler(SettingsManager):
         shutil.rmtree(self.EOVPN_CONFIG_DIR)
         os.mkdir(self.EOVPN_CONFIG_DIR)
         
-        #default settings (TODO: check if networkmanager is supported)
-        default = {"notifications": True, "manager": "openvpn"}
+        is_nm_supported = NetworkManager().get_version()
+        logger.info("is_nm_supported={}".format(is_nm_supported))
+        default = {"notifications": True, "manager": "networkmanager" if (is_nm_supported != None) else "openvpn"}
         default = json.dumps(default, indent=2)
         f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), "w+")
         f.write(default)
@@ -280,7 +277,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.user_pass_box.set_sensitive(toggle.get_active())
 
     def on_settings_validate_btn_clicked(self, entry):
-        self.ovpn.validate_remote(entry.get_text())
+        validate_remote(entry.get_text(), self.spinner)
 
     def save_btn_activate(self, editable):
         self.save_btn.set_sensitive(True)

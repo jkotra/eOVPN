@@ -4,7 +4,9 @@ from .eovpn_base import Base, SettingsManager, ThreadManager, get_standalone, bu
 from .settings_window import SettingsWindow
 from .log_window import LogWindow
 from .about_dialog import AboutWindow
-from .openvpn import OpenVPN_eOVPN, is_openvpn_running
+from .connection_manager import eOVPNConnectionManager
+from .openvpn import is_openvpn_running
+from .utils import download_remote_to_destination, load_configs_to_tree
 from .ip_lookup.lookup import LocationDetails
 import requests
 import os
@@ -116,8 +118,8 @@ class MainWindowSignalHandler(SettingsManager):
         if os.path.exists(self.EOVPN_CONFIG_DIR) != True:
             os.mkdir(self.EOVPN_CONFIG_DIR)
 
-        self.ovpn = OpenVPN_eOVPN(self.statusbar, self.spinner, self.statusbar_icon)
-        self.ovpn.get_version_eovpn(callback=self.on_version)
+        self.conn_mgr = eOVPNConnectionManager(self.statusbar, self.statusbar_icon, self.spinner)
+        self.conn_mgr.get_version(callback=self.on_version)
 
         self.update_status_ip_loc_flag()
 
@@ -132,7 +134,7 @@ class MainWindowSignalHandler(SettingsManager):
 
 
         if self.get_setting("remote_savepath") != None:
-            self.ovpn.load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
+            load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
         
         if self.get_setting("last_connected") != None:
             logger.debug("last_connected = {}".format(self.get_setting("last_connected")))
@@ -153,10 +155,9 @@ class MainWindowSignalHandler(SettingsManager):
             self.on_update_btn_clicked(self.update_btn)
 
 
-    #callbacks passed to OpenVPN_eOVPN
-
+    #callbacks
     def on_connect(self, result):
-        logger.debug("result = {}".format(result))
+        logger.info("result = {}".format(result))
         if result:
             self.update_status_ip_loc_flag()
             if not self.standalone_mode:
@@ -218,8 +219,6 @@ class MainWindowSignalHandler(SettingsManager):
 
     #ping
     def on_ping_clicked(self, spinner):
-
-        openvpn_addr = None
 
         def test_ping():
             
@@ -309,15 +308,15 @@ class MainWindowSignalHandler(SettingsManager):
 
     def update_status_ip_loc_flag(self) -> None:
 
-        LocationDetails().set(self.connection_details_widgets, self.ovpn.get_connection_status_eovpn())
+        LocationDetails().set(self.connection_details_widgets, self.conn_mgr.get_connection_status())
         
-        if self.ovpn.get_connection_status_eovpn():
+        if self.conn_mgr.get_connection_status():
             if self.config_selected != None:
-                self.ovpn.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
+                self.conn_mgr.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
                                                   self.get_setting("remote_savepath"),
                                                   self.config_selected), self.proto_label)
             if self.standalone_mode:
-                self.ovpn.openvpn_config_set_protocol(self.standalone_path, self.proto_label)
+                self.conn_mgr.openvpn_config_set_protocol(self.standalone_path, self.proto_label)
             self.proto_chooser_box.set_sensitive(False)
             self.is_connected = True
         else:
@@ -333,14 +332,12 @@ class MainWindowSignalHandler(SettingsManager):
         logger.info("{} copied to clipboard.".format(ip))
 
     def on_update_btn_clicked(self, button):
-        self.ovpn.download_config_and_update_liststore(self.get_setting("remote"),
-                                  self.get_setting("remote_savepath"),
-                                  self.config_storage,
-                                  self.on_update)
+        download_remote_to_destination(self.get_setting("remote"), self.get_setting("remote_savepath"))
+        load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
             
 
     def on_open_vpn_running_kill_btn_clicked(self, dlg):
-        ThreadManager().create(self.ovpn.disconnect_eovpn, (self.on_disconnect,), True)
+        ThreadManager().create(self.conn_mgr.disconnect, (self.on_disconnect,), True)
         dlg.hide()
         return True
 
@@ -360,7 +357,8 @@ class MainWindowSignalHandler(SettingsManager):
         log_file = os.path.join(self.EOVPN_CONFIG_DIR, "session.log")
 
         if self.is_connected:
-            ThreadManager().create(self.ovpn.disconnect_eovpn, (self.on_disconnect,), True)
+            #ThreadManager().create(self.conn_mgr.disconnect, (self.on_disconnect,), True) 
+            self.conn_mgr.disconnect(self.on_disconnect)
             return True
         
         is_ovpn_running, _ = is_openvpn_running()
@@ -398,9 +396,8 @@ class MainWindowSignalHandler(SettingsManager):
 
         if self.get_setting("crt") is not None:    
             crt = self.get_setting("crt")
-        
-        ThreadManager().create(self.ovpn.connect_eovpn, (config_file, auth_file, crt, log_file, self.on_connect),  is_daemon=True)
 
+        self.conn_mgr.connect(config_file, auth_file, crt, log_file, self.on_connect)
 
     def on_connect_btn_clicked_standalone(self, button):
         working_dir = os.path.dirname(self.standalone_path)
@@ -434,5 +431,4 @@ class MainWindowSignalHandler(SettingsManager):
         if len(crt_result) >= 1:
             crt = os.path.join(working_dir, crt_result[-1])
 
-
-        ThreadManager().create(self.ovpn.connect_eovpn, (config_file, auth_file, crt, log_file, self.on_connect),  is_daemon=True)   
+        self.conn_mgr.connect(config_file, auth_file, crt, log_file, self.on_connect)

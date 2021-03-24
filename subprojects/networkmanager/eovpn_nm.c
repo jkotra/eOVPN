@@ -1,0 +1,315 @@
+#include <stdbool.h>
+#include <stdlib.h>
+#include <glib.h>
+#include <NetworkManager.h>
+
+/*
+* gcc -shared -o eovpn_nm.so -fPIC eovpn_nm.c `pkg-config --libs --cflags libnm`
+* [DEBUGGING]: gcc eovpn_nm.c `pkg-config --libs --cflags libnm`
+*/
+
+static void
+add_cb(NMClient *client, GAsyncResult *result, GMainLoop *loop)
+{
+    GError *err = NULL;
+    nm_client_add_connection_finish(client, result, &err);
+    if (err != NULL)
+    {
+        g_print("Error: %s\n", err->message);
+    }
+    else
+    {
+        g_print("Connection Added.\n");
+    }
+
+    g_main_loop_quit(loop);
+}
+
+char *
+add_connection(char *config_name, char *username, char *password, char *ca, int debug)
+{
+
+    GMainLoop *loop = g_main_loop_new(NULL, false);
+
+    GSList *plugins = nm_vpn_plugin_info_list_load();
+    NMVpnPluginInfo *plugin;
+    GError *err = NULL;
+
+    while (plugins != NULL)
+    {
+        plugin = plugins->data;
+        const char *name = nm_vpn_plugin_info_get_name(plugin);
+        if (debug) { g_print("%s\n", name); }
+
+        if (strcmp("openvpn", name) == 0)
+        {
+            break;
+        }
+
+        plugins = plugins->next;
+    }
+
+    NMVpnEditorPlugin *editor = nm_vpn_plugin_info_load_editor_plugin(plugin, &err);
+    if (err != NULL)
+    {
+        g_printerr(err->message);
+        g_error_free(err);
+        err = NULL;
+    }
+
+    NMConnection *conn = nm_vpn_editor_plugin_import(editor, config_name, &err);
+    if (err != NULL)
+    {
+        g_printerr(err->message);
+        g_error_free(err);
+        err = NULL;
+    }
+
+    NMSettingVpn *vpn_settings = nm_connection_get_setting_vpn(conn);
+    g_assert(vpn_settings != NULL);
+
+    if (username != NULL)
+    {
+        nm_setting_vpn_add_data_item(vpn_settings, "username", username);
+    }
+    if (password != NULL)
+    {
+        nm_setting_vpn_add_secret(vpn_settings, "password", password);
+    }
+    if (ca != NULL)
+    {
+        nm_setting_vpn_add_data_item(vpn_settings, "ca", ca);
+    }
+
+    g_assert(conn != NULL);
+    nm_connection_normalize(conn, NULL, NULL, NULL);
+
+    if (debug){ nm_connection_dump(conn); }
+
+    NMClient *client = nm_client_new(NULL, NULL);
+
+    nm_client_add_connection_async(client, conn, TRUE, NULL, (GAsyncReadyCallback)add_cb, loop);
+    g_main_loop_run(loop);
+
+    return (char*)nm_connection_get_uuid(conn);
+}
+
+static void activate_cb(NMClient *client, GAsyncResult *result, GMainLoop *loop)
+{
+
+    nm_client_activate_connection_finish(client, result, NULL);
+
+    g_main_loop_quit(loop);
+}
+
+int activate_connection(char *uuid)
+{
+
+    GMainLoop *loop = g_main_loop_new(NULL, FALSE);
+
+    NMClient *client = nm_client_new(NULL, NULL);
+    const GPtrArray *arr = nm_client_get_connections(client);
+    NMConnection *target = NULL;
+
+    for (size_t i = 0; i < arr->len; i++)
+    {
+        const char *current_uuid = nm_connection_get_uuid(NM_CONNECTION(arr->pdata[i]));
+        if (strcmp(uuid, current_uuid) == 0)
+        {
+            target = NM_CONNECTION(arr->pdata[i]);
+            break;
+        }
+    }
+
+    g_assert(target != NULL);
+
+    nm_client_activate_connection_async(client, target, NULL, NULL, NULL, (GAsyncReadyCallback)activate_cb, loop);
+    g_main_loop_run(loop);
+    return true;
+}
+
+static void disconnect_cb(NMClient *client, GAsyncResult *result, GMainLoop *loop)
+{
+
+    nm_client_deactivate_connection_finish(client, result, NULL);
+    g_main_loop_quit(loop);
+}
+
+int disconnect(char *uuid, int debug)
+{
+
+    GMainLoop *loop = g_main_loop_new(NULL, FALSE);
+    NMClient *client = nm_client_new(NULL, NULL);
+    const GPtrArray *arr = nm_client_get_active_connections(client);
+    NMActiveConnection *target = NULL;
+
+    for (size_t i = 0; i < arr->len; i++)
+    {
+
+        const char *current_uuid = nm_active_connection_get_uuid(arr->pdata[i]);
+
+        if (debug) { g_print("active connection uuid: %s\n", uuid); }
+
+        if (strcmp(uuid, current_uuid) == 0)
+        {
+            target = arr->pdata[i];
+            break;
+        }
+    }
+
+    nm_client_deactivate_connection_async(client, target, NULL, (GAsyncReadyCallback)disconnect_cb, loop);
+    g_main_loop_run(loop);
+
+    return true;
+}
+
+static void delete_cb(NMRemoteConnection *conn, GAsyncResult *result, GMainLoop *loop)
+{
+
+    nm_remote_connection_delete_finish(conn, result, NULL);
+    g_main_loop_quit(loop);
+}
+
+int delete_connection(char *uuid, int debug)
+{
+
+    GMainLoop *loop = g_main_loop_new(NULL, FALSE);
+
+    NMClient *client = nm_client_new(NULL, NULL);
+    const GPtrArray *arr = nm_client_get_connections(client);
+    NMRemoteConnection *target = NULL;
+
+    for (size_t i = 0; i < arr->len; i++)
+    {
+        const char *current_uuid = nm_connection_get_uuid(NM_CONNECTION(arr->pdata[i]));
+        if (strcmp(uuid, current_uuid) == 0)
+        {
+            if (debug) { g_print("[%s] uuid match: %s\n", __FUNCTION__, uuid); }
+            target = NM_REMOTE_CONNECTION(arr->pdata[i]);
+            break;
+        }
+    }
+
+    nm_remote_connection_delete_async(target, NULL, (GAsyncReadyCallback)delete_cb, loop);
+    g_main_loop_run(loop);
+
+    return true;
+}
+
+int delete_all_vpn_connections(void)
+{
+
+    NMClient *client = nm_client_new(NULL, NULL);
+    const GPtrArray *arr = nm_client_get_connections(client);
+
+    char **vpn_uuid_storage = NULL;
+    int n_vpn = 0;
+
+    for (size_t i = 0; i < arr->len; i++)
+    {
+
+        const char *uuid = nm_connection_get_uuid(arr->pdata[i]);
+        NMSetting *is_vpn = nm_connection_get_setting_by_name(arr->pdata[i], "vpn");
+        g_print("[%s] uuid = %s\n", __FUNCTION__, uuid);
+        if (is_vpn != NULL)
+        {
+            g_print("[%s] *VPN = %s\n", __FUNCTION__, uuid);
+
+            //index
+            vpn_uuid_storage = realloc(vpn_uuid_storage, 1);
+
+            //data
+            vpn_uuid_storage[n_vpn] = (char *)malloc((strlen(uuid) + 1) * sizeof(char));
+            strcpy(vpn_uuid_storage[n_vpn], uuid);
+            n_vpn++;
+        }
+    }
+
+    for (size_t i = 0; i < n_vpn; i++)
+    {
+        delete_connection(vpn_uuid_storage[i], true);
+        g_print("[%s] Deleted %s\n",__FUNCTION__, vpn_uuid_storage[i]);
+    }
+
+    free(vpn_uuid_storage);
+
+    return true;
+}
+
+int is_vpn_running(void)
+{
+
+    NMClient *client = nm_client_new(NULL, NULL);
+    const GPtrArray *arr = nm_client_get_active_connections(client);
+
+    for (size_t i = 0; i < arr->len; i++)
+    {
+        const char *con_type = nm_active_connection_get_connection_type(arr->pdata[i]);
+
+        if (strcmp("vpn", con_type) == 0)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+int is_vpn_activated(void)
+{
+
+    /*
+    https://people.freedesktop.org/~lkundrak/nm-docs/nm-vpn-dbus-types.html
+    NM_VPN_CONNECTION_STATE_ACTIVATED = 5 //return true
+    NM_VPN_CONNECTION_STATE_FAILED = 6 /return false
+    */
+
+    NMClient *client = nm_client_new(NULL, NULL);
+    NMActiveConnection *ac = nm_client_get_primary_connection(client);
+
+    const char *conn_type = nm_active_connection_get_connection_type(ac);
+    if (strcmp("vpn", conn_type) == 0)
+    {
+        NMVpnConnectionState state = nm_vpn_connection_get_vpn_state(NM_VPN_CONNECTION(ac));
+        if (state == NM_VPN_CONNECTION_STATE_ACTIVATED)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+char* get_version(void){
+
+    NMClient *client = nm_client_new(NULL, NULL);
+    g_assert(client != NULL);
+    return (char*)nm_client_get_version(client);
+}
+
+int is_openvpn_plugin_available(void){
+
+    // this need to be used after checking version.
+
+    GSList *plugins = nm_vpn_plugin_info_list_load();
+    g_assert(plugins != NULL);
+    GSList *iter;
+
+    for (iter = plugins; iter; iter=iter->next)
+    {
+        if (strcmp("openvpn", nm_vpn_plugin_info_get_name(iter->data)) == 0){
+            return true;
+        }
+    }
+
+    return false;
+
+}
+
+
+/*
+int main(){
+    g_print("%s\n", get_version());
+    g_print("%d\n", is_openvpn_plugin_available());
+}
+*/

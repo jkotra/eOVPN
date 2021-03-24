@@ -13,7 +13,9 @@ os.environ["GSETTINGS_SCHEMA_DIR"] = "data/"
 from eovpn.application import launch_eovpn
 
 if __name__ == "__main__":
-
+    
+    if not os.path.exists("eovpn/networkmanager/libeovpn_nm.so"):
+        subprocess.run(["cp", "build/subprojects/networkmanager/libeovpn_nm.so", "eovpn/networkmanager/"])
     if not os.path.exists("build"):
         subprocess.run(["meson", "build", "-Dprefix=/usr"])
     try:
