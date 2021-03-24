@@ -1,6 +1,6 @@
 from .eovpn_base import Base, SettingsManager, ThreadManager, builder_record
 from .connection_manager import eOVPNConnectionManager
-from .utils import validate_remote, load_configs_to_tree, download_remote_to_destination
+from .utils import validate_remote, load_configs_to_tree, download_remote_to_destination, message_dialog
 from .networkmanager.bindings import NetworkManager
 import requests
 import typing
@@ -64,6 +64,7 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         self.on_mgr_change_revealer = self.builder.get_object("on_manager_change_revealer")
         self.initial_manager = self.get_setting("manager")
+        self.remove_all_vpn_btn = self.builder.get_object("remove_all_vpn_nm_btn")
 
         #load tree from mainwindow
         main_builder = builder_record["main"]
@@ -100,15 +101,24 @@ class SettingsWindowSignalHandler(SettingsManager):
                 self.on_mgr_change_revealer.set_reveal_child(False)
             else:
                 self.on_mgr_change_revealer.set_reveal_child(True)
+                self.remove_all_vpn_btn.set_visible(True)
+
 
     def ovpn_radio_btn_toggled_cb(self, radio_btn):
         if radio_btn.get_active():
             self.set_setting("manager", "openvpn")
+            self.remove_all_vpn_btn.set_visible(False)
             if self.initial_manager == "openvpn":
                 self.on_mgr_change_revealer.set_reveal_child(False)
             else:
                 self.on_mgr_change_revealer.set_reveal_child(True)
-
+    
+    def on_remove_all_vpn_nm_btn_clicked(self, btn):
+        nm = NetworkManager()
+        res = nm.delete_all_vpn_connections()
+        if res:
+            message_dialog(gettext.gettext("Deleted all VPN connections (if any)!"), "")
+            
 
     def update_settings_ui(self):
         remote = self.get_setting("remote")

@@ -202,8 +202,8 @@ int delete_all_vpn_connections(void)
     NMClient *client = nm_client_new(NULL, NULL);
     const GPtrArray *arr = nm_client_get_connections(client);
 
-    char **vpn_uuid_storage = NULL;
-    int n_vpn = 0;
+    char vpn_uuid[arr->len][40];
+    int vpn_uuid_count = 0;
 
     for (size_t i = 0; i < arr->len; i++)
     {
@@ -214,24 +214,16 @@ int delete_all_vpn_connections(void)
         if (is_vpn != NULL)
         {
             g_print("[%s] *VPN = %s\n", __FUNCTION__, uuid);
-
-            //index
-            vpn_uuid_storage = realloc(vpn_uuid_storage, 1);
-
-            //data
-            vpn_uuid_storage[n_vpn] = (char *)malloc((strlen(uuid) + 1) * sizeof(char));
-            strcpy(vpn_uuid_storage[n_vpn], uuid);
-            n_vpn++;
+            strcpy(vpn_uuid[vpn_uuid_count], uuid);
+            vpn_uuid_count++;
         }
     }
 
-    for (size_t i = 0; i < n_vpn; i++)
+    for (size_t i = 0; i < vpn_uuid_count; i++)
     {
-        delete_connection(vpn_uuid_storage[i], true);
-        g_print("[%s] Deleted %s\n",__FUNCTION__, vpn_uuid_storage[i]);
+        delete_connection(vpn_uuid[i], 0);
     }
-
-    free(vpn_uuid_storage);
+    
 
     return true;
 }
