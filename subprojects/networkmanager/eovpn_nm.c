@@ -3,6 +3,10 @@
 #include <glib.h>
 #include <NetworkManager.h>
 
+#define NM_OPENVPN_KEY_USERNAME "username"
+#define NM_OPENVPN_KEY_PASSWORD "password"
+#define NM_OPENVPN_KEY_CA "ca"
+
 /*
 * gcc -shared -o eovpn_nm.so -fPIC eovpn_nm.c `pkg-config --libs --cflags libnm`
 * [DEBUGGING]: gcc eovpn_nm.c `pkg-config --libs --cflags libnm`
@@ -71,15 +75,15 @@ add_connection(char *config_name, char *username, char *password, char *ca, int 
 
     if (username != NULL)
     {
-        nm_setting_vpn_add_data_item(vpn_settings, "username", username);
+        nm_setting_vpn_add_data_item(vpn_settings, NM_OPENVPN_KEY_USERNAME, username);
     }
     if (password != NULL)
     {
-        nm_setting_vpn_add_secret(vpn_settings, "password", password);
+        nm_setting_vpn_add_secret(vpn_settings, NM_OPENVPN_KEY_PASSWORD, password);
     }
     if (ca != NULL)
     {
-        nm_setting_vpn_add_data_item(vpn_settings, "ca", ca);
+        nm_setting_vpn_add_data_item(vpn_settings, NM_OPENVPN_KEY_CA, ca);
     }
 
     g_assert(conn != NULL);
