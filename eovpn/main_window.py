@@ -7,7 +7,7 @@ from .about_dialog import AboutWindow
 from .connection_manager import eOVPNConnectionManager
 from .openvpn import is_openvpn_running
 from .networkmanager.bindings import NetworkManager
-from .utils import download_remote_to_destination, load_configs_to_tree
+from .utils import download_remote_to_destination, load_configs_to_tree, is_selinux_enforcing
 from .ip_lookup.lookup import LocationDetails
 import requests
 import os
@@ -23,6 +23,8 @@ import datetime
 import psutil
 import socket
 import gettext
+import pathlib
+import shutil
 
 logger = logging.getLogger(__name__)
 
@@ -80,6 +82,11 @@ class MainWindowSignalHandler(SettingsManager):
 
         self.standalone_mode = False
         self.standalone_path = None
+
+        self.se_enforcing = False
+        if is_selinux_enforcing():
+            self.se_enforcing = True
+
 
         #load_settings
         self.settings = Gio.Settings.new(self.APP_ID)
@@ -403,7 +410,14 @@ class MainWindowSignalHandler(SettingsManager):
 
         if self.get_setting("crt") is not None:    
             crt = self.get_setting("crt")
-
+            if self.se_enforcing:
+                home_dir = GLib.get_home_dir()
+                se_friendly_path = os.path.join(home_dir, ".cert")
+                if not os.path.exists(se_friendly_path):
+                    os.mkdir(se_friendly_path)
+                shutil.copy(crt, se_friendly_path)
+                crt = os.path.join(se_friendly_path, crt.split("/")[-1])
+        
         self.conn_mgr.connect(config_file, auth_file, crt, log_file, self.on_connect)
 
     def on_connect_btn_clicked_standalone(self, button):

@@ -8,6 +8,7 @@ from gi.repository import GLib, Gtk
 import gettext
 from .eovpn_base import ThreadManager, SettingsManager, Base
 import re
+import subprocess
 
 logger = logging.getLogger(__name__)
 
@@ -145,4 +146,13 @@ def set_crt_auto():
         if len(crt_found) >= 1 and settings.get_setting("crt_set_explicit") != True:
             settings.set_setting("crt", os.path.join(settings.get_setting("remote_savepath"),
                                                  crt_found[-1]))        
-            
+
+def is_selinux_enforcing():
+    try:
+        out = subprocess.run(["sestatus"], stdout=subprocess.PIPE)
+    except:
+        return False
+    out = out.stdout.decode('utf-8')
+    if ("enabled" in out) and ("enforcing" in out):
+        return True
+    return False            

@@ -97,7 +97,8 @@ class eOVPNConnectionManager(SettingsManager):
         elif self.is_nm:     
             uuid = self.nm_manager.add_connection(openvpn_config.encode('utf-8'),
                                                self.get_setting('auth_user').encode('utf-8'),
-                                               self.get_setting('auth_pass').encode('utf-8'))
+                                               self.get_setting('auth_pass').encode('utf-8'),
+                                               (ca.encode('utf-8') if ca != None else ca))
             connection_result = self.nm_manager.activate_connection(uuid)
 
             self.uuid = uuid
