@@ -410,7 +410,7 @@ class MainWindowSignalHandler(SettingsManager):
 
         if self.get_setting("crt") is not None:    
             crt = self.get_setting("crt")
-            if self.se_enforcing:
+            if self.se_enforcing and (self.get_setting("manager") != "openvpn"):
                 home_dir = GLib.get_home_dir()
                 se_friendly_path = os.path.join(home_dir, ".cert")
                 if not os.path.exists(se_friendly_path):

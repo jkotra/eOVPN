@@ -94,7 +94,7 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         self.update_settings_ui()
     
-    def nm_radio_button_toggled_cb(self, radio_btn):
+    def on_nm_radio_btn_toggled(self, radio_btn):
         if radio_btn.get_active():
             self.set_setting("manager", "networkmanager")
             if self.initial_manager == "networkmanager":
@@ -104,7 +104,7 @@ class SettingsWindowSignalHandler(SettingsManager):
                 self.remove_all_vpn_btn.set_visible(True)
 
 
-    def ovpn_radio_btn_toggled_cb(self, radio_btn):
+    def on_ovpn_radio_btn_toggled(self, radio_btn):
         if radio_btn.get_active():
             self.set_setting("manager", "openvpn")
             self.remove_all_vpn_btn.set_visible(False)
