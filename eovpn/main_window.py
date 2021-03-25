@@ -351,7 +351,7 @@ class MainWindowSignalHandler(SettingsManager):
             
 
     def on_open_vpn_running_kill_btn_clicked(self, dlg):
-        ThreadManager().create(self.conn_mgr.disconnect, (self.on_disconnect,), True)
+        self.conn_mgr.disconnect(self.on_disconnect)
         dlg.hide()
         return True
 
@@ -371,7 +371,6 @@ class MainWindowSignalHandler(SettingsManager):
         log_file = os.path.join(self.EOVPN_CONFIG_DIR, "session.log")
 
         if self.is_connected:
-            #ThreadManager().create(self.conn_mgr.disconnect, (self.on_disconnect,), True) 
             self.conn_mgr.disconnect(self.on_disconnect)
             return True
         

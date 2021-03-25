@@ -25,14 +25,14 @@ class Base:
     def __init__(self):
         self.APP_NAME = "eOVPN"
         self.APP_ID = "com.github.jkotra.eovpn"
-        self.APP_VERSION = "0.17.5"
+        self.APP_VERSION = "0.20"
         self.AUTHOR = "Jagadeesh Kotra"
         self.AUTHOR_MAIL = "jagadeesh@stdin.top"
         self.AUTHOR_MAIL_SECONDARY = "jagadeesh.01101011@gmail.com"
         
         self.TRANSLATORS = {
             "Jagadeesh Kotra": ["Telugu"],
-            }
+        }
 
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")
         self.EOVPN_GRESOURCE_PREFIX = "/com/github/jkotra/" + self.APP_NAME.lower()
