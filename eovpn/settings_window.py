@@ -1,20 +1,23 @@
-from .eovpn_base import Base, SettingsManager, ThreadManager, builder_record
-from .connection_manager import eOVPNConnectionManager
-from .utils import validate_remote, load_configs_to_tree, download_remote_to_destination, message_dialog, set_crt_auto
-from .networkmanager.bindings import NetworkManager
-import requests
-import typing
 import json
 import logging
-import subprocess
-import re
 import os
 from os import path
-import time
-from gi.repository import GLib, Gtk, Gio
 from urllib.parse import urlparse
 import shutil
 import gettext
+
+from gi.repository import Gtk, Gio
+
+from .eovpn_base import Base, SettingsManager, builder_record
+from .connection_manager import eOVPNConnectionManager
+
+from .utils import validate_remote
+from .utils import load_configs_to_tree
+from .utils import download_remote_to_destination
+from .utils import message_dialog
+from .utils import set_crt_auto
+
+from .networkmanager.bindings import NetworkManager
 
 logger = logging.getLogger(__name__)
 

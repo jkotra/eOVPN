@@ -1,3 +1,15 @@
+import os
+import json
+import re
+import subprocess
+import logging
+import time
+import socket
+import pathlib
+import shutil
+
+import gettext
+
 from gi.repository import Gtk, GLib, Gdk, GdkPixbuf, Gio
 
 from .eovpn_base import Base, SettingsManager, ThreadManager, get_standalone, builder_record
@@ -9,22 +21,6 @@ from .openvpn import is_openvpn_running
 from .networkmanager.bindings import NetworkManager
 from .utils import download_remote_to_destination, load_configs_to_tree, is_selinux_enforcing
 from .ip_lookup.lookup import LocationDetails
-import requests
-import os
-import typing
-import json
-import re
-import subprocess
-import logging
-import io
-import zipfile
-import time
-import datetime
-import psutil
-import socket
-import gettext
-import pathlib
-import shutil
 
 logger = logging.getLogger(__name__)
 

@@ -1,12 +1,16 @@
 import os
 import logging
 import zipfile
-import requests
 import io
 import shutil
+import re
+import subprocess
+import requests
+
 from gi.repository import GLib, Gtk
 import gettext
-from .eovpn_base import ThreadManager, SettingsManager, Base
+
+from .eovpn_base import ThreadManager, SettingsManager
 import re
 import subprocess
 
@@ -21,7 +25,7 @@ def message_dialog(primary_text, secondary_text):
     messagedialog.format_secondary_text(secondary_text)
     messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
     messagedialog.run()
-    messagedialog.hide()   
+    messagedialog.hide()
 
 def load_configs_to_tree(storage, config_folder):
         try:

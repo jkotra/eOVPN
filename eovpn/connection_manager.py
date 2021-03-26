@@ -1,16 +1,13 @@
-
-from .eovpn_base import Base, ThreadManager, SettingsManager
-from .openvpn import OpenVPN
-from .networkmanager.bindings import NetworkManager
 import re
-import os
 import logging
 import gettext
-import zipfile
-import io
-import requests
-import shutil
+
 from gi.repository import GLib
+
+from .eovpn_base import ThreadManager, SettingsManager
+from .openvpn import OpenVPN
+from .networkmanager.bindings import NetworkManager
+
 
 logger = logging.getLogger(__name__)
 

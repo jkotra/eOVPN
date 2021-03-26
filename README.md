@@ -69,6 +69,16 @@ To uninstall:
 sudo ninja uninstall -C build
 ```
 
+# Build Flatpak
+
+
+```
+flatpak-builder --user --install build-dir dist/flatpak/com.github.jkotra.eovpn.yml --force-clean
+```
+
+to change python dependencies, refer to [flatpak documentation](https://docs.flatpak.org/en/latest/python.html#building-multiple-python-dependencies).
+
+
 ---
 
 * special thanks to [Gabriele Musco](https://gitlab.gnome.org/GabMus) for design suggestions.

@@ -1,16 +1,10 @@
 import subprocess
-import zipfile
-import io
 import re
-import requests
-import io
 import os
 import time
 import logging
-from gi.repository import GLib
-import psutil
-import shutil
 import gettext
+import psutil
 
 logger = logging.getLogger(__name__)
 

@@ -1,7 +1,6 @@
 import ctypes
 from ctypes import CDLL
 import os
-import time
 import logging
 import gi
 

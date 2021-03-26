@@ -1,5 +1,5 @@
-from .eovpn_base import Base
 from gi.repository import Gtk
+from .eovpn_base import Base
 
 class AboutWindow(Base, Gtk.Builder):
     def __init__(self):

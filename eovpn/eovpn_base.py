@@ -1,12 +1,13 @@
-import gi
-gi.require_version('Notify', '0.7')
-from gi.repository import Gtk, GLib, GdkPixbuf, Notify
 import os
 import subprocess
 import re
 import json
 import logging
 import threading
+
+import gi
+gi.require_version('Notify', '0.7')
+from gi.repository import Gtk, GLib, GdkPixbuf, Notify
 
 eovpn_standalone = {"is_standalone": False, "path": None}
 builder_record = {}
