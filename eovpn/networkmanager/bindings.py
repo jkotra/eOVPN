@@ -4,10 +4,6 @@ import os
 import logging
 import gi
 
-gi.require_version("NM", "1.0")
-from gi.repository import GLib, NM
-
-
 logger = logging.getLogger(__name__)
 
 class NetworkManager:
