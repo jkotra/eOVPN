@@ -315,6 +315,7 @@ char* get_version(void){
         g_print("Error: %s\n", err->message);
         g_error_free(err);
     }
+
     return (char*)nm_client_get_version(client);
 }
 
