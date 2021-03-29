@@ -70,6 +70,8 @@ class NetworkManager:
 
         ver = self.eovpn_nm.get_version()
         is_openvpn_available = self.eovpn_nm.is_openvpn_plugin_available()
+
+        logger.info("version={}, openvpn={}".format(ver, is_openvpn_available))
         
         if ver is not None:
             ver = ver.decode('utf-8')

@@ -20,7 +20,7 @@ add_cb(NMClient *client, GAsyncResult *result, GMainLoop *loop)
     if (err != NULL)
     {
         /* https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html#g-printerr */
-        g_printerr("Error: %s\n", err->message);
+        g_print("Error: %s\n", err->message);
     }
     else
     {
@@ -105,7 +105,7 @@ static void activate_cb(NMClient *client, GAsyncResult *result, GMainLoop *loop)
     GError *err = NULL;
     nm_client_activate_connection_finish(client, result, &err);
     if (err != NULL){
-        g_printerr("Error: %s\n", err->message);
+        g_print("Error: %s\n", err->message);
     }
     else{
         g_message("[NM] Connection Connected!");
@@ -146,7 +146,7 @@ static void disconnect_cb(NMClient *client, GAsyncResult *result, GMainLoop *loo
     GError *err = NULL;
     nm_client_deactivate_connection_finish(client, result, &err);
     if (err != NULL){
-        g_printerr("Error: %s\n", err->message);
+        g_print("Error: %s\n", err->message);
     }
     else{
         g_message("[NM] Connection Disconnected!");
@@ -188,7 +188,7 @@ static void delete_cb(NMRemoteConnection *conn, GAsyncResult *result, GMainLoop 
     GError *err = NULL;
     nm_remote_connection_delete_finish(conn, result, &err);
     if (err != NULL){
-        g_printerr("Error: %s\n", err->message);
+        g_print("Error: %s\n", err->message);
     }
     else{
         g_message("[NM] Connection Deleted!");
@@ -308,9 +308,13 @@ int is_vpn_activated(char *uuid)
 
 
 char* get_version(void){
-
-    NMClient *client = nm_client_new(NULL, NULL);
-    g_assert(client != NULL);
+    
+    GError *err = NULL;
+    NMClient *client = nm_client_new(NULL, &err);
+    if (err != NULL){
+        g_print("Error: %s\n", err->message);
+        g_error_free(err);
+    }
     return (char*)nm_client_get_version(client);
 }
 

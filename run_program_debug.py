@@ -25,6 +25,8 @@ if __name__ == "__main__":
                         "eovpn/networkmanager/libeovpn_nm.so")
         resource = Gio.resource_load(gre_path)
         subprocess.run(["glib-compile-schemas", "data/"])
+        sys.argv.append("--debug")
+        sys.argv.append("DEBUG")
     except Exception as e:
         print(e)
         exit(1)
