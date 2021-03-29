@@ -57,6 +57,8 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         #radio button chooser
         self.nm_radio = self.builder.get_object("nm_radio_btn")
+        if NetworkManager().get_version() == None:
+            self.nm_radio.hide()
         self.ovpn_radio = self.builder.get_object("ovpn_radio_btn")
 
         self.nm_logo = self.builder.get_object("nm_logo")
@@ -88,7 +90,6 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.valid_result_lbl = self.builder.get_object("openvpn_settings_statusbar")
 
         #General Tab
-
         self.notification_switch = self.builder.get_object("notification_switch")
         self.update_on_launch_switch = self.builder.get_object("update_on_launch_switch")
         self.connect_on_launch_switch = self.builder.get_object("connect_on_launch_switch")

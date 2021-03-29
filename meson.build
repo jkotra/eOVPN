@@ -42,7 +42,11 @@ conf.set('PYTHON_DIR', python_dir)
 
 subdir('po')
 subdir('data')
-subproject('networkmanager')
+
+
+if get_option('nm')
+  subproject('networkmanager')
+endif
 
 install_subdir(
   'eovpn',

@@ -124,9 +124,14 @@ class MainWindowSignalHandler(SettingsManager):
 
         #if manager is None, set it according to compatibility (NM preferered)
         is_nm_supported = NetworkManager().get_version()
+
         logger.info("[startup] is_nm_supported={}".format(is_nm_supported))
         if self.get_setting("manager") is None:
             self.set_setting("manager", "networkmanager" if (is_nm_supported != None) else "openvpn")
+        
+        if (self.get_setting("manager") == "networkmanager") and (is_nm_supported is None):
+            self.set_setting("manager", "openvpn")
+
 
         self.conn_mgr = eOVPNConnectionManager(self.statusbar, self.statusbar_icon, self.spinner)
         self.conn_mgr.get_version(callback=self.on_version)
@@ -199,6 +204,8 @@ class MainWindowSignalHandler(SettingsManager):
 
         if result is False:
             self.connect_btn.set_sensitive(False)
+            if self.get_setting("manager") == "networkmanager":
+                self.set_setting("manager", "openvpn")
 
     def on_update(self, result):
         logger.debug(result)
@@ -412,6 +419,7 @@ class MainWindowSignalHandler(SettingsManager):
                     os.mkdir(se_friendly_path)
                 shutil.copy(crt, se_friendly_path)
                 crt = os.path.join(se_friendly_path, crt.split("/")[-1])
+                logger.debug("crt={}".format(crt))
         
         self.conn_mgr.connect(config_file, auth_file, crt, log_file, self.on_connect)
 

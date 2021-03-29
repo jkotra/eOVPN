@@ -20,9 +20,13 @@ if __name__ == "__main__":
     try:
         gre_path = "build/data/com.github.jkotra.eovpn.gresource"
         subprocess.run(["ninja", "-C", "build"])
-        print("copying libeovpn_nm.so to eovpn/networkmanager/")
-        shutil.copyfile("build/subprojects/networkmanager/libeovpn_nm.so",
-                        "eovpn/networkmanager/libeovpn_nm.so")
+        
+        try:
+            shutil.copyfile("build/subprojects/networkmanager/libeovpn_nm.so",
+                            "eovpn/networkmanager/libeovpn_nm.so")
+        except Exception as e:
+            print(e)
+
         resource = Gio.resource_load(gre_path)
         subprocess.run(["glib-compile-schemas", "data/"])
         sys.argv.append("--debug")

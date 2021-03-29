@@ -11,9 +11,15 @@ class NetworkManager:
     def __init__(self, debug=False) -> None:
         
         self.__NAME__ = "NetworkManager"
+        self.lib_load_fail = None
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "libeovpn_nm.so")
         #load .so file
-        self.eovpn_nm = CDLL(path)
+        try:
+            self.eovpn_nm = CDLL(path)
+        except:
+            self.lib_load_fail = True
+            pass
+
         self.debug = int(debug)
         self.uuid = None
 
@@ -61,6 +67,8 @@ class NetworkManager:
         return bool(res)
 
     def get_version(self) -> str:
+        if self.lib_load_fail:
+            return None
         self.eovpn_nm.get_version.restype = ctypes.c_char_p
         self.eovpn_nm.is_openvpn_plugin_available.restype = ctypes.c_int
 
