@@ -153,7 +153,14 @@ def set_crt_auto():
 
 def is_selinux_enforcing():
     try:
-        out = subprocess.run(["sestatus"], stdout=subprocess.PIPE)
+        commands = []
+        if os.getenv("FLATPAK_ID") is not None:
+            commands.append("flatpak-spawn")
+            commands.append("--host")
+        
+        commands.append("sestatus")
+
+        out = subprocess.run(commands, stdout=subprocess.PIPE)
     except:
         return False
     out = out.stdout.decode('utf-8')

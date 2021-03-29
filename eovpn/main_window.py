@@ -79,10 +79,8 @@ class MainWindowSignalHandler(SettingsManager):
         self.standalone_mode = False
         self.standalone_path = None
 
-        self.se_enforcing = False
-        if is_selinux_enforcing():
-            self.se_enforcing = True
-
+        self.se_enforcing = is_selinux_enforcing()
+        logger.debug("SELinux_Enforcing={}".format(self.se_enforcing))
 
         #load_settings
         self.settings = Gio.Settings.new(self.APP_ID)
