@@ -51,6 +51,12 @@ Refer: [Python Logging Levels](https://docs.python.org/3/library/logging.html#le
 
 ### Native (For Developers)
 
+### Build Flags
+
+```
+-Dnm=[true(default)|false]  Include support for NetworkManager(libnm).
+```
+
 ### Dependencies
 
 ```
