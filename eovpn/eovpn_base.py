@@ -1,12 +1,13 @@
-import gi
-gi.require_version('Notify', '0.7')
-from gi.repository import Gtk, GLib, GdkPixbuf, Notify
 import os
 import subprocess
 import re
 import json
 import logging
 import threading
+
+import gi
+gi.require_version('Notify', '0.7')
+from gi.repository import Gtk, GLib, GdkPixbuf, Notify
 
 eovpn_standalone = {"is_standalone": False, "path": None}
 builder_record = {}
@@ -25,14 +26,19 @@ class Base:
     def __init__(self):
         self.APP_NAME = "eOVPN"
         self.APP_ID = "com.github.jkotra.eovpn"
-        self.APP_VERSION = "0.17.5"
+        self.APP_VERSION = "0.20"
         self.AUTHOR = "Jagadeesh Kotra"
         self.AUTHOR_MAIL = "jagadeesh@stdin.top"
         self.AUTHOR_MAIL_SECONDARY = "jagadeesh.01101011@gmail.com"
         
+        # tip to translators - add yourself to the dict.
+        #
+        #   ex: "Name": ["Lang"]
+        #
         self.TRANSLATORS = {
             "Jagadeesh Kotra": ["Telugu"],
-            }
+        }
+
 
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")
         self.EOVPN_GRESOURCE_PREFIX = "/com/github/jkotra/" + self.APP_NAME.lower()
@@ -70,15 +76,6 @@ class Base:
         else:
             notif.set_image_from_pixbuf(self.get_image("com.github.jkotra.eovpn.svg", "icons", (64,64)))   
         notif.show()
-
-    def message_dialog(self, title, primary_text, secondary_text):
-        messagedialog = Gtk.MessageDialog(message_format="MessageDialog")
-        messagedialog.set_title(title)
-        messagedialog.set_markup("<span size='12000'><b>{}</b></span>".format(primary_text))
-        messagedialog.format_secondary_text(secondary_text)
-        messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-        messagedialog.run()
-        messagedialog.hide()   
 
 class ThreadManager:
     

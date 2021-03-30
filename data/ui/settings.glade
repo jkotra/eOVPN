@@ -180,6 +180,210 @@
                         <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <object class="GtkAspectFrame">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="label-xalign">0</property>
+                                <property name="shadow-type">etched-out</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <object class="GtkBox">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <child>
+                                          <object class="GtkRadioButton" id="nm_radio_btn">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="receives-default">False</property>
+                                            <property name="draw-indicator">True</property>
+                                            <property name="group">ovpn_radio_btn</property>
+                                            <signal name="toggled" handler="on_nm_radio_btn_toggled" swapped="no"/>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <child>
+                                                  <object class="GtkImage" id="nm_logo">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="icon-name">network-transmit-receive-symbolic</property>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">0</property>
+                                                  </packing>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="label" translatable="yes">NetworkManager</property>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="padding">4</property>
+                                                    <property name="position">1</property>
+                                                  </packing>
+                                                </child>
+                                              </object>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">True</property>
+                                            <property name="fill">True</property>
+                                            <property name="padding">4</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkRadioButton" id="ovpn_radio_btn">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="receives-default">False</property>
+                                            <property name="draw-indicator">True</property>
+                                            <property name="group">nm_radio_btn</property>
+                                            <signal name="toggled" handler="on_ovpn_radio_btn_toggled" swapped="no"/>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <child>
+                                                  <object class="GtkImage" id="ovpn_logo">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="icon-name">network-transmit-receive-symbolic</property>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="position">0</property>
+                                                  </packing>
+                                                </child>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="label" translatable="yes">OpenVPN CLI</property>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="padding">4</property>
+                                                    <property name="position">1</property>
+                                                  </packing>
+                                                </child>
+                                              </object>
+                                            </child>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">True</property>
+                                            <property name="fill">True</property>
+                                            <property name="padding">4</property>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="padding">4</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkRevealer" id="on_manager_change_revealer">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <child>
+                                          <object class="GtkBox">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="orientation">vertical</property>
+                                            <child>
+                                              <object class="GtkBox">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <child>
+                                                  <object class="GtkLabel">
+                                                    <property name="visible">True</property>
+                                                    <property name="can-focus">False</property>
+                                                    <property name="halign">start</property>
+                                                    <property name="label" translatable="yes">Restart eOVPN to reflect changes.</property>
+                                                    <style>
+                                                      <class name="dim-label"/>
+                                                    </style>
+                                                  </object>
+                                                  <packing>
+                                                    <property name="expand">False</property>
+                                                    <property name="fill">True</property>
+                                                    <property name="padding">4</property>
+                                                    <property name="position">1</property>
+                                                  </packing>
+                                                </child>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">0</property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <object class="GtkButton" id="remove_all_vpn_nm_btn">
+                                                <property name="label" translatable="yes">Remove all VPN connections from NM</property>
+                                                <property name="can-focus">True</property>
+                                                <property name="receives-default">True</property>
+                                                <property name="halign">start</property>
+                                                <signal name="clicked" handler="on_remove_all_vpn_nm_btn_clicked" swapped="no"/>
+                                                <style>
+                                                  <class name="destructive-action"/>
+                                                </style>
+                                              </object>
+                                              <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="padding">4</property>
+                                                <property name="position">1</property>
+                                              </packing>
+                                            </child>
+                                          </object>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="padding">4</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="padding">12</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
                           <object class="GtkFrame">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
@@ -366,7 +570,7 @@
                             <property name="expand">False</property>
                             <property name="fill">True</property>
                             <property name="padding">12</property>
-                            <property name="position">0</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -432,7 +636,7 @@
                             <property name="expand">False</property>
                             <property name="fill">True</property>
                             <property name="padding">12</property>
-                            <property name="position">2</property>
+                            <property name="position">3</property>
                           </packing>
                         </child>
                       </object>

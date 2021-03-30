@@ -51,6 +51,12 @@ Refer: [Python Logging Levels](https://docs.python.org/3/library/logging.html#le
 
 ### Native (For Developers)
 
+### Build Flags
+
+```
+-Dnm=[true(default)|false]  Include support for NetworkManager(libnm).
+```
+
 ### Dependencies
 
 ```
@@ -68,6 +74,16 @@ To uninstall:
 ```
 sudo ninja uninstall -C build
 ```
+
+# Build Flatpak
+
+
+```
+flatpak-builder --user --install build-dir dist/flatpak/com.github.jkotra.eovpn.yml --force-clean
+```
+
+to change python dependencies, refer to [flatpak documentation](https://docs.flatpak.org/en/latest/python.html#building-multiple-python-dependencies).
+
 
 ---
 

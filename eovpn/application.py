@@ -1,10 +1,11 @@
+import os, sys
+import argparse
+import logging
+
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, GLib, Gio
 
-import os, sys
-import argparse
-import logging
 logger = logging.getLogger(__name__)
 
 from .eovpn_base import Base, set_standalone

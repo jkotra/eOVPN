@@ -10,3 +10,4 @@ build-dir
 tests/data/**
 *.mo
 gschemas.compiled
+*.so
