@@ -119,7 +119,7 @@ modules:
       - -Dselinux=false
       - -Dsession_tracking=no
       - -Dsystemdsystemunitdir=no
-      - -Dsystemd_journal=false'
+      - -Dsystemd_journal=false
       - -Dtests=no
       - -Dvapi=false
     sources:
