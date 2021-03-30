@@ -324,8 +324,11 @@ int is_openvpn_plugin_available(void){
     // this need to be used after checking version.
 
     GSList *plugins = nm_vpn_plugin_info_list_load();
-    g_assert(plugins != NULL);
     GSList *iter;
+
+    if (plugins == NULL){
+        return false;
+    }
 
     for (iter = plugins; iter; iter=iter->next)
     {
