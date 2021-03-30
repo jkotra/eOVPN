@@ -41,7 +41,7 @@
 
   <releases>
 
-    <release version="0.20" date="2021-03-25">
+    <release version="0.20.1" date="2021-03-30">
       <description>
         <ul>
           <li>Support for NetworkManager.</li>
