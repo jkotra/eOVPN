@@ -84,6 +84,7 @@ modules:
     sources:
       - type: git
         url: 'git://github.com/gentoo/eudev.git'
+        tag: "v3.2.10"
 
 
   - name: libndp
@@ -125,6 +126,7 @@ modules:
     sources:
       - type: git
         url: 'https://gitlab.freedesktop.org/NetworkManager/NetworkManager.git'
+        tag: "1.30.2"
 
   - name: libnma
     buildsystem: meson
@@ -136,6 +138,7 @@ modules:
     sources:
       - type: git
         url: 'https://gitlab.gnome.org/GNOME/libnma.git'
+        tag: "1.8.30"
 
 
   - name: NetworkManager-openvpn
@@ -143,6 +146,7 @@ modules:
     sources:
       - type: git
         url: 'https://github.com/NetworkManager/NetworkManager-openvpn.git'
+        tag: "1.8.12"
 
   - name: eovpn
     buildsystem: meson
