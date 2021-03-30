@@ -31,9 +31,14 @@ class Base:
         self.AUTHOR_MAIL = "jagadeesh@stdin.top"
         self.AUTHOR_MAIL_SECONDARY = "jagadeesh.01101011@gmail.com"
         
+        # tip to translators - add yourself to the dict.
+        #
+        #   ex: "Name": ["Lang"]
+        #
         self.TRANSLATORS = {
             "Jagadeesh Kotra": ["Telugu"],
         }
+
 
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")
         self.EOVPN_GRESOURCE_PREFIX = "/com/github/jkotra/" + self.APP_NAME.lower()

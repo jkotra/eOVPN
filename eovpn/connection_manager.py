@@ -178,8 +178,8 @@ class eOVPNConnectionManager(SettingsManager):
             pass
 
         if callable(callback):
-            callback(version != None)
-        self.__push_to_statusbar(str(version))
+            callback((version != None) or (version != False))
+            self.__push_to_statusbar(version)
         
         if self.is_openvpn:
             img = self.get_image("openvpn_black.svg","icons", (16,16))

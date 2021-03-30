@@ -11,13 +11,15 @@ class AboutWindow(Base, Gtk.Builder):
         self.window = self.get_object("about_dlg")
         self.window.set_version(self.APP_VERSION)
         
-        translation_credits = ""
-        for person in self.TRANSLATORS.keys():
-            translator_name = person
-            translator_lang = ", ".join(self.TRANSLATORS[person])
-            translation_credits += translator_name + ' (' + translator_lang + ')' + '\n'
+        if len(self.TRANSLATORS.keys()) >= 1:
+            translation_credits = ""
+            for person in self.TRANSLATORS.keys():
+                translator_name = person
+                translator_lang = ", ".join(self.TRANSLATORS[person])
+                translation_credits += translator_name + ' (' + translator_lang + ')' + '\n'
 
-        self.window.set_translator_credits(translation_credits) 
+            self.window.set_translator_credits(translation_credits) 
+
         self.window.set_logo(self.get_logo())
 
 

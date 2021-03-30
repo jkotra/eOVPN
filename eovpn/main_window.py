@@ -195,15 +195,16 @@ class MainWindowSignalHandler(SettingsManager):
             self.update_status_ip_loc_flag()
 
     def on_version(self, result):
+
+        logger.info("version_callback={}".format(result))
         if result:
-            img = self.get_image("openvpn_black.svg","icons", (16,16))
-            statusbar_icon = self.builder.get_object("statusbar_icon")
-            statusbar_icon.set_from_pixbuf(img)
+            pass
 
         if result is False:
             self.connect_btn.set_sensitive(False)
             if self.get_setting("manager") == "networkmanager":
                 self.set_setting("manager", "openvpn")
+                self.conn_mgr.get_version(callable=self.on_version)
 
     def on_update(self, result):
         logger.debug(result)
