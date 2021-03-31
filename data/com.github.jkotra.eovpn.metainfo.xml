@@ -41,6 +41,14 @@
 
   <releases>
 
+    <release version="0.20.5" date="2021-03-31">
+      <description>
+        <ul>
+          <li>NetworkManager support for flatpak system install.</li>
+        </ul>
+      </description>
+    </release>  
+
     <release version="0.20.1" date="2021-03-30">
       <description>
         <ul>
