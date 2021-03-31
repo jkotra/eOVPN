@@ -6,6 +6,8 @@
 #define NM_OPENVPN_KEY_USERNAME "username"
 #define NM_OPENVPN_KEY_PASSWORD "password"
 #define NM_OPENVPN_KEY_CA "ca"
+#define NM_OPENVPN_FLATPAK_PLUGIN_NAME "/app/lib/NetworkManager/VPN/nm-openvpn-service.name"
+#define NM_OPENVPN_FLATPAK_PLUGIN_SO "/app/lib/NetworkManager/libnm-vpn-plugin-openvpn.so"
 
 /*
 * gcc -shared -o eovpn_nm.so -fPIC eovpn_nm.c `pkg-config --libs --cflags libnm`
@@ -19,7 +21,6 @@ add_cb(NMClient *client, GAsyncResult *result, GMainLoop *loop)
     nm_client_add_connection_finish(client, result, &err);
     if (err != NULL)
     {
-        /* https://developer.gnome.org/glib/stable/glib-Warnings-and-Assertions.html#g-printerr */
         g_print("Error: %s\n", err->message);
     }
     else
@@ -28,6 +29,68 @@ add_cb(NMClient *client, GAsyncResult *result, GMainLoop *loop)
     }
 
     g_main_loop_quit(loop);
+}
+
+char* add_connection_flatpak(char *config_name, char *username, char *password, char *ca, int debug){
+
+    GMainLoop *loop = g_main_loop_new(NULL, false);
+    NMVpnPluginInfo *plugin;
+    GError *err = NULL;
+
+    plugin = nm_vpn_plugin_info_new_from_file(NM_OPENVPN_FLATPAK_PLUGIN_NAME, &err);
+    if (err != NULL)
+    {
+        g_printerr(err->message);
+        g_error_free(err);
+        err = NULL;
+        return false;
+    }
+
+    NMVpnEditorPlugin *editor = nm_vpn_editor_plugin_load_from_file(NM_OPENVPN_FLATPAK_PLUGIN_SO, NULL, -1, NULL, NULL, &err);
+    if (err != NULL)
+    {
+        g_printerr(err->message);
+        g_error_free(err);
+        err = NULL;
+        return false;
+    }
+
+    NMConnection *conn = nm_vpn_editor_plugin_import(editor, config_name, &err);
+    if (err != NULL)
+    {
+        g_printerr(err->message);
+        g_error_free(err);
+        err = NULL;
+        return false;
+    }
+
+    NMSettingVpn *vpn_settings = nm_connection_get_setting_vpn(conn);
+    g_assert(vpn_settings != NULL);
+
+    if (username != NULL)
+    {
+        nm_setting_vpn_add_data_item(vpn_settings, NM_OPENVPN_KEY_USERNAME, username);
+    }
+    if (password != NULL)
+    {
+        nm_setting_vpn_add_secret(vpn_settings, NM_OPENVPN_KEY_PASSWORD, password);
+    }
+    if (ca != NULL)
+    {
+        nm_setting_vpn_add_data_item(vpn_settings, NM_OPENVPN_KEY_CA, ca);
+    }
+
+    g_assert(conn != NULL);
+    nm_connection_normalize(conn, NULL, NULL, NULL);
+
+    if (debug){ nm_connection_dump(conn); }
+
+    NMClient *client = nm_client_new(NULL, NULL);
+
+    nm_client_add_connection_async(client, conn, TRUE, NULL, (GAsyncReadyCallback)add_cb, loop);
+    g_main_loop_run(loop);
+
+    return (char*)nm_connection_get_uuid(conn);
 }
 
 char *
@@ -60,6 +123,7 @@ add_connection(char *config_name, char *username, char *password, char *ca, int 
         g_printerr(err->message);
         g_error_free(err);
         err = NULL;
+        return false;
     }
 
     NMConnection *conn = nm_vpn_editor_plugin_import(editor, config_name, &err);
@@ -68,6 +132,7 @@ add_connection(char *config_name, char *username, char *password, char *ca, int 
         g_printerr(err->message);
         g_error_free(err);
         err = NULL;
+        return false;
     }
 
     NMSettingVpn *vpn_settings = nm_connection_get_setting_vpn(conn);
@@ -320,6 +385,15 @@ char* get_version(void){
 }
 
 int is_openvpn_plugin_available(void){
+
+    if (g_getenv("FLATPAK_ID") != NULL){
+        NMVpnPluginInfo *plugin = nm_vpn_plugin_info_new_from_file(NM_OPENVPN_FLATPAK_PLUGIN_NAME, NULL);
+        if (plugin == NULL){
+            return false;
+        }
+        
+        return true;
+    }
 
     // this need to be used after checking version.
 

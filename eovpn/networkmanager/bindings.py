@@ -23,20 +23,27 @@ class NetworkManager:
         self.debug = int(debug)
         self.uuid = None
 
+        self.add_connection_args = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
+        self.add_connection_return = ctypes.c_char_p
+
         self.VPN_ACTIVATED = 5
 
     def add_connection(self, config: str, username:str = None, password: str = None, ca: str = None) -> str:
 
         # arguments must be encode before being passed to this function!
         # ex: a.encode('utf-8')
-        self.eovpn_nm.add_connection.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
-        self.eovpn_nm.add_connection.restype = ctypes.c_char_p
 
-        uuid = self.eovpn_nm.add_connection(config, username, password, ca, self.debug)
+        if os.getenv("FLATPAK_ID") is not None:
+            self.eovpn_nm.add_connection_flatpak.argtypes = self.add_connection_args
+            self.eovpn_nm.add_connection_flatpak.restype = self.add_connection_return
+            self.uuid = self.eovpn_nm.add_connection_flatpak(config, username, password, ca, self.debug)
+        else:
+            self.eovpn_nm.add_connection.argtypes = self.add_connection_args
+            self.eovpn_nm.add_connection.restype = self.add_connection_return
+            self.uuid = self.eovpn_nm.add_connection(config, username, password, ca, self.debug)
         
-        if uuid is not None:
-            self.uuid = uuid
-            return uuid
+        if self.uuid is not None:
+            return self.uuid
         
     def activate_connection(self, uuid: str) -> bool:
 

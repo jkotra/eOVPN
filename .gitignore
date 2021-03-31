@@ -11,3 +11,5 @@ tests/data/**
 *.mo
 gschemas.compiled
 *.so
+repo
+*.flatpak
