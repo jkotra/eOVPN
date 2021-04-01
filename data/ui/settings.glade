@@ -711,7 +711,7 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Send Notification on Connect AND Disconnect Event.</property>
+                                        <property name="label" translatable="yes">Send Notification on Connect and Disconnect Event.</property>
                                         <attributes>
                                           <attribute name="scale" value="0.84999999999999998"/>
                                         </attributes>

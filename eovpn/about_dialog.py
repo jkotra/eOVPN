@@ -1,5 +1,5 @@
 from gi.repository import Gtk
-from .eovpn_base import Base
+from .eovpn_base import Base, builder_record
 
 class AboutWindow(Base, Gtk.Builder):
     def __init__(self):
@@ -22,6 +22,8 @@ class AboutWindow(Base, Gtk.Builder):
 
         self.window.set_logo(self.get_logo())
 
+        self.main_window = builder_record["main"].get_object("mainwindow") 
+        self.window.set_transient_for(self.main_window)
 
     def show(self):
         self.window.show()
