@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: eOVPN\n"
-"POT-Creation-Date: 2021-03-31 17:16+0530\n"
+"POT-Creation-Date: 2021-04-02 10:52+0530\n"
 "PO-Revision-Date: 2021-02-17 16:04+0530\n"
 "Last-Translator: Jagadeesh Kotra <jagadeesh.01101011@gmail.com>\n"
 "Language-Team: \n"
@@ -25,16 +25,12 @@ msgstr ""
 msgid "eOVPN"
 msgstr ""
 
-#: data/com.github.jkotra.eovpn.desktop:5
+#: data/com.github.jkotra.eovpn.desktop:5 data/ui/about.glade:12
 msgid "OpenVPN Configuration Manager"
 msgstr ""
 
 #: data/com.github.jkotra.eovpn.gschema.xml:7
 msgid "Height of treeview"
-msgstr ""
-
-#: data/ui/about.glade:12
-msgid "OpenVPN Configuration(s) Manager"
 msgstr ""
 
 #: data/ui/log.glade:7 data/ui/main.glade:334
@@ -192,7 +188,7 @@ msgid "Notifications"
 msgstr ""
 
 #: data/ui/settings.glade:714
-msgid "Send Notification on Connect AND Disconnect Event."
+msgid "Send Notification on Connect and Disconnect Event."
 msgstr ""
 
 #: data/ui/settings.glade:773
@@ -287,11 +283,11 @@ msgstr ""
 msgid "Deleted all VPN connections (if any)!"
 msgstr ""
 
-#: eovpn/settings_window.py:217
+#: eovpn/settings_window.py:218
 msgid "Settings Saved."
 msgstr ""
 
-#: eovpn/settings_window.py:276
+#: eovpn/settings_window.py:277
 msgid "Settings deleted."
 msgstr ""
 
