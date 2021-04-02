@@ -29,6 +29,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "settings.glade")
         self.connect_signals(SettingsWindowSignalHandler(self))
         self.window = self.get_object("settings_window")
+        self.window.set_title("eOVPN Settings")
 
     def show(self):
         self.window.show()    
