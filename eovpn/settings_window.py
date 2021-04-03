@@ -6,9 +6,9 @@ from urllib.parse import urlparse
 import shutil
 import gettext
 
-from gi.repository import Gtk, Gio
+from gi.repository import Gtk, Gio, GLib
 
-from .eovpn_base import Base, SettingsManager, builder_record
+from .eovpn_base import Base, SettingsManager, ThreadManager, builder_record
 from .connection_manager import eOVPNConnectionManager
 
 from .utils import validate_remote
@@ -58,9 +58,11 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         #radio button chooser
         self.nm_radio = self.builder.get_object("nm_radio_btn")
-        if NetworkManager().get_version() == None:
-            self.nm_radio.hide()
         self.ovpn_radio = self.builder.get_object("ovpn_radio_btn")
+
+        self.is_nm_supported = NetworkManager().get_version() != None
+        if self.is_nm_supported == None:
+            self.nm_radio.hide()
 
         self.nm_logo = self.builder.get_object("nm_logo")
         self.nm_logo.set_from_pixbuf(self.get_image("nm.svg", "icons", (48, 48)))
@@ -80,6 +82,8 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         self.save_btn = self.builder.get_object("settings_apply_btn")
         self.save_btn.set_sensitive(False)
+
+        self.reset_tmp_path = os.path.join(GLib.get_tmp_dir(), "eovpn_reset_backup")
 
         self.req_auth = self.builder.get_object("req_auth")
         self.auth_user = self.builder.get_object("auth_user")
@@ -122,7 +126,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         nm = NetworkManager()
         res = nm.delete_all_vpn_connections()
         if res:
-            message_dialog(gettext.gettext("Deleted all VPN connections (if any)!"), "")
+            message_dialog("", gettext.gettext("Deleted all VPN connections (if any)!"))
             
 
     def update_settings_ui(self):
@@ -205,14 +209,19 @@ class SettingsWindowSignalHandler(SettingsManager):
             
             auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
             f = open(auth_file ,"w+")
-            f.write("{user}\n{passw}".format(user=username, passw=password))
+            f.write("{}\n{}".format(username, password))
             f.close()
         
         if initial_remote is None:
-            download_remote_to_destination(url, self.get_setting("remote_savepath"))
-            load_configs_to_tree(self.config_storage ,self.get_setting("remote_savepath"))
-        
-        set_crt_auto()
+            def initial_load():
+                self.spinner.start()
+                download_remote_to_destination(url, self.get_setting("remote_savepath"))
+                set_crt_auto()
+                load_configs_to_tree(self.config_storage ,self.get_setting("remote_savepath"))
+                self.spinner.stop()
+
+            ThreadManager().create(initial_load, (), True)    
+
         self.update_settings_ui()
         
         #show settings saved notfication
@@ -237,43 +246,47 @@ class SettingsWindowSignalHandler(SettingsManager):
         return True    
 
     def reset_settings(self):
-
-        #backup to /tmp, give user choice to undo
-        shutil.copytree(self.EOVPN_CONFIG_DIR, "/tmp/eovpn_reset_backup/", dirs_exist_ok=True)
-        shutil.rmtree(self.EOVPN_CONFIG_DIR)
-        os.mkdir(self.EOVPN_CONFIG_DIR)
         
-        is_nm_supported = NetworkManager().get_version()
-        logger.info("[reset] is_nm_supported={}".format(is_nm_supported))
-        default = {"notifications": True, "manager": "networkmanager" if (is_nm_supported != None) else "openvpn"}
-        default = json.dumps(default, indent=2)
-        f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), "w+")
-        f.write(default)
-        f.close()
+        def remove_settings():
+            #backup to /tmp, give user choice to undo
+            shutil.copytree(self.EOVPN_CONFIG_DIR, self.reset_tmp_path, dirs_exist_ok=True)
+            shutil.rmtree(self.EOVPN_CONFIG_DIR)
+            os.mkdir(self.EOVPN_CONFIG_DIR)
+        
+        def set_default_settings():
+            default = {"notifications": True, "manager": "networkmanager" if (self.is_nm_supported != None) else "openvpn"}
+            default = json.dumps(default, indent=2)
+            f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), "w+")
+            f.write(default)
+            f.close()
 
-        #remove config from liststorage
-        self.config_storage.clear()
-        self.menu_view_config.hide()
+        tm = ThreadManager()
+        tm.create(remove_settings, ())
+        tm.create(set_default_settings, ())    
 
         #remote GtkPaned size from Gsetting.
         settings = Gio.Settings.new(self.APP_ID)
         settings.reset("treeview-height")
         self.paned.set_position(250)
-
+        
+        #Setup Tab
         self.remote_addr_entry.set_text("")
-
         self.nm_radio.set_active(False)
         self.ovpn_radio.set_active(False)
+        self.req_auth.set_active(False)
+        self.auth_user.set_text("")
+        self.auth_pass.set_text("")
+        self.crt_chooser.set_filename("")
 
         # General Tab
         self.update_on_launch_switch.set_state(False)
         self.connect_on_launch_switch.set_state(False)
         self.notification_switch.set_state(False)
+        
+        #remove config from liststorage
+        self.config_storage.clear()
+        self.menu_view_config.hide()
 
-        self.req_auth.set_active(False)
-        self.auth_user.set_text("")
-        self.auth_pass.set_text("")
-        self.crt_chooser.set_filename("")
 
         self.inapp_notification_label.set_text(gettext.gettext("Settings deleted."))
         self.undo_reset_btn.show()
@@ -281,7 +294,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.update_settings_ui()
 
     def on_undo_reset_clicked(self, button):
-        shutil.copytree("/tmp/eovpn_reset_backup/", self.EOVPN_CONFIG_DIR, dirs_exist_ok=True)
+        shutil.copytree(self.reset_tmp_path, self.EOVPN_CONFIG_DIR, dirs_exist_ok=True)
         self.update_settings_ui()
         self.on_revealer_close_btn_clicked(None) #button is not actually used so it's okay.
         self.undo_reset_btn.hide()

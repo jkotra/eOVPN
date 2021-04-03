@@ -7,7 +7,7 @@ import re
 import subprocess
 import requests
 
-from gi.repository import GLib, Gtk
+from gi.repository import GLib, Gtk, GLib
 import gettext
 
 from .eovpn_base import ThreadManager, SettingsManager
@@ -99,11 +99,12 @@ def download_remote_to_destination(remote, destination):
 
 def validate_remote(remote, spinner = None):
 
+    tmp_path = os.path.join(GLib.get_tmp_dir(), "eovpn_validate")
+
     def remote_validate():
         if spinner is not None:
             spinner.start()
 
-        tmp_path = "/tmp/eovpn_validate/"
         if os.path.isdir(tmp_path):
             shutil.rmtree(tmp_path)
         else:
@@ -118,7 +119,6 @@ def validate_remote(remote, spinner = None):
             return False    
 
         if res == False:
-            logger.debug("Cannot download / save from remote {}!".format(remote))
             return False
 
         all_files = os.listdir(tmp_path)
@@ -134,7 +134,8 @@ def validate_remote(remote, spinner = None):
         
 
     ThreadManager().create(remote_validate, None, True)    
-        
+
+
 def set_crt_auto():
 
     settings = SettingsManager()
