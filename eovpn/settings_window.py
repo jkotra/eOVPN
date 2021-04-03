@@ -219,10 +219,9 @@ class SettingsWindowSignalHandler(SettingsManager):
                 set_crt_auto()
                 load_configs_to_tree(self.config_storage ,self.get_setting("remote_savepath"))
                 self.spinner.stop()
+                self.update_settings_ui()
 
-            ThreadManager().create(initial_load, (), True)    
-
-        self.update_settings_ui()
+            ThreadManager().create(initial_load, (), True)
         
         #show settings saved notfication
         self.inapp_notification_label.set_text(gettext.gettext("Settings Saved."))

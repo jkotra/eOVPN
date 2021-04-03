@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class NetworkManager:
 
-    def __init__(self, debug=False) -> None:
+    def __init__(self) -> None:
         
         self.__NAME__ = "NetworkManager"
         self.lib_load_fail = None
@@ -20,7 +20,11 @@ class NetworkManager:
             self.lib_load_fail = True
             pass
 
-        self.debug = int(debug)
+        if logger.getEffectiveLevel() > 0:
+            self.debug = int(True)
+            logger.info("NM debug = {}".format(self.debug))
+
+        logger.getEffectiveLevel
         self.uuid = None
 
         self.add_connection_args = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
