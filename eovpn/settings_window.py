@@ -172,25 +172,30 @@ class SettingsWindowSignalHandler(SettingsManager):
         window.hide()
         return True
 
+    def __download_and_load_configs(self):
+        self.spinner.start()
+        download_remote_to_destination(self.get_setting("remote"), self.get_setting("remote_savepath"))
+        set_crt_auto()
+        load_configs_to_tree(self.get_widget("config_storage") ,self.get_setting("remote_savepath"))
+        self.spinner.stop()
+        self.update_settings_ui()
+
     def on_settings_apply_btn_clicked(self, buttton):
 
         initial_remote = self.get_setting("remote")
 
         
         url = self.remote_addr_entry.get_text().strip()
+        url = os.path.expanduser(url)
 
         if url != '':
             self.set_setting("remote", url)
             folder_name = urlparse(url).netloc
             if folder_name == '':
                 folder_name = "configs"
-
-            self.set_setting("remote_savepath", path.join(self.EOVPN_CONFIG_DIR, folder_name))    
-        
+            self.set_setting("remote_savepath", path.join(self.EOVPN_CONFIG_DIR, folder_name)) 
         else:
             self.set_setting("remote", None)
-        
-        #save folder name to config
 
         if self.req_auth.get_active():
             self.set_setting("req_auth", True)
@@ -207,15 +212,7 @@ class SettingsWindowSignalHandler(SettingsManager):
             f.close()
         
         if initial_remote is None:
-            def initial_load():
-                self.spinner.start()
-                download_remote_to_destination(url, self.get_setting("remote_savepath"))
-                set_crt_auto()
-                load_configs_to_tree(self.get_widget("config_storage") ,self.get_setting("remote_savepath"))
-                self.spinner.stop()
-                self.update_settings_ui()
-
-            ThreadManager().create(initial_load, (), True)
+            ThreadManager().create(self.__download_and_load_configs, (), True)
         
         if initial_remote is not None:
             set_crt_auto()
@@ -286,6 +283,7 @@ class SettingsWindowSignalHandler(SettingsManager):
 
     def on_undo_reset_clicked(self, button):
         shutil.copytree(self.reset_tmp_path, self.EOVPN_CONFIG_DIR, dirs_exist_ok=True)
+        ThreadManager().create(self.__download_and_load_configs, (), True)
         self.update_settings_ui()
         self.on_revealer_close_btn_clicked(None) #button is not actually used so it's okay.
         self.undo_reset_btn.hide()

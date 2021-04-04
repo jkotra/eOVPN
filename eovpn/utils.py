@@ -68,8 +68,8 @@ def download_remote_to_destination(remote, destination):
         return zip_file
 
     remote = os.path.expanduser(remote)
-
-    if os.path.isdir(remote) and remote.endswith("zip") == False:
+    logger.info("remote={}, isdir={}, iszip={}".format(remote, os.path.isdir(remote), os.path.isfile(remote) and remote.endswith("zip") == True))
+    if os.path.isdir(remote):
         logger.debug("remote is a local directory!")
         shutil.copytree(remote, destination, dirs_exist_ok=True)
         return True
@@ -106,7 +106,11 @@ def validate_remote(remote, spinner = None):
             spinner.start()
 
         if os.path.isdir(tmp_path):
-            shutil.rmtree(tmp_path)
+            try:
+                shutil.rmtree(tmp_path)
+            except Exception as e:
+                logger.error(e)
+
         else:
             os.mkdir(tmp_path)    
             
