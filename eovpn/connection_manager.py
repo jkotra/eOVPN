@@ -84,8 +84,7 @@ class eOVPNConnectionManager(SettingsManager):
                 else:
                     self.__set_statusbar_icon(False)
  
-                callback(connection_result)
-                self.spinner.stop()    
+                callback(connection_result, openvpn_config)    
 
 
             ThreadManager().create(connect_to_openvpn_cli, (), is_daemon=True)        
@@ -101,29 +100,11 @@ class eOVPNConnectionManager(SettingsManager):
             self.uuid = uuid
             self.set_setting("nm_active_uuid", self.uuid.decode('utf-8'))
 
-            if connection_result:
-                self.__push_to_statusbar(gettext.gettext("Connected to {}.").format(openvpn_config.split('/')[-1]))
-                self.__set_statusbar_icon(True, connected=True)
-            else:
+            if not connection_result:
                 self.__set_statusbar_icon(False)
             
-            def delay_call_nm():
-                res = self.nm_manager.is_vpn_activated()
-                logger.debug("[NM] is_vpn_activated()={}".format(res))
-                if res is True:
-                    callback(connection_result)
-                    self.spinner.stop()
-                if res == -1: #signifies error
-                    self.__set_statusbar_icon(False)
-                    self.spinner.stop()
-                    callback(False)
-                    self.nm_manager.delete_connection(uuid)
-                    return False
+            callback(connection_result, openvpn_config)
                 
-                res = False if (res is True) else True
-                return res #True to continue looping
-
-            GLib.timeout_add_seconds(1, delay_call_nm)
         else:
             pass                      
 

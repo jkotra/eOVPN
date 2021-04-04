@@ -18,6 +18,7 @@ from .log_window import LogWindow
 from .about_dialog import AboutWindow
 from .connection_manager import eOVPNConnectionManager
 from .openvpn import is_openvpn_running
+from .networkmanager.dbus import watch_vpn_status
 from .networkmanager.bindings import NetworkManager
 from .utils import download_remote_to_destination, load_configs_to_tree, is_selinux_enforcing
 from .ip_lookup.lookup import LocationDetails
@@ -139,6 +140,8 @@ class MainWindowSignalHandler(SettingsManager):
 
         self.conn_mgr = eOVPNConnectionManager(self.statusbar, self.statusbar_icon, self.spinner)
         self.conn_mgr.get_version(callback=self.on_version)
+        self.current_manager = self.get_setting("manager")
+        watch_vpn_status(update_callback=self.update_status_ip_loc_flag)
 
         self.update_status_ip_loc_flag()
 
@@ -175,10 +178,15 @@ class MainWindowSignalHandler(SettingsManager):
 
 
     #callbacks
-    def on_connect(self, result):
+    def on_connect(self, result, config_connected):
         logger.info("result = {}".format(result))
         if result:
-            self.update_status_ip_loc_flag()
+
+            #update_status_ip_loc_flag() is called inside watch_vpn_status(). so, dont update here.
+            if self.current_manager != "networkmanager":      
+                self.update_status_ip_loc_flag()
+
+            self.config_connected = config_connected
             if not self.standalone_mode:
                 self.set_setting("last_connected", self.config_selected)
                 self.set_setting("last_connected_cursor", self.selected_cursor)
@@ -194,11 +202,14 @@ class MainWindowSignalHandler(SettingsManager):
     def on_disconnect(self, result):
         logger.debug("result = {}".format(result))
         if result:
+            self.config_connected = None
             if self.get_setting("notifications"):
                 self.send_notification("Disconnected", "Disconnected from {}".format(
                     self.get_setting("last_connected")
                     ), False)
-            self.update_status_ip_loc_flag()
+
+            if self.current_manager != "networkmanager":      
+                self.update_status_ip_loc_flag()
 
     def on_version(self, result):
 
@@ -331,9 +342,14 @@ class MainWindowSignalHandler(SettingsManager):
     def update_status_ip_loc_flag(self) -> None:
 
         LocationDetails().set(self.connection_details_widgets, self.conn_mgr.get_connection_status())
-        
+    
         if self.conn_mgr.get_connection_status():
             if self.config_selected != None:
+
+                if self.current_manager == "networkmanager":
+                    self.statusbar.push(1, gettext.gettext("Connected to {}").format(self.config_connected.split("/")[-1]))
+                    self.statusbar_icon.set_from_icon_name("network-vpn-symbolic", 1)
+
                 self.conn_mgr.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
                                                   self.get_setting("remote_savepath"),
                                                   self.config_selected), self.proto_label)
@@ -345,6 +361,8 @@ class MainWindowSignalHandler(SettingsManager):
             self.proto_label.hide()
             self.proto_chooser_box.set_sensitive(True)
             self.is_connected = False
+
+        self.spinner.stop()    
 
 
     def on_copy_btn_clicked(self, ip):
