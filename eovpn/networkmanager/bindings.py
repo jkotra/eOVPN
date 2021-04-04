@@ -103,7 +103,11 @@ class NetworkManager:
             return True #or res, both are same.
         return False
 
-    def is_vpn_activated(self) -> bool:
+    def is_vpn_activated(self, uuid=None) -> bool:
+
+        if uuid is not None:
+            self.uuid = uuid
+            
         self.eovpn_nm.is_vpn_activated.restype = ctypes.c_int
         self.eovpn_nm.is_vpn_activated.argtypes = [ctypes.c_char_p]
 

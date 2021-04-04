@@ -11,12 +11,24 @@ def callback(connection, sender_name, object_path, interface_name, signal_name, 
     x = GLib.Variant("(uu)", parameters)
     status = x.get_child_value(0).get_uint32()
     reason = x.get_child_value(1).get_uint32()
+    
+    """ u state:
+     (NMVpnConnectionState) The new state of the VPN connection.
 
-    if (status == 5):
-        logger.debug("calling callback update fn")
-        update_callback()    
-    elif (status == 7):
-        GLib.timeout_add_seconds(1, update_callback)
+     u reason:
+     (NMActiveConnectionStateReason) Reason code describing the change to the new state.
+
+     https://developer.gnome.org/NetworkManager/stable/nm-vpn-dbus-types.html
+    """
+
+    if (status == 5 and reason == 1):
+        logger.debug("VPN connected.")
+        update_callback(True)   
+    elif (status == 7 and reason == 2):
+        logger.debug("VPN disconnected.")
+        GLib.timeout_add_seconds(1, update_callback, False)
+    else:
+        pass    
 
 
 def watch_vpn_status(update_callback):

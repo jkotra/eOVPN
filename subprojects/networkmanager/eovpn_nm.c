@@ -34,10 +34,9 @@ add_cb(NMClient *client, GAsyncResult *result, GMainLoop *loop)
 char* add_connection_flatpak(char *config_name, char *username, char *password, char *ca, int debug){
 
     GMainLoop *loop = g_main_loop_new(NULL, false);
-    NMVpnPluginInfo *plugin;
     GError *err = NULL;
 
-    plugin = nm_vpn_plugin_info_new_from_file(NM_OPENVPN_FLATPAK_PLUGIN_NAME, &err);
+    nm_vpn_plugin_info_new_from_file(NM_OPENVPN_FLATPAK_PLUGIN_NAME, &err);
     if (err != NULL)
     {
         g_printerr(err->message);
@@ -232,7 +231,7 @@ int disconnect(char *uuid, int debug)
 
         const char *current_uuid = nm_active_connection_get_uuid(arr->pdata[i]);
 
-        if (debug) { g_print("active connection uuid: %s\n", uuid); }
+        if (debug) { g_print("connection uuid: %s\n", uuid); }
 
         if (strcmp(uuid, current_uuid) == 0)
         {
@@ -305,6 +304,7 @@ int delete_all_vpn_connections(void)
         if (is_vpn != NULL)
         {
             g_print("[%s] *VPN = %s\n", __FUNCTION__, uuid);
+
             strcpy(vpn_uuid[vpn_uuid_count], uuid);
             vpn_uuid_count++;
         }
@@ -312,6 +312,7 @@ int delete_all_vpn_connections(void)
 
     for (size_t i = 0; i < vpn_uuid_count; i++)
     {
+        g_print("Deleting %s\n...", vpn_uuid[i]);
         delete_connection(vpn_uuid[i], 0);
     }
     

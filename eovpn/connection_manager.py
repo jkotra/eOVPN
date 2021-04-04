@@ -127,10 +127,24 @@ class eOVPNConnectionManager(SettingsManager):
 
         elif self.is_nm:
             if (self.get_setting("nm_active_uuid") != None):
-                self.uuid = self.get_setting("nm_active_uuid").encode('utf-8')    
+                self.uuid = self.get_setting("nm_active_uuid").encode('utf-8')
+
+                is_uuid_found = self.nm_manager.is_vpn_activated(self.uuid)
+
+                if (is_uuid_found == True) or (is_uuid_found != -1):
+                    logger.info("current vpn UUID ({}) matches one in settings.json.".format(self.uuid))
+                else:
+                    self.uuid = None
+            
+            if self.uuid is None:
+                logger.info("unknown UUID! Deleting all VPN connections...")
+                self.nm_manager.delete_all_vpn_connections()
+                return True
+                            
             disconnect_result = self.nm_manager.disconnect(self.uuid)
             self.nm_manager.delete_connection(self.uuid)
             self.uuid = None
+            self.set_setting("nm_active_uuid", None)
 
             self.spinner.stop()
             if disconnect_result:

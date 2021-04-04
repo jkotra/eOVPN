@@ -192,8 +192,10 @@ class MainWindowSignalHandler(SettingsManager):
                 self.set_setting("last_connected_cursor", self.selected_cursor)
 
             #send notification
-            if self.get_setting("notifications"):
-                self.send_notification("Connected", "Connected to {}".format(self.get_setting("last_connected")), True)            
+            if self.get_setting("notifications") and (self.current_manager != "networkmanager"):
+                self.send_notification("Connected",
+                                       "Connected to {}".format(self.get_setting("last_connected")),
+                                        True)            
 
             logger.debug("saved to config: cursor={} config={}".format(self.config_selected, self.selected_cursor))
         else:
@@ -203,10 +205,10 @@ class MainWindowSignalHandler(SettingsManager):
         logger.debug("result = {}".format(result))
         if result:
             self.config_connected = None
-            if self.get_setting("notifications"):
-                self.send_notification("Disconnected", "Disconnected from {}".format(
-                    self.get_setting("last_connected")
-                    ), False)
+            if self.get_setting("notifications") and (self.current_manager != "networkmanager"):
+                self.send_notification("Disconnected",
+                                       "Disconnected from {}".format(self.get_setting("last_connected")),
+                                        False)
 
             if self.current_manager != "networkmanager":      
                 self.update_status_ip_loc_flag()
@@ -339,16 +341,22 @@ class MainWindowSignalHandler(SettingsManager):
             logger.error(str(e))    
 
 
-    def update_status_ip_loc_flag(self) -> None:
+    def update_status_ip_loc_flag(self, nm_connected=None) -> None:
 
         LocationDetails().set(self.connection_details_widgets, self.conn_mgr.get_connection_status())
     
         if self.conn_mgr.get_connection_status():
             if self.config_selected != None:
 
-                if self.current_manager == "networkmanager":
-                    self.statusbar.push(1, gettext.gettext("Connected to {}").format(self.config_connected.split("/")[-1]))
+                if self.current_manager == "networkmanager" and nm_connected:
+                    text = gettext.gettext("Connected to {}").format(self.config_connected.split("/")[-1])
+
+                    self.statusbar.push(1, text)
                     self.statusbar_icon.set_from_icon_name("network-vpn-symbolic", 1)
+                    if self.get_setting("notifications"):
+                        self.send_notification("Connected",
+                                       "Connected to {}".format(self.get_setting("last_connected")),
+                                        True)
 
                 self.conn_mgr.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
                                                   self.get_setting("remote_savepath"),
@@ -357,10 +365,17 @@ class MainWindowSignalHandler(SettingsManager):
                 self.conn_mgr.openvpn_config_set_protocol(self.standalone_path, self.proto_label)
             self.proto_chooser_box.set_sensitive(False)
             self.is_connected = True
+
         else:
             self.proto_label.hide()
             self.proto_chooser_box.set_sensitive(True)
             self.is_connected = False
+            
+            if self.current_manager == "networkmanager" and nm_connected == False:
+                if self.get_setting("notifications") and (self.current_manager == "networkmanager"):
+                    self.send_notification("Disconnected",
+                                           "Disconnected from {}".format(self.get_setting("last_connected")),
+                                           False)
 
         self.spinner.stop()    
 
@@ -408,9 +423,9 @@ class MainWindowSignalHandler(SettingsManager):
             self.conn_mgr.disconnect(self.on_disconnect)
             return True
         
-        is_ovpn_running, _ = is_openvpn_running()
+        is_vpn_running = self.conn_mgr.get_connection_status()
 
-        if is_ovpn_running:
+        if is_vpn_running:
             dlg = self.builder.get_object("openvpn_running_dlg")
             dlg.run()
             return False
