@@ -46,6 +46,7 @@
         <ul>
           <li>use dbus to detect VPN status (NM)</li>
           <li>UX improvements</li>
+          <li>Bug fixes</li>
         </ul>
       </description>
     </release>  
