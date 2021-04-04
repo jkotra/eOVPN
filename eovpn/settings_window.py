@@ -8,7 +8,7 @@ import gettext
 
 from gi.repository import Gtk, Gio, GLib
 
-from .eovpn_base import Base, SettingsManager, ThreadManager, builder_record
+from .eovpn_base import Base, SettingsManager, ThreadManager
 from .connection_manager import eOVPNConnectionManager
 
 from .utils import validate_remote
@@ -73,12 +73,6 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.on_mgr_change_revealer = self.builder.get_object("on_manager_change_revealer")
         self.initial_manager = self.get_setting("manager")
         self.remove_all_vpn_btn = self.builder.get_object("remove_all_vpn_nm_btn")
-
-        #load tree from mainwindow
-        main_builder = builder_record["main"]
-        self.config_storage = main_builder.get_object("config_storage")
-        self.menu_view_config = main_builder.get_object("view_config")
-        self.paned = main_builder.get_object("main_paned")
 
         self.save_btn = self.builder.get_object("settings_apply_btn")
         self.save_btn.set_sensitive(False)
@@ -217,12 +211,15 @@ class SettingsWindowSignalHandler(SettingsManager):
                 self.spinner.start()
                 download_remote_to_destination(url, self.get_setting("remote_savepath"))
                 set_crt_auto()
-                load_configs_to_tree(self.config_storage ,self.get_setting("remote_savepath"))
+                load_configs_to_tree(self.get_widget("config_storage") ,self.get_setting("remote_savepath"))
                 self.spinner.stop()
                 self.update_settings_ui()
 
             ThreadManager().create(initial_load, (), True)
         
+        if initial_remote is not None:
+            set_crt_auto()
+            
         #show settings saved notfication
         self.inapp_notification_label.set_text(gettext.gettext("Settings Saved."))
         self.undo_reset_btn.hide()
@@ -236,7 +233,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         
     
     def reset_yes_btn_clicked_cb(self, dialog):
-        self.reset_settings()
+        ThreadManager().create(self.reset_settings, (), join=True)
         dialog.hide()
         return True
 
@@ -246,27 +243,23 @@ class SettingsWindowSignalHandler(SettingsManager):
 
     def reset_settings(self):
         
-        def remove_settings():
-            #backup to /tmp, give user choice to undo
-            shutil.copytree(self.EOVPN_CONFIG_DIR, self.reset_tmp_path, dirs_exist_ok=True)
-            shutil.rmtree(self.EOVPN_CONFIG_DIR)
-            os.mkdir(self.EOVPN_CONFIG_DIR)
-        
-        def set_default_settings():
-            default = {"notifications": True, "manager": "networkmanager" if (self.is_nm_supported != None) else "openvpn"}
-            default = json.dumps(default, indent=2)
-            f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), "w+")
-            f.write(default)
-            f.close()
 
-        tm = ThreadManager()
-        tm.create(remove_settings, ())
-        tm.create(set_default_settings, ())    
+        #backup to /tmp, give user choice to undo
+        shutil.copytree(self.EOVPN_CONFIG_DIR, self.reset_tmp_path, dirs_exist_ok=True)
+        shutil.rmtree(self.EOVPN_CONFIG_DIR)
+        os.mkdir(self.EOVPN_CONFIG_DIR)
+        
+
+        default = {"notifications": True, "manager": "networkmanager" if (self.is_nm_supported != None) else "openvpn"}
+        default = json.dumps(default, indent=2)
+        f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), "w+")
+        f.write(default)
+        f.close()
 
         #remote GtkPaned size from Gsetting.
         settings = Gio.Settings.new(self.APP_ID)
         settings.reset("treeview-height")
-        self.paned.set_position(250)
+        self.get_widget("main_paned").set_position(250)
         
         #Setup Tab
         self.remote_addr_entry.set_text("")
@@ -283,9 +276,8 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.notification_switch.set_state(False)
         
         #remove config from liststorage
-        self.config_storage.clear()
-        self.menu_view_config.hide()
-
+        self.get_widget("config_storage").clear()
+        self.get_widget("menu_view_config").hide()
 
         self.inapp_notification_label.set_text(gettext.gettext("Settings deleted."))
         self.undo_reset_btn.show()

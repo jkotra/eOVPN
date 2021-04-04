@@ -10,7 +10,8 @@ gi.require_version('Notify', '0.7')
 from gi.repository import Gtk, GLib, GdkPixbuf, Notify
 
 eovpn_standalone = {"is_standalone": False, "path": None}
-builder_record = {}
+_builder_record = {}
+_widget_record = {}
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,23 @@ class Base:
         self.EOVPN_GRESOURCE_PREFIX = "/com/github/jkotra/" + self.APP_NAME.lower()
         self.EOVPN_CSS = self.EOVPN_GRESOURCE_PREFIX + "/css/main.css"
     
+    def get_builder(self, ui_resource_name):
+        if ui_resource_name not in _builder_record.keys():
+            builder = Gtk.Builder()
+            builder.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + ui_resource_name)
+            _builder_record[ui_resource_name] = builder
+            return builder
+        else:
+            return _builder_record[ui_resource_name]
+    
+    def get_widget(self, widget_name):
+        if widget_name in _widget_record.keys():
+            return _widget_record[widget_name]
+
+    def store_widget(self, name, widget):
+        _widget_record[name] = widget
+
+
     def get_logo(self):
         img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/com.github.jkotra.eovpn.svg", -1, 128, True)
         return img
@@ -92,9 +110,8 @@ class ThreadManager:
             self.__join_thread(th)
     
     def __join_thread(self, thread):
-
-        logger.info("join request for {}".format(str(thread)))
         thread.join()
+        logger.info("{} joined!".format(str(thread)))
 
 
 class SettingsManager(Base):

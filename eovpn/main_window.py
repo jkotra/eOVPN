@@ -12,7 +12,7 @@ import gettext
 
 from gi.repository import Gtk, GLib, Gdk, GdkPixbuf, Gio
 
-from .eovpn_base import Base, SettingsManager, ThreadManager, get_standalone, builder_record
+from .eovpn_base import Base, SettingsManager, ThreadManager, get_standalone
 from .settings_window import SettingsWindow
 from .log_window import LogWindow
 from .about_dialog import AboutWindow
@@ -31,9 +31,9 @@ class MainWindow(Base, Gtk.Builder):
         self.app = app
         
         self.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "main.glade")
-        builder_record["main"] = self
         self.connect_signals(MainWindowSignalHandler(self))
         self.window = self.get_object("mainwindow")
+        self.store_widget("mainwindow", self.window)
 
         self.window.set_title("eOVPN")
         self.window.set_icon_name(self.APP_ID)
@@ -63,8 +63,13 @@ class MainWindowSignalHandler(SettingsManager):
 
         self.statusbar = self.builder.get_object("statusbar")
         self.spinner = self.builder.get_object("main_spinner")
+
         self.paned = self.builder.get_object("main_paned")
+        self.store_widget("main_paned", self.paned)
+        
         self.config_storage = self.builder.get_object("config_storage")
+        self.store_widget("config_storage", self.config_storage)
+
         self.config_tree = self.builder.get_object("config_treeview")
         self.statusbar_icon = self.builder.get_object("statusbar_icon")
         self.proto_label = self.builder.get_object("openvpn_proto")
@@ -115,15 +120,16 @@ class MainWindowSignalHandler(SettingsManager):
        
 
         self.menu_view_config = self.builder.get_object("view_config")
+        self.store_widget("menu_view_config", self.menu_view_config)
 
         #reset session.log
         if os.path.exists(self.EOVPN_CONFIG_DIR) != True:
             os.mkdir(self.EOVPN_CONFIG_DIR)
 
         #if manager is None, set it according to compatibility (NM preferered)
+        logger.debug("Testing if NM is supported...")
         is_nm_supported = NetworkManager().get_version()
 
-        logger.info("[startup] is_nm_supported={}".format(is_nm_supported))
         if self.get_setting("manager") is None:
             self.set_setting("manager", "networkmanager" if (is_nm_supported != None) else "openvpn")
         
@@ -348,9 +354,17 @@ class MainWindowSignalHandler(SettingsManager):
         logger.info("{} copied to clipboard.".format(ip))
 
     def on_update_btn_clicked(self, button):
-        download_remote_to_destination(self.get_setting("remote"), self.get_setting("remote_savepath"))
-        load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
-            
+
+        def update():
+            self.spinner.start()
+            builder = self.get_builder("main.glade")
+            cs = builder.get_object("config_storage")
+            download_remote_to_destination(self.get_setting("remote"), self.get_setting("remote_savepath"))
+            load_configs_to_tree(cs, self.get_setting("remote_savepath"))
+            self.spinner.stop()
+            logger.debug("configs updated!")
+
+        ThreadManager().create(update, (), True)
 
     def on_open_vpn_running_kill_btn_clicked(self, dlg):
         self.conn_mgr.disconnect(self.on_disconnect)
