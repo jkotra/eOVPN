@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: eOVPN\n"
-"POT-Creation-Date: 2021-04-02 10:52+0530\n"
+"POT-Creation-Date: 2021-04-05 13:30+0530\n"
 "PO-Revision-Date: 2021-02-17 16:04+0530\n"
 "Last-Translator: Jagadeesh Kotra <jagadeesh.01101011@gmail.com>\n"
 "Language-Team: \n"
@@ -100,6 +100,7 @@ msgid "Exit"
 msgstr ""
 
 #: data/ui/main.glade:436 eovpn/ip_lookup/lookup.py:57
+#: eovpn/main_window.py:209 eovpn/main_window.py:245
 msgid "Disconnected"
 msgstr ""
 
@@ -243,11 +244,11 @@ msgstr ""
 msgid "Config requires authorization (auth-user-pass)"
 msgstr ""
 
-#: eovpn/connection_manager.py:82 eovpn/connection_manager.py:105
+#: eovpn/connection_manager.py:82
 msgid "Connected to {}."
 msgstr ""
 
-#: eovpn/connection_manager.py:142 eovpn/connection_manager.py:156
+#: eovpn/connection_manager.py:123 eovpn/connection_manager.py:151
 msgid "Disconnected."
 msgstr ""
 
@@ -255,7 +256,8 @@ msgstr ""
 msgid "No Network"
 msgstr ""
 
-#: eovpn/ip_lookup/lookup.py:52
+#: eovpn/ip_lookup/lookup.py:52 eovpn/main_window.py:196
+#: eovpn/main_window.py:240
 msgid "Connected"
 msgstr ""
 
@@ -263,11 +265,23 @@ msgstr ""
 msgid "Disconnect!"
 msgstr ""
 
-#: eovpn/main_window.py:186
+#: eovpn/main_window.py:197 eovpn/main_window.py:236 eovpn/main_window.py:241
+msgid "Connected to {}"
+msgstr ""
+
+#: eovpn/main_window.py:202
 msgid "Failed to connect!"
 msgstr ""
 
-#: eovpn/main_window.py:402
+#: eovpn/main_window.py:210 eovpn/main_window.py:246
+msgid "Disconnected from {}"
+msgstr ""
+
+#: eovpn/main_window.py:399
+msgid "Configs updated."
+msgstr ""
+
+#: eovpn/main_window.py:451
 msgid "No config selected."
 msgstr ""
 
@@ -279,22 +293,22 @@ msgstr ""
 msgid "OpenVPN Killed!"
 msgstr ""
 
-#: eovpn/settings_window.py:124
+#: eovpn/settings_window.py:123
 msgid "Deleted all VPN connections (if any)!"
 msgstr ""
 
-#: eovpn/settings_window.py:218
+#: eovpn/settings_window.py:220
 msgid "Settings Saved."
 msgstr ""
 
-#: eovpn/settings_window.py:277
+#: eovpn/settings_window.py:278
 msgid "Settings deleted."
 msgstr ""
 
-#: eovpn/utils.py:130
+#: eovpn/utils.py:135
 msgid "Valid Remote"
 msgstr ""
 
-#: eovpn/utils.py:131
+#: eovpn/utils.py:136
 msgid "{} OpenVPN configuration's found."
 msgstr ""
