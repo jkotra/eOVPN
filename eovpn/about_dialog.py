@@ -21,9 +21,9 @@ class AboutWindow(Base, Gtk.Builder):
             self.window.set_translator_credits(translation_credits) 
 
         self.window.set_logo(self.get_logo())
+        self.window.set_transient_for(self.get_widget("main_window"))
 
     def show(self):
-        self.window.set_transient_for(self.get_widget("main_window"))
         self.window.show()
 
 class AboutWindowSignalHandler:
