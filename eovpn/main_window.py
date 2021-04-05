@@ -33,13 +33,12 @@ class MainWindow(Base, Gtk.Builder):
         
         self.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "main.glade")
         self.connect_signals(MainWindowSignalHandler(self))
-        self.window = self.get_object("mainwindow")
-        self.store_widget("mainwindow", self.window)
-
+        self.window = self.get_object("main_window")
         self.window.set_title("eOVPN")
         self.window.set_icon_name(self.APP_ID)
 
         self.app.add_window(self.window)
+        self.store_widget("main_window", self.window)
 
 
     def show(self):
@@ -393,7 +392,14 @@ class MainWindowSignalHandler(SettingsManager):
             self.spinner.start()
             builder = self.get_builder("main.glade")
             cs = builder.get_object("config_storage")
-            download_remote_to_destination(self.get_setting("remote"), self.get_setting("remote_savepath"))
+
+            try:
+                download_remote_to_destination(self.get_setting("remote"), self.get_setting("remote_savepath"))
+            except Exception as e:
+                logger.error(e)
+                self.spinner.stop()
+                return False
+
             load_configs_to_tree(cs, self.get_setting("remote_savepath"))
             self.spinner.stop()
             self.statusbar.push(1, gettext.gettext("Configs updated."))

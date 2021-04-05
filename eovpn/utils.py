@@ -58,12 +58,8 @@ def download_remote_to_destination(remote, destination):
         return zipfile.ZipFile(io.BytesIO(content), "r")
 
     def download_zip(remote):
-        try:
-            remote_c = requests.get(remote, timeout=360)
-        except Exception as e:
-            logger.error(str(e))
-            raise(e)
-            
+
+        remote_c = requests.get(remote, timeout=360)  
         zip_file = make_zip_from_b(remote_c.content)
         return zip_file
 
@@ -116,15 +112,14 @@ def validate_remote(remote, spinner = None):
             os.mkdir(tmp_path)    
             
         try:
-            res = download_remote_to_destination(remote, tmp_path)
+            if download_remote_to_destination(remote, tmp_path) is False:
+                return False
         except Exception as e:
             logger.error(e)
+            GLib.idle_add(message_dialog, "", str(e))
             if spinner is not None:
                 spinner.stop()
-            return False    
 
-        if res == False:
-            return False
 
         all_files = os.listdir(tmp_path)
 
@@ -132,7 +127,7 @@ def validate_remote(remote, spinner = None):
         if len(configs) > 0:
             #show message dialog
             GLib.idle_add(message_dialog,
-            gettext.gettext("Valid Remote"), 
+            "",
             gettext.gettext("{} OpenVPN configuration's found.").format(len(configs)))
         if spinner is not None:
             spinner.stop()

@@ -32,6 +32,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.window.set_title("eOVPN Settings")
 
     def show(self):
+        self.window.set_transient_for(self.get_widget("main_window"))
         self.window.show()    
 
 

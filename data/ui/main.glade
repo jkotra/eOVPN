@@ -397,7 +397,7 @@
             <property name="receives-default">True</property>
             <property name="text" translatable="yes">Exit</property>
             <property name="centered">True</property>
-            <signal name="clicked" handler="on_menu_exit_clicked" object="mainwindow" swapped="no"/>
+            <signal name="clicked" handler="on_menu_exit_clicked" object="main_window" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -409,7 +409,7 @@
       </object>
     </child>
   </object>
-  <object class="GtkApplicationWindow" id="mainwindow">
+  <object class="GtkApplicationWindow" id="main_window">
     <property name="can-focus">False</property>
     <property name="default-width">600</property>
     <property name="default-height">840</property>
