@@ -41,7 +41,7 @@
 
   <releases>
 
-    <release version="0.21" date="2021-04-04">
+    <release version="0.22" date="2021-04-05">
       <description>
         <ul>
           <li>use dbus to detect VPN status (NM)</li>
