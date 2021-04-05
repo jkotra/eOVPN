@@ -1,0 +1,156 @@
+app-id: com.github.jkotra.eovpn
+runtime : org.gnome.Platform
+runtime-version : '3.38'
+sdk : org.gnome.Sdk
+command: eovpn
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --talk-name=org.freedesktop.Flatpak
+  - --talk-name=org.freedesktop.Notifications
+  - --filesystem=home
+  - --persist=path
+  - --socket=system-bus
+
+modules:
+  - python3-modules.json
+
+  - name: intltool
+    cleanup:
+       - '*'
+    sources:
+       - type: archive
+         url: https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz
+         sha256: 67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd
+
+  - name: polkit
+    buildsystem: autotools
+    config-opts:
+      - --disable-polkitd
+      - --disable-man-pages
+      - --disable-introspection
+      - --disable-examples
+      - --disable-gtk-doc
+      - --disable-libelogind
+      - --disable-libsystemd-login
+      - --with-systemdsystemunitdir=no
+      - --with-authdb=dummy
+      - --with-authfw=none
+    rm-configure: true
+    cleanup:
+      - /bin/*
+      - /etc/pam.d
+      - /etc/dbus-1
+      - /share/dbus-1/system-services/*
+      - /share/polkit-1
+      - /lib/polkit-1
+    sources:
+      - type: archive
+        url: https://www.freedesktop.org/software/polkit/releases/polkit-0.116.tar.gz
+        sha256: 88170c9e711e8db305a12fdb8234fac5706c61969b94e084d0f117d8ec5d34b1
+
+      - type: patch
+        path: polkit-build-Add-option-to-build-without-polkitd.patch
+
+      - type: file
+        path: polkit-autogen
+        dest-filename: autogen.sh
+
+  - name: udev
+    config-opts:
+      - --disable-hwdb
+      - --disable-logging
+      - --disable-gudev
+      - --disable-introspection
+      - --disable-keymap
+      - --disable-mtd_probe
+    cleanup:
+      - /include
+      - /etc
+      - /libexec
+      - /sbin
+      - /lib/pkgconfig
+      - /man
+      - /share/aclocal
+      - /share/doc
+      - /share/gtk-doc
+      - /share/man
+      - /share/pkgconfig
+      - '*.la'
+      - '*.a'
+    sources:
+      - type: git
+        url: 'git://github.com/gentoo/eudev.git'
+        tag: "v3.2.10"
+
+
+  - name: libndp
+    buildsystem: autotools
+    sources:
+      - type: archive
+        url: ' http://libndp.org/files/libndp-1.6.tar.gz'
+        sha256: 0c7dfa84e013bd5e569ef2c6292a6f72cfaf14f4ff77a77425e52edc33ffac0e
+
+
+  - name: NetworkManager
+    buildsystem: meson
+    build-options:
+      cflags: -ltinfo
+      cxxflags: -ltinfo
+    config-opts:
+      - -Dlibaudit=no
+      - -Ddbus_conf_dir=/app/etc/dbus-1/system.d
+      - -Ddbus_ifaces_dir=/app/share/dbus-1/interfaces
+      - -Ddbus_sys_dir=/app/share/dbus-1/system.d
+      - -Ddnsmasq=/usr/bin/true
+      - -Ddocs=false
+      - -Dintrospection=false
+      - -Diptables=/usr/bin/true
+      - -Djson_validation=false
+      - -Dlibnm_glib=false
+      - -Dlibpsl=false
+      - -Dmodem_manager=false
+      - -Dnmtui=false
+      - -Dovs=false
+      - -Dppp=false
+      - -Dqt=false
+      - -Dselinux=false
+      - -Dsession_tracking=no
+      - -Dsystemdsystemunitdir=no
+      - -Dsystemd_journal=false
+      - -Dtests=no
+      - -Dvapi=false
+    sources:
+      - type: git
+        url: 'https://gitlab.freedesktop.org/NetworkManager/NetworkManager.git'
+        tag: "1.30.2"
+
+  - name: libnma
+    buildsystem: meson
+    config-opts:
+      - -Dmobile_broadband_provider_info=false
+      - -Dgtk_doc=false
+      - -Dintrospection=false
+      - -Dvapi=false
+    sources:
+      - type: git
+        url: 'https://gitlab.gnome.org/GNOME/libnma.git'
+        tag: "1.8.30"
+
+
+  - name: NetworkManager-openvpn
+    buildsystem: autotools
+    sources:
+      - type: git
+        url: 'https://github.com/NetworkManager/NetworkManager-openvpn.git'
+        tag: "1.8.12"
+
+  - name: eovpn
+    buildsystem: meson
+    sources:
+      - type: dir
+        path: "../../"

@@ -193,8 +193,8 @@ class MainWindowSignalHandler(SettingsManager):
 
             #send notification
             if self.get_setting("notifications") and (self.current_manager != "networkmanager"):
-                self.send_notification("Connected",
-                                       "Connected to {}".format(self.get_setting("last_connected")),
+                self.send_notification(gettext.gettext("Connected"),
+                                       gettext.gettext("Connected to {}").format(self.get_setting("last_connected")),
                                         True)            
 
             logger.debug("saved to config: cursor={} config={}".format(self.config_selected, self.selected_cursor))
@@ -206,8 +206,8 @@ class MainWindowSignalHandler(SettingsManager):
         if result:
             self.config_connected = None
             if self.get_setting("notifications") and (self.current_manager != "networkmanager"):
-                self.send_notification("Disconnected",
-                                       "Disconnected from {}".format(self.get_setting("last_connected")),
+                self.send_notification(gettext.gettext("Disconnected"),
+                                       gettext.gettext("Disconnected from {}").format(self.get_setting("last_connected")),
                                         False)
 
             if self.current_manager != "networkmanager":      
@@ -237,13 +237,13 @@ class MainWindowSignalHandler(SettingsManager):
             self.statusbar.push(1, text)
             self.statusbar_icon.set_from_icon_name("network-vpn-symbolic", 1)
             if self.get_setting("notifications"):
-                self.send_notification("Connected",
-                                       "Connected to {}".format(self.get_setting("last_connected")),
+                self.send_notification(gettext.gettext("Connected"),
+                                       gettext.gettext("Connected to {}").format(self.get_setting("last_connected")),
                                         True)
         elif connection_result is False:
                 if self.get_setting("notifications"):
-                    self.send_notification("Disconnected",
-                                           "Disconnected from {}".format(self.get_setting("last_connected")),
+                    self.send_notification(gettext.gettext("Disconnected"),
+                                           gettext.gettext("Disconnected from {}").format(self.get_setting("last_connected")),
                                            False)
         else:
             pass
@@ -396,6 +396,7 @@ class MainWindowSignalHandler(SettingsManager):
             download_remote_to_destination(self.get_setting("remote"), self.get_setting("remote_savepath"))
             load_configs_to_tree(cs, self.get_setting("remote_savepath"))
             self.spinner.stop()
+            self.statusbar.push(1, gettext.gettext("Configs updated."))
             logger.debug("configs updated!")
 
         ThreadManager().create(update, (), True)
