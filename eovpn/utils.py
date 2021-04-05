@@ -68,6 +68,7 @@ def download_remote_to_destination(remote, destination):
         return zip_file
 
     remote = os.path.expanduser(remote)
+    
     logger.info("remote={}, isdir={}, iszip={}".format(remote, os.path.isdir(remote), os.path.isfile(remote) and remote.endswith("zip") == True))
     if os.path.isdir(remote):
         logger.debug("remote is a local directory!")

@@ -186,7 +186,6 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         
         url = self.remote_addr_entry.get_text().strip()
-        url = os.path.expanduser(url)
 
         if url != '':
             self.set_setting("remote", url)

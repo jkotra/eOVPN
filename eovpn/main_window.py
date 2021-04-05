@@ -141,7 +141,7 @@ class MainWindowSignalHandler(SettingsManager):
         self.conn_mgr = eOVPNConnectionManager(self.statusbar, self.statusbar_icon, self.spinner)
         self.conn_mgr.get_version(callback=self.on_version)
         self.current_manager = self.get_setting("manager")
-        watch_vpn_status(update_callback=self.update_status_ip_loc_flag)
+        watch_vpn_status(update_callback=self.on_nm_connent_event)
 
         self.update_status_ip_loc_flag()
 
@@ -230,6 +230,26 @@ class MainWindowSignalHandler(SettingsManager):
         if result:
             self.config_tree.set_cursor(0)
             self.config_tree.scroll_to_cell(0)
+
+    def on_nm_connent_event(self, connection_result=None):
+        if connection_result is True:
+            text = gettext.gettext("Connected to {}").format(self.config_connected.split("/")[-1])
+            self.statusbar.push(1, text)
+            self.statusbar_icon.set_from_icon_name("network-vpn-symbolic", 1)
+            if self.get_setting("notifications"):
+                self.send_notification("Connected",
+                                       "Connected to {}".format(self.get_setting("last_connected")),
+                                        True)
+        elif connection_result is False:
+                if self.get_setting("notifications"):
+                    self.send_notification("Disconnected",
+                                           "Disconnected from {}".format(self.get_setting("last_connected")),
+                                           False)
+        else:
+            pass
+
+        self.update_status_ip_loc_flag()
+        self.spinner.stop()
     #end
 
     def on_mainwindow_destroy(self, application):
@@ -346,21 +366,10 @@ class MainWindowSignalHandler(SettingsManager):
         LocationDetails().set(self.connection_details_widgets, self.conn_mgr.get_connection_status())
     
         if self.conn_mgr.get_connection_status():
-            if self.config_selected != None:
-
-                if self.current_manager == "networkmanager" and nm_connected:
-                    text = gettext.gettext("Connected to {}").format(self.config_connected.split("/")[-1])
-
-                    self.statusbar.push(1, text)
-                    self.statusbar_icon.set_from_icon_name("network-vpn-symbolic", 1)
-                    if self.get_setting("notifications"):
-                        self.send_notification("Connected",
-                                       "Connected to {}".format(self.get_setting("last_connected")),
-                                        True)
-
+            if self.config_connected != None:
                 self.conn_mgr.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
                                                   self.get_setting("remote_savepath"),
-                                                  self.config_selected), self.proto_label)
+                                                  self.config_connected), self.proto_label)
             if self.standalone_mode:
                 self.conn_mgr.openvpn_config_set_protocol(self.standalone_path, self.proto_label)
             self.proto_chooser_box.set_sensitive(False)
@@ -369,15 +378,7 @@ class MainWindowSignalHandler(SettingsManager):
         else:
             self.proto_label.hide()
             self.proto_chooser_box.set_sensitive(True)
-            self.is_connected = False
-            
-            if self.current_manager == "networkmanager" and nm_connected == False:
-                if self.get_setting("notifications") and (self.current_manager == "networkmanager"):
-                    self.send_notification("Disconnected",
-                                           "Disconnected from {}".format(self.get_setting("last_connected")),
-                                           False)
-
-        self.spinner.stop()    
+            self.is_connected = False  
 
 
     def on_copy_btn_clicked(self, ip):
