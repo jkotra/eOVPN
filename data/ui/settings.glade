@@ -2,18 +2,11 @@
 <!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
-  <object class="GtkFileFilter" id="filefilter1">
-    <patterns>
-      <pattern>*.pem</pattern>
-      <pattern>*.crt</pattern>
-      <pattern>*ca</pattern>
-    </patterns>
-  </object>
   <object class="GtkWindow" id="settings_window">
     <property name="can-focus">False</property>
     <property name="modal">True</property>
     <property name="default-width">700</property>
-    <property name="default-height">400</property>
+    <property name="default-height">500</property>
     <signal name="delete-event" handler="on_settings_window_delete_event" after="yes" swapped="no"/>
     <child>
       <object class="GtkBox" id="MainBox">
@@ -30,9 +23,11 @@
                 <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkBox">
+                  <object class="GtkBox" id="setup_inner_box">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
+                    <property name="margin-start">18</property>
+                    <property name="margin-end">18</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkRevealer" id="reveal_settings_saved">
@@ -120,13 +115,16 @@
                       <object class="GtkBox">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
                             <property name="halign">start</property>
-                            <property name="margin-start">4</property>
-                            <property name="label" translatable="yes">Configuration Source: </property>
+                            <property name="label" translatable="yes">Configuration Source</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -136,42 +134,141 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="openvpn_config_remote_addr">
+                          <object class="GtkBox" id="config_radio_btn_box">
                             <property name="visible">True</property>
-                            <property name="can-focus">True</property>
-                            <property name="max-width-chars">128</property>
-                            <property name="placeholder-text" translatable="yes">https://example.com/configs.zip</property>
-                            <signal name="changed" handler="save_btn_activate" swapped="no"/>
+                            <property name="can-focus">False</property>
+                            <child>
+                              <object class="GtkRadioButton" id="url_radio_btn">
+                                <property name="label" translatable="yes">URL</property>
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="active">True</property>
+                                <property name="draw-indicator">True</property>
+                                <property name="group">dir_radio_btn</property>
+                                <signal name="toggled" handler="on_url_radio_btn_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkRadioButton" id="zip_radio_btn">
+                                <property name="label" translatable="yes">ZIP</property>
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="active">True</property>
+                                <property name="draw-indicator">True</property>
+                                <property name="group">url_radio_btn</property>
+                                <signal name="toggled" handler="on_zip_radio_btn_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkRadioButton" id="dir_radio_btn">
+                                <property name="label" translatable="yes">Directory</property>
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="active">True</property>
+                                <property name="draw-indicator">True</property>
+                                <property name="group">zip_radio_btn</property>
+                                <signal name="toggled" handler="on_dir_radio_btn_toggled" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
-                            <property name="expand">True</property>
+                            <property name="expand">False</property>
                             <property name="fill">True</property>
                             <property name="padding">8</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkButton" id="settings_validate_btn">
-                            <property name="label" translatable="yes">Validate</property>
-                            <property name="visible">True</property>
+                          <object class="GtkEntry" id="url_entry">
                             <property name="can-focus">True</property>
-                            <property name="receives-default">True</property>
-                            <signal name="clicked" handler="on_settings_validate_btn_clicked" object="openvpn_config_remote_addr" swapped="no"/>
+                            <property name="max-width-chars">0</property>
+                            <property name="placeholder-text" translatable="yes">https://example.com/configs.zip</property>
+                            <property name="input-purpose">url</property>
+                            <signal name="changed" handler="on_config_source_set" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="padding">4</property>
-                            <property name="pack-type">end</property>
+                            <property name="padding">8</property>
                             <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkFileChooserButton" id="source_file_chooser">
+                            <property name="can-focus">False</property>
+                            <property name="title" translatable="yes"/>
+                            <signal name="file-set" handler="on_config_source_set" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="padding">8</property>
+                            <property name="position">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkFileChooserButton" id="source_folder_chooser">
+                            <property name="can-focus">False</property>
+                            <property name="action">select-folder</property>
+                            <property name="title" translatable="yes"/>
+                            <signal name="file-set" handler="on_config_source_set" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="padding">8</property>
+                            <property name="position">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkRevealer" id="validate_revealer">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <child>
+                              <object class="GtkButton" id="settings_validate_btn">
+                                <property name="label" translatable="yes">Validate</property>
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">True</property>
+                                <property name="halign">start</property>
+                                <signal name="clicked" handler="on_settings_validate_btn_clicked" swapped="no"/>
+                                <style>
+                                  <class name="suggested-action"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="padding">4</property>
+                            <property name="position">5</property>
                           </packing>
                         </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="padding">16</property>
-                        <property name="position">3</property>
+                        <property name="padding">12</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
@@ -180,18 +277,293 @@
                         <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="label" translatable="yes">Manager</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="padding">4</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
                           <object class="GtkBox">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkAspectFrame">
+                              <object class="GtkRadioButton" id="nm_radio_btn">
                                 <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="label-xalign">0</property>
-                                <property name="shadow-type">etched-out</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="draw-indicator">True</property>
+                                <property name="group">openvpn2xcli_radio_btn</property>
+                                <signal name="toggled" handler="on_nm_radio_btn_toggled" swapped="no"/>
                                 <child>
                                   <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <child>
+                                      <object class="GtkImage" id="nm_logo">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="icon-name">network-transmit-receive-symbolic</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">NetworkManager</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="padding">4</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">4</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkRadioButton" id="openvpn2xcli_radio_btn">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="draw-indicator">True</property>
+                                <property name="group">nm_radio_btn</property>
+                                <signal name="toggled" handler="on_openvpn2xcli_radio_btn_toggled" swapped="no"/>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <child>
+                                      <object class="GtkImage" id="ovpn_logo">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="icon-name">network-transmit-receive-symbolic</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">OpenVPN 2.x CLI</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="padding">4</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">4</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkRadioButton" id="openvpn3_radio_btn">
+                                <property name="can-focus">True</property>
+                                <property name="receives-default">False</property>
+                                <property name="draw-indicator">True</property>
+                                <property name="group">openvpn2xcli_radio_btn</property>
+                                <signal name="toggled" handler="on_openvpn3_radio_btn_toggled" swapped="no"/>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <child>
+                                      <object class="GtkImage" id="ovpn_logo1">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="icon-name">network-transmit-receive-symbolic</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="label" translatable="yes">OpenVPN 3</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="padding">4</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">4</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="padding">8</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkRevealer" id="on_manager_change_revealer">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <child>
+                                      <object class="GtkImage">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="icon-name">view-refresh-symbolic</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="halign">start</property>
+                                        <property name="label" translatable="yes">Restart eOVPN to reflect changes.</property>
+                                        <style>
+                                          <class name="dim-label"/>
+                                        </style>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="padding">4</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="remove_all_vpn_nm_btn">
+                                    <property name="label" translatable="yes">Remove all VPN connections from NM</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <property name="halign">start</property>
+                                    <signal name="clicked" handler="on_remove_all_vpn_nm_btn_clicked" swapped="no"/>
+                                    <style>
+                                      <class name="destructive-action"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="padding">4</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="padding">4</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="padding">12</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFrame">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label-xalign">0</property>
+                        <property name="shadow-type">out</property>
+                        <child>
+                          <object class="GtkAlignment">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="left-padding">12</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkCheckButton" id="req_auth">
+                                    <property name="label" translatable="yes">Requires Authentication</property>
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="draw-indicator">True</property>
+                                    <signal name="toggled" handler="on_req_auth_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="padding">4</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="user_pass_box">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="orientation">vertical</property>
@@ -200,455 +572,218 @@
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <child>
-                                          <object class="GtkRadioButton" id="nm_radio_btn">
+                                          <object class="GtkButton">
                                             <property name="visible">True</property>
+                                            <property name="sensitive">False</property>
                                             <property name="can-focus">True</property>
-                                            <property name="receives-default">False</property>
-                                            <property name="draw-indicator">True</property>
-                                            <property name="group">ovpn_radio_btn</property>
-                                            <signal name="toggled" handler="on_nm_radio_btn_toggled" swapped="no"/>
+                                            <property name="receives-default">True</property>
+                                            <property name="tooltip-text" translatable="yes">Username</property>
+                                            <property name="halign">center</property>
+                                            <property name="valign">center</property>
                                             <child>
-                                              <object class="GtkBox">
+                                              <object class="GtkImage">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">False</property>
-                                                <child>
-                                                  <object class="GtkImage" id="nm_logo">
-                                                    <property name="visible">True</property>
-                                                    <property name="can-focus">False</property>
-                                                    <property name="icon-name">network-transmit-receive-symbolic</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">0</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkLabel">
-                                                    <property name="visible">True</property>
-                                                    <property name="can-focus">False</property>
-                                                    <property name="label" translatable="yes">NetworkManager</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="padding">4</property>
-                                                    <property name="position">1</property>
-                                                  </packing>
-                                                </child>
+                                                <property name="icon-name">avatar-default-symbolic</property>
                                               </object>
                                             </child>
                                           </object>
                                           <packing>
-                                            <property name="expand">True</property>
+                                            <property name="expand">False</property>
                                             <property name="fill">True</property>
-                                            <property name="padding">4</property>
                                             <property name="position">0</property>
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkRadioButton" id="ovpn_radio_btn">
+                                          <object class="GtkEntry" id="auth_user">
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
-                                            <property name="receives-default">False</property>
-                                            <property name="draw-indicator">True</property>
-                                            <property name="group">nm_radio_btn</property>
-                                            <signal name="toggled" handler="on_ovpn_radio_btn_toggled" swapped="no"/>
-                                            <child>
-                                              <object class="GtkBox">
-                                                <property name="visible">True</property>
-                                                <property name="can-focus">False</property>
-                                                <child>
-                                                  <object class="GtkImage" id="ovpn_logo">
-                                                    <property name="visible">True</property>
-                                                    <property name="can-focus">False</property>
-                                                    <property name="icon-name">network-transmit-receive-symbolic</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="position">0</property>
-                                                  </packing>
-                                                </child>
-                                                <child>
-                                                  <object class="GtkLabel">
-                                                    <property name="visible">True</property>
-                                                    <property name="can-focus">False</property>
-                                                    <property name="label" translatable="yes">OpenVPN CLI</property>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="padding">4</property>
-                                                    <property name="position">1</property>
-                                                  </packing>
-                                                </child>
-                                              </object>
-                                            </child>
+                                            <property name="margin-end">4</property>
+                                            <signal name="changed" handler="save_btn_activate" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="expand">True</property>
                                             <property name="fill">True</property>
-                                            <property name="padding">4</property>
                                             <property name="position">1</property>
                                           </packing>
                                         </child>
+                                        <style>
+                                          <class name="linked"/>
+                                        </style>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="padding">4</property>
                                         <property name="position">0</property>
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkRevealer" id="on_manager_change_revealer">
+                                      <object class="GtkBox">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
                                         <child>
-                                          <object class="GtkBox">
+                                          <object class="GtkButton">
                                             <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <property name="orientation">vertical</property>
+                                            <property name="sensitive">False</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="receives-default">True</property>
+                                            <property name="tooltip-text" translatable="yes">Password</property>
+                                            <property name="halign">center</property>
+                                            <property name="valign">center</property>
                                             <child>
-                                              <object class="GtkBox">
+                                              <object class="GtkImage">
                                                 <property name="visible">True</property>
                                                 <property name="can-focus">False</property>
-                                                <child>
-                                                  <object class="GtkLabel">
-                                                    <property name="visible">True</property>
-                                                    <property name="can-focus">False</property>
-                                                    <property name="halign">start</property>
-                                                    <property name="label" translatable="yes">Restart eOVPN to reflect changes.</property>
-                                                    <style>
-                                                      <class name="dim-label"/>
-                                                    </style>
-                                                  </object>
-                                                  <packing>
-                                                    <property name="expand">False</property>
-                                                    <property name="fill">True</property>
-                                                    <property name="padding">4</property>
-                                                    <property name="position">1</property>
-                                                  </packing>
-                                                </child>
+                                                <property name="icon-name">dialog-password-symbolic</property>
                                               </object>
-                                              <packing>
-                                                <property name="expand">False</property>
-                                                <property name="fill">True</property>
-                                                <property name="position">0</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkButton" id="remove_all_vpn_nm_btn">
-                                                <property name="label" translatable="yes">Remove all VPN connections from NM</property>
-                                                <property name="can-focus">True</property>
-                                                <property name="receives-default">True</property>
-                                                <property name="halign">start</property>
-                                                <signal name="clicked" handler="on_remove_all_vpn_nm_btn_clicked" swapped="no"/>
-                                                <style>
-                                                  <class name="destructive-action"/>
-                                                </style>
-                                              </object>
-                                              <packing>
-                                                <property name="expand">False</property>
-                                                <property name="fill">True</property>
-                                                <property name="padding">4</property>
-                                                <property name="position">1</property>
-                                              </packing>
                                             </child>
                                           </object>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">0</property>
+                                          </packing>
                                         </child>
+                                        <child>
+                                          <object class="GtkEntry" id="auth_pass">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">True</property>
+                                            <property name="margin-end">4</property>
+                                            <property name="visibility">False</property>
+                                            <property name="invisible-char">•</property>
+                                            <property name="input-purpose">password</property>
+                                            <signal name="changed" handler="save_btn_activate" swapped="no"/>
+                                          </object>
+                                          <packing>
+                                            <property name="expand">True</property>
+                                            <property name="fill">True</property>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                        <style>
+                                          <class name="linked"/>
+                                        </style>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="padding">4</property>
+                                        <property name="padding">6</property>
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="padding">4</property>
+                                    <property name="position">1</property>
+                                  </packing>
                                 </child>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="padding">12</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkFrame">
-                            <property name="visible">True</property>
-                            <property name="can-focus">False</property>
-                            <property name="margin-start">6</property>
-                            <property name="margin-end">6</property>
-                            <property name="label-xalign">0</property>
-                            <property name="shadow-type">out</property>
-                            <child>
-                              <object class="GtkAlignment">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="left-padding">12</property>
+                                <child>
+                                  <object class="GtkCheckButton" id="show_password_btn">
+                                    <property name="label" translatable="yes">Show Password</property>
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="halign">end</property>
+                                    <property name="draw-indicator">True</property>
+                                    <signal name="toggled" handler="on_show_password_btn_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="padding">2</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
                                 <child>
                                   <object class="GtkBox">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="orientation">vertical</property>
                                     <child>
-                                      <object class="GtkCheckButton" id="req_auth">
-                                        <property name="label" translatable="yes">Requires Authentication</property>
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                        <property name="receives-default">False</property>
-                                        <property name="draw-indicator">True</property>
-                                        <signal name="toggled" handler="on_req_auth_toggled" swapped="no"/>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="padding">4</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkBox" id="user_pass_box">
+                                      <object class="GtkLabel">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="orientation">vertical</property>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <child>
-                                              <object class="GtkButton">
-                                                <property name="visible">True</property>
-                                                <property name="sensitive">False</property>
-                                                <property name="can-focus">True</property>
-                                                <property name="receives-default">True</property>
-                                                <property name="tooltip-text" translatable="yes">Username</property>
-                                                <property name="halign">center</property>
-                                                <property name="valign">center</property>
-                                                <child>
-                                                  <object class="GtkImage">
-                                                    <property name="visible">True</property>
-                                                    <property name="can-focus">False</property>
-                                                    <property name="icon-name">avatar-default-symbolic</property>
-                                                  </object>
-                                                </child>
-                                              </object>
-                                              <packing>
-                                                <property name="expand">False</property>
-                                                <property name="fill">True</property>
-                                                <property name="position">0</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkEntry" id="auth_user">
-                                                <property name="visible">True</property>
-                                                <property name="can-focus">True</property>
-                                                <property name="margin-end">4</property>
-                                                <signal name="changed" handler="save_btn_activate" swapped="no"/>
-                                              </object>
-                                              <packing>
-                                                <property name="expand">True</property>
-                                                <property name="fill">True</property>
-                                                <property name="position">1</property>
-                                              </packing>
-                                            </child>
-                                            <style>
-                                              <class name="linked"/>
-                                            </style>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">0</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <object class="GtkBox">
-                                            <property name="visible">True</property>
-                                            <property name="can-focus">False</property>
-                                            <child>
-                                              <object class="GtkButton">
-                                                <property name="visible">True</property>
-                                                <property name="sensitive">False</property>
-                                                <property name="can-focus">True</property>
-                                                <property name="receives-default">True</property>
-                                                <property name="tooltip-text" translatable="yes">Password</property>
-                                                <property name="halign">center</property>
-                                                <property name="valign">center</property>
-                                                <child>
-                                                  <object class="GtkImage">
-                                                    <property name="visible">True</property>
-                                                    <property name="can-focus">False</property>
-                                                    <property name="icon-name">dialog-password-symbolic</property>
-                                                  </object>
-                                                </child>
-                                              </object>
-                                              <packing>
-                                                <property name="expand">False</property>
-                                                <property name="fill">True</property>
-                                                <property name="position">0</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <object class="GtkEntry" id="auth_pass">
-                                                <property name="visible">True</property>
-                                                <property name="can-focus">True</property>
-                                                <property name="margin-end">4</property>
-                                                <property name="visibility">False</property>
-                                                <property name="invisible-char">•</property>
-                                                <property name="input-purpose">password</property>
-                                                <signal name="changed" handler="save_btn_activate" swapped="no"/>
-                                              </object>
-                                              <packing>
-                                                <property name="expand">True</property>
-                                                <property name="fill">True</property>
-                                                <property name="position">1</property>
-                                              </packing>
-                                            </child>
-                                            <style>
-                                              <class name="linked"/>
-                                            </style>
-                                          </object>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="padding">6</property>
-                                            <property name="position">1</property>
-                                          </packing>
-                                        </child>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="padding">4</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkCheckButton" id="show_password_btn">
-                                        <property name="label" translatable="yes">Show Password</property>
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">True</property>
-                                        <property name="receives-default">False</property>
-                                        <property name="halign">end</property>
-                                        <property name="draw-indicator">True</property>
-                                        <signal name="toggled" handler="on_show_password_btn_toggled" swapped="no"/>
+                                        <property name="label" translatable="yes">Certificate authority (CA)</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
                                         <property name="padding">2</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="crt_file_reset">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="receives-default">True</property>
+                                        <property name="halign">center</property>
+                                        <signal name="clicked" handler="on_crt_file_reset_clicked" swapped="no"/>
+                                        <child>
+                                          <object class="GtkImage">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="icon-name">edit-clear-symbolic</property>
+                                          </object>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="padding">6</property>
+                                        <property name="pack-type">end</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkFileChooserButton" id="crt_chooser">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="title" translatable="yes"/>
+                                        <signal name="file-set" handler="on_crt_chooser_file_set" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="padding">12</property>
+                                        <property name="pack-type">end</property>
                                         <property name="position">2</property>
                                       </packing>
                                     </child>
                                   </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="padding">8</property>
+                                    <property name="position">3</property>
+                                  </packing>
                                 </child>
                               </object>
                             </child>
-                            <child type="label">
-                              <object class="GtkLabel">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="label" translatable="yes">Authentication</property>
-                                <attributes>
-                                  <attribute name="weight" value="bold"/>
-                                </attributes>
-                              </object>
-                            </child>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="padding">12</property>
-                            <property name="position">1</property>
-                          </packing>
                         </child>
-                        <child>
-                          <object class="GtkBox">
+                        <child type="label">
+                          <object class="GtkLabel">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="margin-top">4</property>
-                                <property name="label" translatable="yes">OpenVPN CRT:</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="padding">14</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkButton" id="crt_file_reset">
-                                <property name="visible">True</property>
-                                <property name="can-focus">True</property>
-                                <property name="receives-default">True</property>
-                                <property name="halign">center</property>
-                                <property name="margin-top">4</property>
-                                <signal name="clicked" handler="on_crt_file_reset_clicked" swapped="no"/>
-                                <child>
-                                  <object class="GtkImage">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">False</property>
-                                    <property name="icon-name">edit-clear-symbolic</property>
-                                  </object>
-                                </child>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="padding">6</property>
-                                <property name="pack-type">end</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkFileChooserButton" id="crt_chooser">
-                                <property name="visible">True</property>
-                                <property name="can-focus">False</property>
-                                <property name="margin-top">4</property>
-                                <property name="filter">filefilter1</property>
-                                <property name="title" translatable="yes"/>
-                                <signal name="file-set" handler="on_crt_chooser_file_set" swapped="no"/>
-                              </object>
-                              <packing>
-                                <property name="expand">True</property>
-                                <property name="fill">True</property>
-                                <property name="pack-type">end</property>
-                                <property name="position">2</property>
-                              </packing>
-                            </child>
+                            <property name="label" translatable="yes">Authentication</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="padding">12</property>
-                            <property name="position">3</property>
-                          </packing>
                         </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">5</property>
+                        <property name="padding">12</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">0</property>
                   </packing>
@@ -665,240 +800,223 @@
                 <property name="can-focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkAspectFrame">
+                  <object class="GtkListBox" id="OptionsListBox">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="margin-start">20</property>
-                    <property name="margin-end">20</property>
-                    <property name="label-xalign">0</property>
-                    <property name="shadow-type">in</property>
+                    <property name="margin-start">18</property>
+                    <property name="margin-end">18</property>
+                    <property name="selection-mode">none</property>
                     <child>
-                      <object class="GtkListBox" id="OptionsListBox">
+                      <object class="GtkListBoxRow">
                         <property name="visible">True</property>
-                        <property name="can-focus">False</property>
-                        <property name="selection-mode">none</property>
+                        <property name="can-focus">True</property>
                         <child>
-                          <object class="GtkListBoxRow">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
-                            <property name="can-focus">True</property>
+                            <property name="can-focus">False</property>
                             <child>
                               <object class="GtkBox">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="orientation">vertical</property>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Notifications</property>
-                                        <attributes>
-                                          <attribute name="weight" value="bold"/>
-                                        </attributes>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Send Notification on Connect and Disconnect Event.</property>
-                                        <attributes>
-                                          <attribute name="scale" value="0.84999999999999998"/>
-                                        </attributes>
-                                        <style>
-                                          <class name="dim-label"/>
-                                        </style>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">2</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSwitch" id="notification_switch">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="halign">center</property>
-                                    <property name="valign">center</property>
-                                    <signal name="state-set" handler="on_notification_switch_state_set" swapped="no"/>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Notifications</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="padding">2</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Send Notification on Connect and Disconnect Event.</property>
+                                    <attributes>
+                                      <attribute name="scale" value="0.84999999999999998"/>
+                                    </attributes>
+                                    <style>
+                                      <class name="dim-label"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
                               </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">2</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="notification_switch">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="halign">center</property>
+                                <property name="valign">center</property>
+                                <signal name="state-set" handler="on_notification_switch_state_set" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="padding">2</property>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBoxRow">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
                         <child>
-                          <object class="GtkListBoxRow">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
-                            <property name="can-focus">True</property>
+                            <property name="can-focus">False</property>
                             <child>
                               <object class="GtkBox">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="orientation">vertical</property>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Update on Launch</property>
-                                        <attributes>
-                                          <attribute name="weight" value="bold"/>
-                                        </attributes>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Update Configuration(s) from remote on launch.</property>
-                                        <attributes>
-                                          <attribute name="scale" value="0.84999999999999998"/>
-                                        </attributes>
-                                        <style>
-                                          <class name="dim-label"/>
-                                        </style>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">2</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSwitch" id="update_on_launch_switch">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="halign">center</property>
-                                    <property name="valign">center</property>
-                                    <signal name="state-set" handler="on_update_on_launch_switch_state_set" swapped="no"/>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Update on Launch</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="padding">2</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Update Configuration(s) from remote on launch.</property>
+                                    <attributes>
+                                      <attribute name="scale" value="0.84999999999999998"/>
+                                    </attributes>
+                                    <style>
+                                      <class name="dim-label"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
                               </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">2</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="update_on_launch_switch">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="halign">center</property>
+                                <property name="valign">center</property>
+                                <signal name="state-set" handler="on_update_on_launch_switch_state_set" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="padding">2</property>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBoxRow">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
                         <child>
-                          <object class="GtkListBoxRow">
+                          <object class="GtkBox">
                             <property name="visible">True</property>
-                            <property name="can-focus">True</property>
+                            <property name="can-focus">False</property>
                             <child>
                               <object class="GtkBox">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
+                                <property name="orientation">vertical</property>
                                 <child>
-                                  <object class="GtkBox">
+                                  <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="orientation">vertical</property>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Connect on Launch</property>
-                                        <attributes>
-                                          <attribute name="weight" value="bold"/>
-                                        </attributes>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <object class="GtkLabel">
-                                        <property name="visible">True</property>
-                                        <property name="can-focus">False</property>
-                                        <property name="halign">start</property>
-                                        <property name="label" translatable="yes">Connect to last connected config on Launch.</property>
-                                        <attributes>
-                                          <attribute name="scale" value="0.84999999999999998"/>
-                                        </attributes>
-                                        <style>
-                                          <class name="dim-label"/>
-                                        </style>
-                                      </object>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">True</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">True</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">2</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSwitch" id="connect_on_launch_switch">
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="halign">center</property>
-                                    <property name="valign">center</property>
-                                    <signal name="state-set" handler="on_connect_on_launch_switch_state_set" swapped="no"/>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Connect on Launch</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="padding">2</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Connect to last connected config on Launch.</property>
+                                    <attributes>
+                                      <attribute name="scale" value="0.84999999999999998"/>
+                                    </attributes>
+                                    <style>
+                                      <class name="dim-label"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
                                     <property name="position">1</property>
                                   </packing>
                                 </child>
                               </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">2</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="connect_on_launch_switch">
+                                <property name="visible">True</property>
+                                <property name="can-focus">True</property>
+                                <property name="halign">center</property>
+                                <property name="valign">center</property>
+                                <signal name="state-set" handler="on_connect_on_launch_switch_state_set" swapped="no"/>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="padding">2</property>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                           </object>
                         </child>
@@ -953,7 +1071,7 @@
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <signal name="clicked" handler="on_settings_apply_btn_clicked" object="openvpn_config_remote_addr" swapped="no"/>
+                <signal name="clicked" handler="on_settings_apply_btn_clicked" object="url_entry" swapped="no"/>
               </object>
               <packing>
                 <property name="pack-type">end</property>
@@ -998,6 +1116,7 @@
     <property name="can-focus">False</property>
     <property name="type-hint">dialog</property>
     <property name="gravity">center</property>
+    <property name="transient-for">settings_window</property>
     <property name="message-type">warning</property>
     <property name="text" translatable="yes">Are you sure?</property>
     <property name="secondary-text" translatable="yes">All settings will be permanently deleted.</property>

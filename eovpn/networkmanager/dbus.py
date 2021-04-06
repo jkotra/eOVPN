@@ -4,6 +4,20 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+error_reasons = [
+"The reason for the VPN connection state change is unknown.",
+"No reason was given for the VPN connection state change.",
+"The VPN connection changed state because the user disconnected it.",
+"The VPN connection changed state because the device it was using was disconnected.",
+"The service providing the VPN connection was stopped.",
+"The IP config of the VPN connection was invalid.",
+"The connection attempt to the VPN service timed out.",
+"A timeout occurred while starting the service providing the VPN connection.",
+"Starting the service starting the service providing the VPN connection failed.",
+"Necessary secrets for the VPN connection were not provided.",
+"Authentication to the VPN server failed.",
+"The connection was deleted from settings."
+]
 
 def callback(connection, sender_name, object_path, interface_name, signal_name, parameters, update_callback):
     logger.debug("{} {}".format(signal_name, parameters))
@@ -21,14 +35,15 @@ def callback(connection, sender_name, object_path, interface_name, signal_name, 
      https://developer.gnome.org/NetworkManager/stable/nm-vpn-dbus-types.html
     """
 
-    if (status == 5 and reason == 1):
+    if (status == 5):
         logger.debug("VPN connected.")
         update_callback(True)   
-    elif (status == 7 and reason == 2):
+    elif ((status == 6) or (status == 7)):
         logger.debug("VPN disconnected.")
-        GLib.timeout_add_seconds(1, update_callback, False)
+        is_connection_deletion_required = reason in [5, 6, 7, 8 , 9, 10]
+        GLib.timeout_add_seconds(1, update_callback, False, (error_reasons[reason] if is_connection_deletion_required else None))
     else:
-        pass    
+        pass
 
 
 def watch_vpn_status(update_callback):

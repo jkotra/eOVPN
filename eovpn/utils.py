@@ -97,6 +97,7 @@ def download_remote_to_destination(remote, destination):
 def validate_remote(remote, spinner = None):
 
     tmp_path = os.path.join(GLib.get_tmp_dir(), "eovpn_validate")
+    logger.debug("tmp_path={}".format(tmp_path))
 
     def remote_validate():
         if spinner is not None:
@@ -107,9 +108,8 @@ def validate_remote(remote, spinner = None):
                 shutil.rmtree(tmp_path)
             except Exception as e:
                 logger.error(e)
-
         else:
-            os.mkdir(tmp_path)    
+            os.mkdir(tmp_path)
             
         try:
             if download_remote_to_destination(remote, tmp_path) is False:

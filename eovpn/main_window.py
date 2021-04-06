@@ -230,7 +230,7 @@ class MainWindowSignalHandler(SettingsManager):
             self.config_tree.set_cursor(0)
             self.config_tree.scroll_to_cell(0)
 
-    def on_nm_connent_event(self, connection_result=None):
+    def on_nm_connent_event(self, connection_result=None, error=None):
         if connection_result is True:
             text = gettext.gettext("Connected to {}").format(self.config_connected.split("/")[-1])
             self.statusbar.push(1, text)
@@ -244,6 +244,12 @@ class MainWindowSignalHandler(SettingsManager):
                     self.send_notification(gettext.gettext("Disconnected"),
                                            gettext.gettext("Disconnected from {}").format(self.get_setting("last_connected")),
                                            False)
+                
+                #delete failed connection
+                if error is not None:
+                    logger.error(error)
+                    self.conn_mgr.NM_cleanup_connection()
+                    self.statusbar.pop(1)                                                       
         else:
             pass
 

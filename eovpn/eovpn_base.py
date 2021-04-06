@@ -123,7 +123,6 @@ class SettingsManager(Base):
         else:
             try:
                 f = open(self.EOVPN_CONFIG_DIR + "/settings.json", 'w+')
-
                 settings = {}
                 f.write(json.dumps(settings, indent=2))
 
@@ -150,12 +149,12 @@ class SettingsManager(Base):
     def set_setting(self, setting, value):
         self.__init_config()
 
-        f = open(self.EOVPN_CONFIG_DIR + "/settings.json", 'r')
+        f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), 'r')
         content = f.read()
 
         json_content = json.loads(content)
 
-        f = open(self.EOVPN_CONFIG_DIR + "/settings.json", 'w')
+        f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), 'w+')
         json_content[setting] = value
         f.write(json.dumps(json_content, indent=2))
         f.close()

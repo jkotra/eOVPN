@@ -19,8 +19,8 @@ class eOVPNConnectionManager(SettingsManager):
 
         super().__init__()
         
-        self.openvpn_manager = OpenVPN(60)
-        self.nm_manager = NetworkManager()
+        self.openvpn_manager = None
+        self.nm_manager = None
 
         self.spinner = spinner
         self.statusbar = statusbar
@@ -33,8 +33,10 @@ class eOVPNConnectionManager(SettingsManager):
         self.current_manager = self.get_setting("manager")
 
         if self.current_manager == "openvpn":
+            self.openvpn_manager = OpenVPN(60)
             self.is_openvpn = True
         elif self.current_manager == "networkmanager":
+            self.nm_manager = NetworkManager()
             self.is_nm = True
         else:
             self.__push_to_statusbar("Manager not selected.")
@@ -107,6 +109,12 @@ class eOVPNConnectionManager(SettingsManager):
                 
         else:
             pass                      
+    
+    def NM_cleanup_connection(self):
+
+        """ delete connection/vpn if it failed for whatever reason """
+        self.nm_manager.delete_connection(self.uuid)
+
 
     def disconnect(self, callback=None):
 
