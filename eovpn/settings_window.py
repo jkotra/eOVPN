@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 import shutil
 import gettext
 
-from gi.repository import Gtk, Gio, GLib
+from gi.repository import Gtk, Gio, GLib, Gdk
 
 from .eovpn_base import Base, SettingsManager, ThreadManager
 from .connection_manager import eOVPNConnectionManager
@@ -32,6 +32,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.window.set_title("eOVPN Settings")
 
         self.window.set_transient_for(self.get_widget("main_window"))
+        self.window.set_type_hint(Gdk.WindowTypeHint.DIALOG) #required for Xorg session
 
     def show(self):
         self.window.show()    
