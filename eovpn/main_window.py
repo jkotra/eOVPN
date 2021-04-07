@@ -257,9 +257,8 @@ class MainWindowSignalHandler(SettingsManager):
         self.spinner.stop()
     #end
 
-    def on_mainwindow_destroy(self, application):
+    def on_main_paned_position_notify(self, paned, position):
         paned_height = self.paned.get_position()
-        logger.debug("saving paned_height={}".format(paned_height))
         self.settings.set_int("treeview-height", paned_height)
         return True
 

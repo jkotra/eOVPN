@@ -414,7 +414,6 @@
     <property name="default-width">600</property>
     <property name="default-height">840</property>
     <property name="startup-id">com.github.jkotra.eovpn</property>
-    <signal name="destroy" handler="on_mainwindow_destroy" swapped="no"/>
     <child>
       <object class="GtkBox" id="main_box">
         <property name="visible">True</property>
@@ -670,6 +669,7 @@
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="orientation">vertical</property>
+            <signal name="notify::position" handler="on_main_paned_position_notify" swapped="no"/>
             <child>
               <object class="GtkViewport">
                 <property name="height-request">200</property>
