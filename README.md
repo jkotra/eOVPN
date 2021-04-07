@@ -13,7 +13,7 @@
 
 <a href='https://flathub.org/apps/details/com.github.jkotra.eovpn'><img height='50' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 
-<a href="https://www.buymeacoffee.com/jkotra"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=jkotra&button_colour=FFDD00&font_colour=000000&font_family=Lato&outline_colour=000000&coffee_colour=ffffff"></a>
+<a href='https://ko-fi.com/X7X83SJSN' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi5.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 ---
 
