@@ -204,7 +204,7 @@ class SettingsWindowSignalHandler(SettingsManager):
             self.on_zip_radio_btn_toggled(None)
         elif (remote_type == "dir"):
             if self.get_setting("remote") is not None:
-                self.source_folder_chooser.set_current_folder(self.get_setting("remote"))
+                self.source_folder_chooser.set_filename(self.get_setting("remote"))
             self.dir_radio_btn.set_active(True)
             self.on_dir_radio_btn_toggled(None)  
         else:
@@ -392,7 +392,7 @@ class SettingsWindowSignalHandler(SettingsManager):
             shutil.copytree(self.reset_tmp_path, self.EOVPN_CONFIG_DIR, dirs_exist_ok=True)
         except Exception as e:
             logger.error(e)
-              
+
         ThreadManager().create(self.__download_and_load_configs, ())
         self.update_settings_ui()
         self.on_revealer_close_btn_clicked(None) #button is not actually used so it's okay.
