@@ -285,6 +285,12 @@ class SettingsWindowSignalHandler(SettingsManager):
         elif self.dir_radio_btn.get_active():
             url = self.source_folder_chooser.get_filename()
             self.set_setting("remote_type", "dir")
+
+            #make sure there is no dir inside
+            all_files = [f for f in os.listdir(url)]
+            is_dir = [os.path.isdir(os.path.join(url, x)) for x in all_files]
+            assert(any(is_dir) == False)
+
         else:
             return False            
 
@@ -414,6 +420,11 @@ class SettingsWindowSignalHandler(SettingsManager):
             remote = self.source_file_chooser.get_filename()
         elif self.selected_remote_type == 2:
             remote = self.source_folder_chooser.get_filename()
+
+            #make sure there is no dir inside
+            all_files = [f for f in os.listdir(remote)]
+            is_dir = [os.path.isdir(os.path.join(remote, x)) for x in all_files]
+            assert(any(is_dir) == False)
 
 
         validate_remote(remote, self.spinner)
