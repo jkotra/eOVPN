@@ -74,7 +74,8 @@ class SettingsWindowSignalHandler(SettingsManager):
         
         #TODO: move this to update UI elements
         self.is_nm_supported = NetworkManager().get_version() != None
-        if self.is_nm_supported == None:
+        if not self.is_nm_supported:
+            logger.warning("NM not found. hiding nm_radio btn.")
             self.nm_radio.hide()
 
         self.nm_logo = self.builder.get_object("nm_logo")

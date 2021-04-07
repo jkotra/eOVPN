@@ -92,4 +92,5 @@ to change python dependencies, refer to [flatpak documentation](https://docs.fla
 
 ---
 
-* special thanks to [Gabriele Musco](https://gitlab.gnome.org/GabMus) for design suggestions.
+* [Gabriele Musco](https://gitlab.gnome.org/GabMus) for design suggestions.
+* [Thomas Haller](https://gitlab.freedesktop.org/thaller) for helping me with the process of integrating [NetworkManager](https://gitlab.freedesktop.org/NetworkManager/NetworkManager) with eOVPN.
