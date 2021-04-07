@@ -202,7 +202,7 @@
                             <property name="max-width-chars">0</property>
                             <property name="placeholder-text" translatable="yes">https://example.com/configs.zip</property>
                             <property name="input-purpose">url</property>
-                            <signal name="changed" handler="on_config_source_set" swapped="no"/>
+                            <signal name="changed" handler="on_url_source_set" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -215,7 +215,7 @@
                           <object class="GtkFileChooserButton" id="source_file_chooser">
                             <property name="can-focus">False</property>
                             <property name="title" translatable="yes"/>
-                            <signal name="file-set" handler="on_config_source_set" swapped="no"/>
+                            <signal name="file-set" handler="on_zip_source_set" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -229,7 +229,7 @@
                             <property name="can-focus">False</property>
                             <property name="action">select-folder</property>
                             <property name="title" translatable="yes"/>
-                            <signal name="file-set" handler="on_config_source_set" swapped="no"/>
+                            <signal name="file-set" handler="on_dir_source_set" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>

@@ -52,6 +52,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.url_radio_btn = self.builder.get_object("url_radio_btn")
         self.zip_radio_btn = self.builder.get_object("zip_radio_btn")
         self.dir_radio_btn = self.builder.get_object("dir_radio_btn")
+        self.selected_remote_type = None
 
         self.remote_addr_entry = self.builder.get_object("url_entry")
         self.source_file_chooser = self.builder.get_object("source_file_chooser")
@@ -118,22 +119,38 @@ class SettingsWindowSignalHandler(SettingsManager):
     
 
     def on_url_radio_btn_toggled(self, radio_btn):
-        self.set_setting("remote_type", "url")
+        self.selected_remote_type = 0
         self.source_file_chooser.hide()
         self.source_folder_chooser.hide()
         self.remote_addr_entry.show()
 
+        if self.remote_addr_entry.get_text() != '':
+            self.validate_revealer.set_reveal_child(True)
+        else:
+            self.validate_revealer.set_reveal_child(False)
+
+
     def on_zip_radio_btn_toggled(self, radio_btn):
-        self.set_setting("remote_type", "zip")
+        self.selected_remote_type = 1
         self.remote_addr_entry.hide()
         self.source_folder_chooser.hide()
         self.source_file_chooser.show()
 
+        if self.source_file_chooser.get_filename() is not None:
+            self.validate_revealer.set_reveal_child(True)
+        else:
+            self.validate_revealer.set_reveal_child(False)
+
     def on_dir_radio_btn_toggled(self, radio_btn):
-        self.set_setting("remote_type", "dir")
+        self.selected_remote_type = 2
         self.remote_addr_entry.hide()
         self.source_file_chooser.hide()
         self.source_folder_chooser.show()
+
+        if self.source_folder_chooser.get_current_folder() is not None:
+            self.validate_revealer.set_reveal_child(True)
+        else:
+            self.validate_revealer.set_reveal_child(False)
 
 
     def on_nm_radio_btn_toggled(self, radio_btn):
@@ -167,32 +184,27 @@ class SettingsWindowSignalHandler(SettingsManager):
     def update_settings_ui(self):
 
         """ this function updates ui widgets as per settings.json """
-        
-        self.remote_addr_entry.hide()
-        self.source_file_chooser.hide()
-        self.source_folder_chooser.hide()
 
         remote_type = self.get_setting("remote_type")
 
         if (remote_type == "zip"):
-            self.source_file_chooser.show()
             if self.get_setting("remote") is not None:
                 self.source_file_chooser.set_filename(self.get_setting("remote"))
             self.zip_radio_btn.set_active(True)
+            self.on_zip_radio_btn_toggled(None)
         elif (remote_type == "dir"):
-            self.source_folder_chooser.show()
             if self.get_setting("remote") is not None:
                 self.source_folder_chooser.set_current_folder(self.get_setting("remote"))
-            self.dir_radio_btn.set_active(True)    
+            self.dir_radio_btn.set_active(True)
+            self.on_dir_radio_btn_toggled(None)  
         else:
             if remote_type is None:
                 self.set_setting("remote_type", "url")
-            self.remote_addr_entry.show()
             remote = self.get_setting("remote")
             self.url_radio_btn.set_active(True)
             if remote is not None:
                 self.remote_addr_entry.set_text(remote)
-        
+            self.on_url_radio_btn_toggled(None)
 
         mgr = self.get_setting("manager")
         if mgr == "networkmanager":
@@ -239,9 +251,14 @@ class SettingsWindowSignalHandler(SettingsManager):
 
     def __download_and_load_configs(self):
         self.spinner.start()
-        download_remote_to_destination(self.get_setting("remote"), self.get_setting("remote_savepath"))
-        set_crt_auto()
-        load_configs_to_tree(self.get_widget("config_storage") ,self.get_setting("remote_savepath"))
+
+        try:
+            download_remote_to_destination(self.get_setting("remote"), self.get_setting("remote_savepath"))
+            set_crt_auto()
+            load_configs_to_tree(self.get_widget("config_storage") ,self.get_setting("remote_savepath"))
+        except Exception as e:
+            logger.error(e)
+
         self.spinner.stop()
         self.update_settings_ui()
 
@@ -251,10 +268,13 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         if self.url_radio_btn.get_active():
             url = self.remote_addr_entry.get_text().strip()
+            self.set_setting("remote_type", "url")
         elif self.zip_radio_btn.get_active():
             url = self.source_file_chooser.get_filename()
+            self.set_setting("remote_type", "zip")
         elif self.dir_radio_btn.get_active():
             url = self.source_folder_chooser.get_filename()
+            self.set_setting("remote_type", "dir")
         else:
             return False            
 
@@ -300,7 +320,7 @@ class SettingsWindowSignalHandler(SettingsManager):
         
     
     def reset_yes_btn_clicked_cb(self, dialog):
-        ThreadManager().create(self.reset_settings, (), join=True)
+        self.reset_settings()
         dialog.hide()
         return True
 
@@ -312,9 +332,12 @@ class SettingsWindowSignalHandler(SettingsManager):
         
 
         #backup to /tmp, give user choice to undo
-        shutil.copytree(self.EOVPN_CONFIG_DIR, self.reset_tmp_path, dirs_exist_ok=True)
-        shutil.rmtree(self.EOVPN_CONFIG_DIR)
-        os.mkdir(self.EOVPN_CONFIG_DIR)
+        try:
+            shutil.copytree(self.EOVPN_CONFIG_DIR, self.reset_tmp_path, dirs_exist_ok=True)
+            shutil.rmtree(self.EOVPN_CONFIG_DIR)
+            os.mkdir(self.EOVPN_CONFIG_DIR)
+        except Exception as e:
+            logger.error(e)    
         
 
         default = {"notifications": True, "manager": "networkmanager" if (self.is_nm_supported != None) else "openvpn"}
@@ -329,12 +352,15 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.get_widget("main_paned").set_position(250)
         
         #Setup Tab
-        self.remote_addr_entry.set_text("")
         self.nm_radio.set_active(False)
         self.ovpn_radio.set_active(False)
         self.req_auth.set_active(False)
         self.auth_user.set_text("")
         self.auth_pass.set_text("")
+        
+        self.remote_addr_entry.set_text("")
+        self.source_file_chooser.set_filename("")
+        self.source_folder_chooser.set_filename("")
         self.crt_chooser.set_filename("")
 
         # General Tab
@@ -353,7 +379,7 @@ class SettingsWindowSignalHandler(SettingsManager):
 
     def on_undo_reset_clicked(self, button):
         shutil.copytree(self.reset_tmp_path, self.EOVPN_CONFIG_DIR, dirs_exist_ok=True)
-        ThreadManager().create(self.__download_and_load_configs, (), True)
+        self.__download_and_load_configs()
         self.update_settings_ui()
         self.on_revealer_close_btn_clicked(None) #button is not actually used so it's okay.
         self.undo_reset_btn.hide()
@@ -367,14 +393,12 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.user_pass_box.set_sensitive(toggle.get_active())
 
     def on_settings_validate_btn_clicked(self, btn):
-        
-        remote_type = self.get_setting("remote_type")
 
-        if remote_type == "url":
+        if self.selected_remote_type == 0:
             remote = self.remote_addr_entry.get_text()
-        elif remote_type == "zip":
+        elif self.selected_remote_type == 1:
             remote = self.source_file_chooser.get_filename()
-        elif remote_type == "dir":
+        elif self.selected_remote_type == 2:
             remote = self.source_folder_chooser.get_filename()
 
 
@@ -383,12 +407,30 @@ class SettingsWindowSignalHandler(SettingsManager):
     def save_btn_activate(self, editable):
         self.save_btn.set_sensitive(True)
 
-    def on_config_source_set(self, user_data):
-
-        is_source_set = (self.remote_addr_entry.get_text() != '') or (self.source_file_chooser.get_filename() is not None) or (self.source_folder_chooser.get_filename() is not None)
-        if is_source_set:
+    def on_url_source_set(self, userdata):
+        is_url_source_set = self.remote_addr_entry.get_text() != ''
+        if is_url_source_set and self.url_radio_btn.get_active():
             self.validate_revealer.set_reveal_child(True)
             self.save_btn.set_sensitive(True)
+        else:
+            self.validate_revealer.set_reveal_child(False)
+
+
+    def on_zip_source_set(self, user_data):
+        is_zip_source_set = self.source_file_chooser.get_filename() is not None
+        if is_zip_source_set and self.zip_radio_btn.get_active():
+            self.validate_revealer.set_reveal_child(True)
+            self.save_btn.set_sensitive(True)
+        else:
+            self.validate_revealer.set_reveal_child(False)
+    
+    def on_dir_source_set(self, user_data):
+        is_dir_source_set = self.source_folder_chooser.get_filename() is not None
+        if is_dir_source_set and self.dir_radio_btn.get_active():
+            self.validate_revealer.set_reveal_child(True)
+            self.save_btn.set_sensitive(True)
+        else:
+            self.validate_revealer.set_reveal_child(False)
 
     def on_crt_file_reset_clicked(self, button):
         self.crt_chooser.set_filename("")

@@ -144,8 +144,6 @@ def set_crt_auto():
 
         files = os.listdir(settings.get_setting("remote_savepath"))                       
         crt_found = list(filter(crt.findall, files))
-        print(crt_found)
-
         logger.debug("crt.findall = {}".format(crt_found))
 
         if len(crt_found) >= 1 and settings.get_setting("crt_set_explicit") != True:
