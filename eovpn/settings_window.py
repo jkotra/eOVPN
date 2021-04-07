@@ -156,8 +156,8 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.remote_addr_entry.hide()
         self.source_file_chooser.hide()
         self.source_folder_chooser.show()
-
-        if self.source_folder_chooser.get_current_folder() is not None:
+        
+        if self.source_folder_chooser.get_filename() is not None:
             self.validate_revealer.set_reveal_child(True)
         else:
             self.validate_revealer.set_reveal_child(False)
@@ -375,9 +375,9 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.auth_pass.set_text("")
         
         self.remote_addr_entry.set_text("")
-        self.source_file_chooser.set_filename("")
-        self.source_folder_chooser.set_filename("")
-        self.crt_chooser.set_filename("")
+        self.source_file_chooser.unselect_all()
+        self.source_folder_chooser.unselect_all()
+        self.crt_chooser.unselect_all()
 
         # General Tab
         self.update_on_launch_switch.set_state(False)

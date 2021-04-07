@@ -41,6 +41,15 @@
 
   <releases>
 
+    <release version="0.24" date="2021-04-07">
+      <description>
+        <ul>
+          <li>Improve validation process</li>
+          <li>Bug fixes</li>
+        </ul>
+      </description>
+    </release>  
+
     <release version="0.23" date="2021-04-06">
       <description>
         <ul>
