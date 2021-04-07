@@ -5,6 +5,7 @@ from os import path
 from urllib.parse import urlparse
 import shutil
 import gettext
+import hashlib
 
 from gi.repository import Gtk, Gio, GLib, Gdk
 
@@ -91,8 +92,10 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         self.save_btn = self.builder.get_object("settings_apply_btn")
         self.save_btn.set_sensitive(False)
-
-        self.reset_tmp_path = os.path.join(GLib.get_tmp_dir(), "eovpn_reset_backup")
+        
+        self.settings_hash = None
+        self.__update_settings_hash()
+        self.reset_tmp_path = os.path.join(GLib.get_tmp_dir(), "eovpn_reset_backup_{}".format(self.settings_hash))
 
         self.req_auth = self.builder.get_object("req_auth")
         self.auth_user = self.builder.get_object("auth_user")
@@ -117,6 +120,13 @@ class SettingsWindowSignalHandler(SettingsManager):
 
         self.update_settings_ui()
     
+    def __update_settings_hash(self):
+        md5 = hashlib.md5()
+        file = os.path.join(self.EOVPN_CONFIG_DIR, "settings.json")
+        file_content = open(file, "r").read()
+        md5.update(file_content.encode("utf-8"))
+        self.settings_hash = md5.hexdigest()
+        logger.info(self.settings_hash)
 
     def on_url_radio_btn_toggled(self, radio_btn):
         self.selected_remote_type = 0
@@ -378,8 +388,12 @@ class SettingsWindowSignalHandler(SettingsManager):
         self.update_settings_ui()
 
     def on_undo_reset_clicked(self, button):
-        shutil.copytree(self.reset_tmp_path, self.EOVPN_CONFIG_DIR, dirs_exist_ok=True)
-        self.__download_and_load_configs()
+        try:
+            shutil.copytree(self.reset_tmp_path, self.EOVPN_CONFIG_DIR, dirs_exist_ok=True)
+        except Exception as e:
+            logger.error(e)
+              
+        ThreadManager().create(self.__download_and_load_configs, ())
         self.update_settings_ui()
         self.on_revealer_close_btn_clicked(None) #button is not actually used so it's okay.
         self.undo_reset_btn.hide()
