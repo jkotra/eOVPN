@@ -7,7 +7,7 @@ import shutil
 import gettext
 import hashlib
 
-from gi.repository import Gtk, Gio, GLib, Gdk
+from gi.repository import Gtk, Gio, GLib, Gdk, Secret
 
 from .eovpn_base import Base, SettingsManager, ThreadManager
 from .connection_manager import eOVPNConnectionManager
@@ -239,7 +239,6 @@ class SettingsWindowSignalHandler(SettingsManager):
             if self.get_setting("auth_user") is not None:
                 self.auth_user.set_text(self.get_setting("auth_user"))
 
-            
             if self.get_setting("auth_pass") is not None:
                 self.auth_pass.set_text(self.get_setting("auth_pass"))
 
@@ -313,9 +312,23 @@ class SettingsWindowSignalHandler(SettingsManager):
             self.set_setting("auth_pass", password)
             
             auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
-            f = open(auth_file ,"w+")
-            f.write("{}\n{}".format(username, password))
-            f.close()
+            if self.get_setting("manager") == "networkmanager":
+                if os.path.isfile(auth_file):
+                    os.remove(auth_file)
+                self.set_setting("auth_pass", None)    
+
+                attributes = { "username": username}
+                result = Secret.password_store_sync(self.EOVPN_SECRET_SCHEMA, attributes, Secret.COLLECTION_DEFAULT,
+                                                    "password", password, None)
+                if result:
+                    logger.info("password stored to keyring!")     
+
+            else:
+                self.set_setting("auth_pass", password)
+                f = open(auth_file ,"w+")
+                f.write("{}\n{}".format(username, password))
+                f.close()
+
         
         if initial_remote is None:
             ThreadManager().create(self.__download_and_load_configs, (), True)
@@ -346,6 +359,11 @@ class SettingsWindowSignalHandler(SettingsManager):
 
     def reset_settings(self):
         
+        if self.get_setting("auth_user") is not None:
+            result = Secret.password_clear_sync(self.EOVPN_SECRET_SCHEMA, { "username": self.get_setting("auth_user") }, None)
+            if result:
+                logger.info("password deleted from keyring!")
+
 
         #backup to /tmp, give user choice to undo
         try:
@@ -356,11 +374,9 @@ class SettingsWindowSignalHandler(SettingsManager):
             logger.error(e)    
         
 
-        default = {"notifications": True, "manager": "networkmanager" if (self.is_nm_supported != None) else "openvpn"}
-        default = json.dumps(default, indent=2)
-        f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), "w+")
-        f.write(default)
-        f.close()
+        #default settings
+        self.set_setting("notifications", True)
+        self.set_setting("manager", "networkmanager" if (self.is_nm_supported != None) else "openvpn")
 
         #remote GtkPaned size from Gsetting.
         settings = Gio.Settings.new(self.APP_ID)

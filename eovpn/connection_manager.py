@@ -2,7 +2,7 @@ import re
 import logging
 import gettext
 
-from gi.repository import GLib
+from gi.repository import GLib, Secret
 
 from .eovpn_base import ThreadManager, SettingsManager
 from .openvpn import OpenVPN
@@ -93,10 +93,15 @@ class eOVPNConnectionManager(SettingsManager):
 
          
         elif self.is_nm:     
+            nm_username = self.get_setting("auth_user")
+            nm_password = None
+            if nm_username is not None:
+                nm_password = Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {"username": self.get_setting("auth_user")}, None)
+
             uuid = self.nm_manager.add_connection(openvpn_config.encode('utf-8'),
-                                               self.get_setting('auth_user').encode('utf-8'),
-                                               self.get_setting('auth_pass').encode('utf-8'),
-                                               (ca.encode('utf-8') if ca != None else ca))
+                                               (nm_username.encode('utf-8') if nm_username is not None else None),
+                                               (nm_password.encode('utf-8') if nm_password is not None else None),
+                                               (ca.encode('utf-8') if ca is not None else ca))
             connection_result = self.nm_manager.activate_connection(uuid)
 
             self.uuid = uuid
