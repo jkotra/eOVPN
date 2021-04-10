@@ -187,9 +187,8 @@ class MainWindowSignalHandler(SettingsManager):
                 self.update_status_ip_loc_flag()
 
             self.config_connected = config_connected
-            if not self.standalone_mode:
-                self.set_setting("last_connected", self.config_selected)
-                self.set_setting("last_connected_cursor", self.selected_cursor)
+            self.set_setting("last_connected", config_connected)
+            self.set_setting("last_connected_cursor", self.selected_cursor)
 
             #send notification
             if self.get_setting("notifications") and (self.current_manager != "networkmanager"):
@@ -489,12 +488,12 @@ class MainWindowSignalHandler(SettingsManager):
         if self.is_connected:
             return False
         
-        is_ovpn_running, _ = is_openvpn_running()
+        is_vpn_running = self.conn_mgr.get_connection_status()
 
-        if is_ovpn_running:
+        if is_vpn_running:
             dlg = self.builder.get_object("openvpn_running_dlg")
             dlg.run()
-            return False        
+            return False
         
         log_file = os.path.join(self.EOVPN_CONFIG_DIR, "session.log")
 
@@ -512,7 +511,18 @@ class MainWindowSignalHandler(SettingsManager):
         crt_re = re.compile(r'.crt|cert')
         files = os.listdir(working_dir)                       
         crt_result = list(filter(crt_re.findall, files))
+        crt_filename = None
         if len(crt_result) >= 1:
-            crt = os.path.join(working_dir, crt_result[-1])
+            crt_filename = crt_result[-1]
+            crt = os.path.join(working_dir, crt_filename)
+
+            if self.se_enforcing and (self.get_setting("manager") != "openvpn"):
+                home_dir = GLib.get_home_dir()
+                se_friendly_path = os.path.join(home_dir, ".cert")
+                if not os.path.exists(se_friendly_path):
+                    os.mkdir(se_friendly_path)
+                shutil.copy(crt, se_friendly_path)
+                crt = os.path.join(se_friendly_path, crt_filename)
+                logger.debug("se friendly crt={}".format(crt)) 
 
         self.conn_mgr.connect(config_file, auth_file, crt, log_file, self.on_connect)

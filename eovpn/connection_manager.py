@@ -85,7 +85,8 @@ class eOVPNConnectionManager(SettingsManager):
                     self.__set_statusbar_icon(True, connected=True)
                 else:
                     self.__set_statusbar_icon(False)
- 
+                
+                self.spinner.stop()
                 callback(connection_result, openvpn_config)    
 
 
