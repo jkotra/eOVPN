@@ -7,6 +7,7 @@ import threading
 
 import gi
 gi.require_version('Notify', '0.7')
+gi.require_version('Secret', '1')
 from gi.repository import Gtk, GLib, GdkPixbuf, Notify, Secret
 
 eovpn_standalone = {"is_standalone": False, "path": None}

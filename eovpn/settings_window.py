@@ -171,6 +171,7 @@ class SettingsWindowSignalHandler(SettingsManager):
             else:
                 self.on_mgr_change_revealer.set_reveal_child(True)
                 self.remove_all_vpn_btn.set_visible(True)
+                self.builder.get_object("password_stored_in_keyring_notice_box").show()
     
     def on_openvpn3_radio_btn_toggled(self, radio_btn):
         pass
