@@ -140,7 +140,8 @@ class MainWindowSignalHandler(SettingsManager):
         self.conn_mgr = eOVPNConnectionManager(self.statusbar, self.statusbar_icon, self.spinner)
         self.conn_mgr.get_version(callback=self.on_version)
         self.current_manager = self.get_setting("manager")
-        watch_vpn_status(update_callback=self.on_nm_connent_event)
+        if self.current_manager == "networkmanager":
+            watch_vpn_status(update_callback=self.on_nm_connent_event)
 
         self.update_status_ip_loc_flag()
 

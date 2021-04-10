@@ -7,7 +7,8 @@ import threading
 
 import gi
 gi.require_version('Notify', '0.7')
-from gi.repository import Gtk, GLib, GdkPixbuf, Notify
+gi.require_version('Secret', '1')
+from gi.repository import Gtk, GLib, GdkPixbuf, Notify, Secret
 
 eovpn_standalone = {"is_standalone": False, "path": None}
 _builder_record = {}
@@ -39,6 +40,12 @@ class Base:
         self.TRANSLATORS = {
             "Jagadeesh Kotra": ["Telugu"],
         }
+
+        self.EOVPN_SECRET_SCHEMA = Secret.Schema.new(self.APP_ID, Secret.SchemaFlags.NONE,
+	                                          {
+		                                        "username": Secret.SchemaAttributeType.STRING
+	                                          }
+                                                    )
 
 
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")
