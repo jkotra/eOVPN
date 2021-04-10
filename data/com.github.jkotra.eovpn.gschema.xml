@@ -1,11 +1,56 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-	<schema path="/com/github/jkotra/eovpn/" id="com.github.jkotra.eovpn">
-
-		<key type="i" name="treeview-height">
-			<default>-1</default>
-			<summary>Height of treeview</summary>
-		</key>
-
-	</schema>
+   <schema path="/com/github/jkotra/eovpn/" id="com.github.jkotra.eovpn">
+      <key type="b" name="notifications">
+         <default>true</default>
+      </key>
+      <key type="i" name="treeview-height">
+         <default>250</default>
+      </key>
+      <key type="s" name="manager">
+         <default>"networkmanager"</default>
+      </key>
+      <key type="b" name="req-auth">
+         <default>false</default>
+      </key>
+      <key type="s" name="ca">
+         <default>"null"</default>
+      </key>
+      <key type="b" name="ca-set-explicit">
+         <default>false</default>
+      </key>	  
+      <key type="s" name="remote-type">
+         <default>"null"</default>
+      </key>
+      <key type="s" name="remote">
+         <default>"null"</default>
+      </key>
+      <key type="s" name="remote-savepath">
+         <default>"null"</default>
+      </key>
+      <key type="s" name="auth-user">
+         <default>"null"</default>
+      </key>
+      <key type="s" name="auth-pass">
+         <default>"null"</default>
+      </key>
+      <key type="s" name="nm-active-uuid">
+         <default>"null"</default>
+      </key>
+      <key type="s" name="last-connected">
+         <default>"null"</default>
+      </key>
+      <key type="i" name="last-connected-cursor">
+         <default>0</default>
+      </key>
+      <key type="s" name="current-connected">
+         <default>"null"</default>
+      </key>
+      <key type="b" name="update-on-start">
+         <default>false</default>
+      </key>
+      <key type="b" name="connect-on-launch">
+         <default>false</default>
+      </key>
+   </schema>
 </schemalist>
