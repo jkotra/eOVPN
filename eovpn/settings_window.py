@@ -240,6 +240,12 @@ class SettingsWindowSignalHandler(SettingsManager):
             if self.get_setting("auth_user") is not None:
                 self.auth_user.set_text(self.get_setting("auth_user"))
 
+                if self.get_setting("manager") == "networkmanager":
+                    nm_password = Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {"username": self.get_setting("auth_user")}, None)
+                    if nm_password is not None:
+                        self.auth_pass.set_text(nm_password)
+
+
             if self.get_setting("auth_pass") is not None:
                 self.auth_pass.set_text(self.get_setting("auth_pass"))
 
