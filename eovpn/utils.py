@@ -10,7 +10,7 @@ import requests
 from gi.repository import GLib, Gtk, GLib
 import gettext
 
-from .eovpn_base import ThreadManager, SettingsManager
+from .eovpn_base import ThreadManager
 import re
 import subprocess
 
@@ -136,9 +136,8 @@ def validate_remote(remote, spinner = None):
     ThreadManager().create(remote_validate, None, True)    
 
 
-def set_crt_auto():
+def set_crt_auto(set_setting_obj):
 
-    settings = SettingsManager()
 
     if not settings.get_setting("crt_set_explicit") and settings.get_setting("crt") is None:
 
@@ -147,7 +146,7 @@ def set_crt_auto():
         logger.debug("crt.findall = {}".format(crt_found))
 
         if len(crt_found) >= 1 and settings.get_setting("crt_set_explicit") != True:
-            settings.set_setting("crt", os.path.join(settings.get_setting("remote_savepath"),
+            set_setting_obj("crt", os.path.join(settings.get_setting("remote_savepath"),
                                                  crt_found[-1]))        
 
 def is_selinux_enforcing():

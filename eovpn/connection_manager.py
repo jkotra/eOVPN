@@ -4,15 +4,14 @@ import gettext
 
 from gi.repository import GLib, Secret
 
-from .eovpn_base import ThreadManager, SettingsManager
+from .eovpn_base import Base, ThreadManager
 from .openvpn import OpenVPN
 from .networkmanager.bindings import NetworkManager
 
 
 logger = logging.getLogger(__name__)
 
-class eOVPNConnectionManager(SettingsManager):
-
+class eOVPNConnectionManager(Base):
     # this class deals with connecting and disconneting vpn
 
     def __init__(self, statusbar=None, statusbar_icon=None, spinner=None):

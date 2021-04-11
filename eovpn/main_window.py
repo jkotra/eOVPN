@@ -12,7 +12,7 @@ import gettext
 
 from gi.repository import Gtk, GLib, Gdk, GdkPixbuf, Gio
 
-from .eovpn_base import Base, SettingsManager, ThreadManager, get_standalone
+from .eovpn_base import Base, ThreadManager, get_standalone
 from .settings_window import SettingsWindow
 from .log_window import LogWindow
 from .about_dialog import AboutWindow
@@ -47,7 +47,7 @@ class MainWindow(Base, Gtk.Builder):
 
 
 
-class MainWindowSignalHandler(SettingsManager):
+class MainWindowSignalHandler(Base):
     def __init__(self, builder):
         super(MainWindowSignalHandler, self).__init__()
         

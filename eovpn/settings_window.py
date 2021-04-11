@@ -9,7 +9,7 @@ import hashlib
 
 from gi.repository import Gtk, Gio, GLib, Gdk, Secret
 
-from .eovpn_base import Base, SettingsManager, ThreadManager
+from .eovpn_base import Base, ThreadManager
 from .connection_manager import eOVPNConnectionManager
 
 from .utils import validate_remote
@@ -39,7 +39,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.window.show()    
 
 
-class SettingsWindowSignalHandler(SettingsManager):
+class SettingsWindowSignalHandler(Base):
     def __init__(self, builder):
         super(SettingsWindowSignalHandler, self).__init__()
         self.builder = builder
