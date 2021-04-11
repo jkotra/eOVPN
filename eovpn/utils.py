@@ -136,18 +136,16 @@ def validate_remote(remote, spinner = None):
     ThreadManager().create(remote_validate, None, True)    
 
 
-def set_crt_auto(set_setting_obj):
-
-
-    if not settings.get_setting("crt_set_explicit") and settings.get_setting("crt") is None:
-
-        files = os.listdir(settings.get_setting("remote_savepath"))                       
+def set_ca_automatic(self):
+    if not self.get_setting('ca-set-explicit') and self.get_setting('ca') is None:
+        files = os.listdir(self.get_setting("remote-savepath"))                       
         crt_found = list(filter(crt.findall, files))
-        logger.debug("crt.findall = {}".format(crt_found))
 
-        if len(crt_found) >= 1 and settings.get_setting("crt_set_explicit") != True:
-            set_setting_obj("crt", os.path.join(settings.get_setting("remote_savepath"),
-                                                 crt_found[-1]))        
+        if len(crt_found) >= 1 and self.get_setting("ca-set-explicit") != True:
+            file = crt_found[-1]
+            ca = os.path.join(self.get_setting('remote-savepath'), file)
+            self.set_setting('ca', ca)
+
 
 def is_selinux_enforcing():
     try:

@@ -5,7 +5,6 @@ from os import path
 from urllib.parse import urlparse
 import shutil
 import gettext
-import hashlib
 
 from gi.repository import Gtk, Gio, GLib, Gdk, Secret
 
@@ -16,7 +15,7 @@ from .utils import validate_remote
 from .utils import load_configs_to_tree
 from .utils import download_remote_to_destination
 from .utils import message_dialog
-from .utils import set_crt_auto
+from .utils import set_ca_automatic
 
 from .networkmanager.bindings import NetworkManager
 
@@ -87,27 +86,25 @@ class SettingsWindowSignalHandler(Base):
         self.ovpn_logo.set_from_pixbuf(self.get_image("openvpn.svg", "icons", (48, 48)))
 
         self.on_mgr_change_revealer = self.builder.get_object("on_manager_change_revealer")
-        self.initial_manager = self.get_setting("manager")
+        self.initial_manager = self.get_setting(self.SETTING.MANAGER)
         self.remove_all_vpn_btn = self.builder.get_object("remove_all_vpn_nm_btn")
 
         self.save_btn = self.builder.get_object("settings_apply_btn")
         self.save_btn.set_sensitive(False)
         
-        self.settings_hash = None
-        self.__update_settings_hash()
-        self.reset_tmp_path = os.path.join(GLib.get_tmp_dir(), "eovpn_reset_backup_{}".format(self.settings_hash))
+        self.reset_tmp_path = os.path.join(GLib.get_tmp_dir(), "eovpn_reset_backup")
 
         self.req_auth = self.builder.get_object("req_auth")
         self.auth_user = self.builder.get_object("auth_user")
         self.auth_pass = self.builder.get_object("auth_pass")
         self.user_pass_box = self.builder.get_object("user_pass_box")
 
-        self.crt_chooser = self.builder.get_object("crt_chooser")
+        self.ca_chooser = self.builder.get_object("ca_chooser")
         ca_filter = Gtk.FileFilter()
         ca_filter.add_pattern("*.ca")
         ca_filter.add_pattern("*.pem")
         ca_filter.add_pattern("*.crt")
-        self.crt_chooser.set_filter(ca_filter)
+        self.ca_chooser.set_filter(ca_filter)
 
         self.valid_result_lbl = self.builder.get_object("openvpn_settings_statusbar")
 
@@ -119,14 +116,6 @@ class SettingsWindowSignalHandler(Base):
         self.are_you_sure = self.builder.get_object("settings_reset_ask_sure")
 
         self.update_settings_ui()
-    
-    def __update_settings_hash(self):
-        md5 = hashlib.md5()
-        file = os.path.join(self.EOVPN_CONFIG_DIR, "settings.json")
-        file_content = open(file, "r").read()
-        md5.update(file_content.encode("utf-8"))
-        self.settings_hash = md5.hexdigest()
-        logger.info(self.settings_hash)
 
     def on_url_radio_btn_toggled(self, radio_btn):
         self.selected_remote_type = 0
@@ -165,7 +154,7 @@ class SettingsWindowSignalHandler(Base):
 
     def on_nm_radio_btn_toggled(self, radio_btn):
         if radio_btn.get_active():
-            self.set_setting("manager", "networkmanager")
+            self.set_setting(self.SETTING.MANAGER, "networkmanager")
             if self.initial_manager == "networkmanager":
                 self.on_mgr_change_revealer.set_reveal_child(False)
             else:
@@ -178,7 +167,7 @@ class SettingsWindowSignalHandler(Base):
 
     def on_openvpn2xcli_radio_btn_toggled(self, radio_btn):
         if radio_btn.get_active():
-            self.set_setting("manager", "openvpn")
+            self.set_setting(self.SETTING.MANAGER, "openvpn")
             self.remove_all_vpn_btn.set_visible(False)
             if self.initial_manager == "openvpn":
                 self.on_mgr_change_revealer.set_reveal_child(False)
@@ -196,28 +185,28 @@ class SettingsWindowSignalHandler(Base):
 
         """ this function updates ui widgets as per settings.json """
 
-        remote_type = self.get_setting("remote_type")
+        remote_type = self.get_setting(self.SETTING.REMOTE_TYPE)
 
         if (remote_type == "zip"):
-            if self.get_setting("remote") is not None:
-                self.source_file_chooser.set_filename(self.get_setting("remote"))
+            if self.get_setting(self.SETTING.REMOTE) is not None:
+                self.source_file_chooser.set_filename(self.get_setting(self.SETTING.REMOTE))
             self.zip_radio_btn.set_active(True)
             self.on_zip_radio_btn_toggled(None)
         elif (remote_type == "dir"):
-            if self.get_setting("remote") is not None:
-                self.source_folder_chooser.set_filename(self.get_setting("remote"))
+            if self.get_setting(self.SETTING.REMOTE) is not None:
+                self.source_folder_chooser.set_filename(self.get_setting(self.SETTING.REMOTE))
             self.dir_radio_btn.set_active(True)
             self.on_dir_radio_btn_toggled(None)  
         else:
             if remote_type is None:
-                self.set_setting("remote_type", "url")
-            remote = self.get_setting("remote")
+                self.set_setting(self.SETTING.REMOTE_TYPE, "url")
+            remote = self.get_setting(self.SETTING.REMOTE)
             self.url_radio_btn.set_active(True)
             if remote is not None:
                 self.remote_addr_entry.set_text(remote)
             self.on_url_radio_btn_toggled(None)
 
-        mgr = self.get_setting("manager")
+        mgr = self.get_setting(self.SETTING.MANAGER)
         if mgr == "networkmanager":
             self.nm_radio.set_active(True)
 
@@ -228,36 +217,36 @@ class SettingsWindowSignalHandler(Base):
             self.ovpn_radio.set_active(False)
 
 
-        if self.get_setting("update_on_start"):
+        if self.get_setting(self.SETTING.UPDATE_ON_START):
             self.update_on_launch_switch.set_state(True)
 
-        if self.get_setting("notifications"):
-            self.notification_switch.set_state(True)    
+        if self.get_setting(self.SETTING.NOTIFICATIONS):
+            self.notification_switch.set_state(True)
         
-        if self.get_setting("req_auth"):
+        if self.get_setting(self.SETTING.REQ_AUTH):
             self.req_auth.set_active(True)
 
-            if self.get_setting("auth_user") is not None:
-                self.auth_user.set_text(self.get_setting("auth_user"))
+            if self.get_setting(self.SETTING.AUTH_USER) is not None:
+                self.auth_user.set_text(self.get_setting(self.SETTING.AUTH_USER))
 
-                if self.get_setting("manager") == "networkmanager":
-                    nm_password = Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {"username": self.get_setting("auth_user")}, None)
+                if self.get_setting(self.SETTING.MANAGER) == "networkmanager":
+                    nm_password = Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {"username": self.get_setting(self.SETTING.AUTH_USER)}, None)
                     if nm_password is not None:
                         self.auth_pass.set_text(nm_password)
 
 
-            if self.get_setting("auth_pass") is not None:
-                self.auth_pass.set_text(self.get_setting("auth_pass"))
+            if self.get_setting(self.SETTING.AUTH_PASS) is not None:
+                self.auth_pass.set_text(self.get_setting(self.SETTING.AUTH_PASS))
 
         else:
             self.req_auth.set_active(False)
             self.user_pass_box.set_sensitive(False)
         
-        crt_path = self.get_setting("crt")
-        if crt_path is not None:
-            self.crt_chooser.set_filename(crt_path)
+        ca_path = self.get_setting(self.SETTING.CA)
+        if ca_path is not None:
+            self.ca_chooser.set_filename(ca_path)
 
-        if self.get_setting("connect_on_launch"):
+        if self.get_setting(self.SETTING.CONNECT_ON_LAUNCH):
             self.connect_on_launch_switch.set_state(True)
 
 
@@ -269,9 +258,9 @@ class SettingsWindowSignalHandler(Base):
         self.spinner.start()
 
         try:
-            download_remote_to_destination(self.get_setting("remote"), self.get_setting("remote_savepath"))
-            set_crt_auto()
-            load_configs_to_tree(self.get_widget("config_storage") ,self.get_setting("remote_savepath"))
+            download_remote_to_destination(self.get_setting(self.SETTING.REMOTE), self.get_setting(self.SETTING.REMOTE_SAVEPATH))
+            set_ca_automatic(self)
+            load_configs_to_tree(self.get_widget("config_storage") ,self.get_setting(self.SETTING.REMOTE_SAVEPATH))
         except Exception as e:
             logger.error(e)
 
@@ -280,17 +269,17 @@ class SettingsWindowSignalHandler(Base):
 
     def on_settings_apply_btn_clicked(self, buttton):
 
-        initial_remote = self.get_setting("remote")
+        initial_remote = self.get_setting(self.SETTING.REMOTE)
 
         if self.url_radio_btn.get_active():
             url = self.remote_addr_entry.get_text().strip()
-            self.set_setting("remote_type", "url")
+            self.set_setting(self.SETTING.REMOTE_TYPE, "url")
         elif self.zip_radio_btn.get_active():
             url = self.source_file_chooser.get_filename()
-            self.set_setting("remote_type", "zip")
+            self.set_setting(self.SETTING.REMOTE_TYPE, "zip")
         elif self.dir_radio_btn.get_active():
             url = self.source_folder_chooser.get_filename()
-            self.set_setting("remote_type", "dir")
+            self.set_setting(self.SETTING.REMOTE_TYPE, "dir")
 
             #make sure there is no dir inside
             all_files = [f for f in os.listdir(url)]
@@ -301,28 +290,28 @@ class SettingsWindowSignalHandler(Base):
             return False            
 
         if (url != '') or (url is not None):
-            self.set_setting("remote", url)
+            self.set_setting(self.SETTING.REMOTE, url)
             folder_name = urlparse(url).netloc
             if folder_name == '':
                 folder_name = "configs"
-            self.set_setting("remote_savepath", path.join(self.EOVPN_CONFIG_DIR, folder_name)) 
+            self.set_setting(self.SETTING.REMOTE_SAVEPATH, path.join(self.EOVPN_CONFIG_DIR, folder_name)) 
         else:
-            self.set_setting("remote", None)
+            self.set_setting(self.SETTING.REMOTE, None)
 
         if self.req_auth.get_active():
-            self.set_setting("req_auth", True)
+            self.set_setting(self.SETTING.REQ_AUTH, True)
 
             username = self.auth_user.get_text()
-            self.set_setting("auth_user", username)
+            self.set_setting(self.SETTING.AUTH_USER, username)
 
             password = self.auth_pass.get_text()
-            self.set_setting("auth_pass", password)
+            self.set_setting(self.SETTING.AUTH_PASS, password)
             
             auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
-            if self.get_setting("manager") == "networkmanager":
+            if self.get_setting(self.SETTING.MANAGER) == "networkmanager":
                 if os.path.isfile(auth_file):
                     os.remove(auth_file)
-                self.set_setting("auth_pass", None)    
+                self.set_setting(self.SETTING.AUTH_PASS, None)    
 
                 attributes = { "username": username}
                 result = Secret.password_store_sync(self.EOVPN_SECRET_SCHEMA, attributes, Secret.COLLECTION_DEFAULT,
@@ -331,7 +320,7 @@ class SettingsWindowSignalHandler(Base):
                     logger.info("password stored to keyring!")     
 
             else:
-                self.set_setting("auth_pass", password)
+                self.set_setting(self.SETTING.AUTH_PASS, password)
                 f = open(auth_file ,"w+")
                 f.write("{}\n{}".format(username, password))
                 f.close()
@@ -341,7 +330,7 @@ class SettingsWindowSignalHandler(Base):
             ThreadManager().create(self.__download_and_load_configs, (), True)
         
         if initial_remote is not None:
-            set_crt_auto()
+            set_ca_automatic(self)
             
         #show settings saved notfication
         self.inapp_notification_label.set_text(gettext.gettext("Settings Saved."))
@@ -366,8 +355,8 @@ class SettingsWindowSignalHandler(Base):
 
     def reset_settings(self):
         
-        if self.get_setting("auth_user") is not None:
-            result = Secret.password_clear_sync(self.EOVPN_SECRET_SCHEMA, { "username": self.get_setting("auth_user") }, None)
+        if self.get_setting(self.SETTING.AUTH_USER) is not None:
+            result = Secret.password_clear_sync(self.EOVPN_SECRET_SCHEMA, { "username": self.get_setting(self.SETTING.AUTH_USER) }, None)
             if result:
                 logger.info("password deleted from keyring!")
 
@@ -380,10 +369,12 @@ class SettingsWindowSignalHandler(Base):
         except Exception as e:
             logger.error(e)    
         
+        #reset settings
+        self.reset_all_settings()
 
         #default settings
-        self.set_setting("notifications", True)
-        self.set_setting("manager", "networkmanager" if (self.is_nm_supported != None) else "openvpn")
+        self.set_setting(self.SETTING.NOTIFICATIONS, True)
+        self.set_setting(self.SETTING.MANAGER, "networkmanager" if (self.is_nm_supported != None) else "openvpn")
 
         #remote GtkPaned size from Gsetting.
         settings = Gio.Settings.new(self.APP_ID)
@@ -400,7 +391,7 @@ class SettingsWindowSignalHandler(Base):
         self.remote_addr_entry.set_text("")
         self.source_file_chooser.unselect_all()
         self.source_folder_chooser.unselect_all()
-        self.crt_chooser.unselect_all()
+        self.ca_chooser.unselect_all()
 
         # General Tab
         self.update_on_launch_switch.set_state(False)
@@ -427,12 +418,12 @@ class SettingsWindowSignalHandler(Base):
         self.on_revealer_close_btn_clicked(None) #button is not actually used so it's okay.
         self.undo_reset_btn.hide()
 
-    def on_crt_chooser_file_set(self, chooser):
-        self.set_setting("crt", chooser.get_filename())
-        self.set_setting("crt_set_explicit", True)
+    def on_ca_chooser_file_set(self, chooser):
+        self.set_setting(self.SETTING.CA, chooser.get_filename())
+        self.set_setting(self.SETTING.CA_SET_EXPLICIT, True)
 
     def on_req_auth_toggled(self, toggle):
-        self.set_setting("req_auth", toggle.get_active())
+        self.set_setting(self.SETTING.REQ_AUTH, toggle.get_active())
         self.user_pass_box.set_sensitive(toggle.get_active())
 
     def on_settings_validate_btn_clicked(self, btn):
@@ -480,20 +471,20 @@ class SettingsWindowSignalHandler(Base):
         else:
             self.validate_revealer.set_reveal_child(False)
 
-    def on_crt_file_reset_clicked(self, button):
-        self.crt_chooser.set_filename("")
-        self.set_setting("crt", None)
-        self.set_setting("crt_set_explicit", None)
+    def on_ca_file_reset_clicked(self, button):
+        self.ca_chooser.set_filename("")
+        self.set_setting(self.SETTING.CA, None)
+        self.set_setting(self.SETTING.CA_SET_EXPLICIT, None)
     
     def on_show_password_btn_toggled(self, toggle):
         self.auth_pass.set_visibility(toggle.get_active())
 
     # General Tab
     def on_notification_switch_state_set(self, switch, state):
-        self.set_setting("notifications", state)
+        self.set_setting(self.SETTING.NOTIFICATIONS, state)
 
     def on_update_on_launch_switch_state_set(self, switch, state):
-        self.set_setting("update_on_start", state)
+        self.set_setting(self.SETTING.UPDATE_ON_START, state)
 
     def on_connect_on_launch_switch_state_set(self, switch, state):
-        self.set_setting("connect_on_launch", state)     
+        self.set_setting(self.SETTING.CONNECT_ON_LAUNCH, state)     

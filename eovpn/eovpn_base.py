@@ -30,7 +30,7 @@ class Settings:
     LAST_CONNECTED_CURSOR = "last-connected-cursor"
     UPDATE_ON_START = "update-on-start"
     CONNECT_ON_LAUNCH = "connect-on-launch"
-    NOTIFICATIONS = "notfications"
+    NOTIFICATIONS = "notifications"
     TREEVIEW_HEIGHT = "treeview-height"
     MANAGER = "manager"
     REQ_AUTH = "req-auth"
@@ -42,6 +42,9 @@ class Settings:
     AUTH_USER = "auth-user"
     AUTH_PASS = "auth-pass"
     NM_ACTIVE_UUID = "nm-active-uuid"
+
+    all_settings = ["current-connected", "last-connected", "last-connected-cursor", "update-on-start", "connect-on-launch",
+    "notifications", "treeview-height", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid"]
 
 class Base:
 
@@ -139,6 +142,7 @@ class Base:
         else:
             pass
 
+        logger.debug("{} {}".format(key, v))
         return v            
 
     def set_setting(self, key, value):
@@ -160,6 +164,11 @@ class Base:
         logger.debug("{} {}".format(key, g_value))
         if g_value is not None:
             self.__settings.set_value(key, g_value)
+
+    def reset_all_settings(self):
+        for key in self.SETTING.all_settings:
+            self.__settings.reset(key)
+
 
 class ThreadManager:
     
