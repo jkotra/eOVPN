@@ -137,14 +137,14 @@ def validate_remote(remote, spinner = None):
 
 
 def set_ca_automatic(self):
-    if not self.get_setting('ca-set-explicit') and self.get_setting('ca') is None:
-        files = os.listdir(self.get_setting("remote-savepath"))                       
+    if not self.get_setting(self.SETTING.CA_SET_EXPLICIT) and self.get_setting(self.SETTING.CA) is None:
+        files = os.listdir(self.get_setting(self.SETTING.REMOTE_SAVEPATH))                       
         crt_found = list(filter(crt.findall, files))
 
-        if len(crt_found) >= 1 and self.get_setting("ca-set-explicit") != True:
+        if len(crt_found) >= 1:
             file = crt_found[-1]
-            ca = os.path.join(self.get_setting('remote-savepath'), file)
-            self.set_setting('ca', ca)
+            ca = os.path.join(self.get_setting(self.SETTING.REMOTE_SAVEPATH), file)
+            self.set_setting(self.SETTING.CA, ca)
 
 
 def is_selinux_enforcing():

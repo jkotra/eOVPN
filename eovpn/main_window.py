@@ -75,7 +75,6 @@ class MainWindowSignalHandler(Base):
         self.proto_label = self.builder.get_object("openvpn_proto")
 
         self.config_selected = None
-        self.config_connected = None
         self.selected_cursor = None
         self.proto_override = None #consider true if it's either UDP or TCP
         self.is_connected = False
@@ -88,8 +87,7 @@ class MainWindowSignalHandler(Base):
         logger.debug("SELinux_Enforcing={}".format(self.se_enforcing))
 
         #load_settings
-        self.settings = Gio.Settings.new(self.APP_ID)
-        paned_height = self.settings.get_int("treeview-height")
+        paned_height = self.get_setting(self.SETTING.TREEVIEW_HEIGHT)
         
         if paned_height != -1:
             self.paned.set_position(paned_height)
@@ -185,9 +183,10 @@ class MainWindowSignalHandler(Base):
             #update_status_ip_loc_flag() is called inside watch_vpn_status(). so, dont update here.
             if self.current_manager != "networkmanager":      
                 self.update_status_ip_loc_flag()
-
-            self.config_connected = config_connected
-            self.set_setting(self.SETTING.LAST_CONNECTED, config_connected)
+            
+            connected_filename = os.path.split(config_connected)[-1]
+            self.set_setting(self.SETTING.CURRENT_CONNECTED, connected_filename)
+            self.set_setting(self.SETTING.LAST_CONNECTED, connected_filename)
             self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.selected_cursor)
 
             #send notification
@@ -203,7 +202,7 @@ class MainWindowSignalHandler(Base):
     def on_disconnect(self, result):
         logger.debug("result = {}".format(result))
         if result:
-            self.config_connected = None
+            self.set_setting(self.SETTING.CURRENT_CONNECTED, None)
             if self.get_setting(self.SETTING.NOTIFICATIONS) and (self.current_manager != "networkmanager"):
                 self.send_notification(gettext.gettext("Disconnected"),
                                        gettext.gettext("Disconnected from {}").format(self.get_setting(self.SETTING.LAST_CONNECTED)),
@@ -232,7 +231,8 @@ class MainWindowSignalHandler(Base):
 
     def on_nm_connent_event(self, connection_result=None, error=None):
         if connection_result is True:
-            text = gettext.gettext("Connected to {}").format(self.config_connected.split("/")[-1])
+            filename = self.get_setting(self.SETTING.CURRENT_CONNECTED)
+            text = gettext.gettext("Connected to {}").format(filename)
             self.statusbar.push(1, text)
             self.statusbar_icon.set_from_icon_name("network-vpn-symbolic", 1)
             if self.get_setting(self.SETTING.NOTIFICATIONS):
@@ -259,7 +259,7 @@ class MainWindowSignalHandler(Base):
 
     def on_main_paned_position_notify(self, paned, position):
         paned_height = self.paned.get_position()
-        self.settings.set_int("treeview-height", paned_height)
+        self.set_setting(self.SETTING.TREEVIEW_HEIGHT, paned_height)
         return True
 
     def on_menu_exit_clicked(self, window):
@@ -370,10 +370,10 @@ class MainWindowSignalHandler(Base):
         LocationDetails().set(self.connection_details_widgets, self.conn_mgr.get_connection_status())
     
         if self.conn_mgr.get_connection_status():
-            if self.config_connected != None:
+            if self.get_setting(self.SETTING.CURRENT_CONNECTED) != None:
                 self.conn_mgr.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
                                                   self.get_setting(self.SETTING.REMOTE_SAVEPATH),
-                                                  self.config_connected), self.proto_label)
+                                                  self.get_setting(self.SETTING.CURRENT_CONNECTED)), self.proto_label)
             if self.standalone_mode:
                 self.conn_mgr.openvpn_config_set_protocol(self.standalone_path, self.proto_label)
             self.proto_chooser_box.set_sensitive(False)
@@ -437,6 +437,7 @@ class MainWindowSignalHandler(Base):
             return True
         
         is_vpn_running = self.conn_mgr.get_connection_status()
+        logger.debug("is_vpn_running={}".format(is_vpn_running))
 
         if is_vpn_running:
             dlg = self.builder.get_object("openvpn_running_dlg")
@@ -489,6 +490,7 @@ class MainWindowSignalHandler(Base):
             return False
         
         is_vpn_running = self.conn_mgr.get_connection_status()
+        logger.debug("is_vpn_running={}".format(is_vpn_running))
 
         if is_vpn_running:
             dlg = self.builder.get_object("openvpn_running_dlg")

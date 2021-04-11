@@ -414,6 +414,7 @@ class SettingsWindowSignalHandler(Base):
             logger.error(e)
 
         ThreadManager().create(self.__download_and_load_configs, ())
+        self.undo_reset_settings()
         self.update_settings_ui()
         self.on_revealer_close_btn_clicked(None) #button is not actually used so it's okay.
         self.undo_reset_btn.hide()

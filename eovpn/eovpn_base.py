@@ -14,6 +14,8 @@ eovpn_standalone = {"is_standalone": False, "path": None}
 _builder_record = {}
 _widget_record = {}
 
+_settings_backup = {}
+
 logger = logging.getLogger(__name__)
 
 def set_standalone(path):
@@ -166,9 +168,22 @@ class Base:
             self.__settings.set_value(key, g_value)
 
     def reset_all_settings(self):
+        _settings_backup = {} #empty it!
+        
         for key in self.SETTING.all_settings:
-            self.__settings.reset(key)
 
+            #backup first
+            v = self.__settings.get_value(key)
+            _settings_backup[key] = v
+
+            #reset
+            self.__settings.reset(key)
+        self.__settings.sync()    
+    
+    def undo_reset_settings(self):
+        for k,v in _settings_backup.items():
+            self.__settings.set_value(k,v) 
+        self.__settings.sync()    
 
 class ThreadManager:
     
