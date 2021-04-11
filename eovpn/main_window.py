@@ -151,6 +151,8 @@ class MainWindowSignalHandler(Base):
             self.standalone_mode = True
             self.standalone_path = ovpn_config
             GLib.idle_add(self.on_connect_btn_clicked_standalone, self.connect_btn)
+        else:
+            self.connect_btn.connect("clicked", self.on_connect_btn_clicked)    
 
 
         if self.get_setting(self.SETTING.REMOTE_SAVEPATH) != None:
@@ -167,11 +169,11 @@ class MainWindowSignalHandler(Base):
                 logger.debug("restored cursor = {} | config_selected = {}".format(i, self.config_selected))
                 self.menu_view_config.show()
 
-                if self.get_setting(self.SETTING.CONNECT_ON_LAUNCH) and is_standalone == False:
+                if self.get_setting(self.SETTING.CONNECT_ON_LAUNCH):
                     if (self.is_connected is False) and (self.no_network is False):
                         self.on_connect_btn_clicked(self.connect_btn)
         
-        if self.get_setting(self.SETTING.UPDATE_ON_START) and is_standalone == False:
+        if self.get_setting(self.SETTING.UPDATE_ON_START):
             self.on_update_btn_clicked(self.update_btn)
 
 
@@ -196,8 +198,12 @@ class MainWindowSignalHandler(Base):
                                         True)            
 
             logger.debug("saved to config: cursor={} config={}".format(self.config_selected, self.selected_cursor))
+            self.is_connected = True
+            return True
         else:
             self.statusbar.push(1, gettext.gettext("Failed to connect!"))
+            self.is_connected = False
+            return False
 
     def on_disconnect(self, result):
         logger.debug("result = {}".format(result))
@@ -231,6 +237,7 @@ class MainWindowSignalHandler(Base):
 
     def on_nm_connent_event(self, connection_result=None, error=None):
         if connection_result is True:
+            self.is_connected = True
             filename = self.get_setting(self.SETTING.CURRENT_CONNECTED)
             text = gettext.gettext("Connected to {}").format(filename)
             self.statusbar.push(1, text)
@@ -240,10 +247,12 @@ class MainWindowSignalHandler(Base):
                                        gettext.gettext("Connected to {}").format(self.get_setting(self.SETTING.LAST_CONNECTED)),
                                         True)
         elif connection_result is False:
-                if self.get_setting(self.SETTING.NOTIFICATIONS):
-                    self.send_notification(gettext.gettext("Disconnected"),
-                                           gettext.gettext("Disconnected from {}").format(self.get_setting(self.SETTING.LAST_CONNECTED)),
-                                           False)
+            self.is_connected = False
+            if self.get_setting(self.SETTING.NOTIFICATIONS):
+
+                self.send_notification(gettext.gettext("Disconnected"),
+                                        gettext.gettext("Disconnected from {}").format(self.get_setting(self.SETTING.LAST_CONNECTED)),
+                                        False)
                 
                 #delete failed connection
                 if error is not None:
@@ -487,7 +496,8 @@ class MainWindowSignalHandler(Base):
         working_dir = os.path.dirname(self.standalone_path)
 
         if self.is_connected:
-            return False
+            self.conn_mgr.disconnect(self.on_disconnect)
+            return True
         
         is_vpn_running = self.conn_mgr.get_connection_status()
         logger.debug("is_vpn_running={}".format(is_vpn_running))
