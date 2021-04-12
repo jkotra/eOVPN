@@ -77,7 +77,7 @@ class MainWindowSignalHandler(Base):
         self.config_selected = None
         self.selected_cursor = None
         self.proto_override = None #consider true if it's either UDP or TCP
-        self.is_connected = False
+        self.is_connected = None
         self.no_network = False
 
         self.standalone_mode = False
@@ -134,15 +134,6 @@ class MainWindowSignalHandler(Base):
         if (self.get_setting(self.SETTING.MANAGER) == "networkmanager") and (is_nm_supported is None):
             self.set_setting(self.SETTING.MANAGER, "openvpn")
 
-
-        self.conn_mgr = eOVPNConnectionManager(self.statusbar, self.statusbar_icon, self.spinner)
-        self.conn_mgr.get_version(callback=self.on_version)
-        self.current_manager = self.get_setting(self.SETTING.MANAGER)
-        if self.current_manager == "networkmanager":
-            watch_vpn_status(update_callback=self.on_nm_connent_event)
-
-        self.update_status_ip_loc_flag()
-
         is_standalone, ovpn_config = get_standalone()
         if is_standalone:
             logger.info("Standalone Mode!")
@@ -150,10 +141,17 @@ class MainWindowSignalHandler(Base):
             self.connect_btn.connect("clicked", self.on_connect_btn_clicked_standalone)
             self.standalone_mode = True
             self.standalone_path = ovpn_config
-            GLib.idle_add(self.on_connect_btn_clicked_standalone, self.connect_btn)
         else:
             self.connect_btn.connect("clicked", self.on_connect_btn_clicked)    
 
+
+        self.conn_mgr = eOVPNConnectionManager(self.statusbar, self.statusbar_icon, self.spinner)
+        self.conn_mgr.get_version(callback=self.on_version)
+        self.current_manager = self.get_setting(self.SETTING.MANAGER)
+        if self.current_manager == "networkmanager":
+            watch_vpn_status(update_callback=self.on_nm_connent_event)     
+
+        self.update_status_ip_loc_flag()
 
         if self.get_setting(self.SETTING.REMOTE_SAVEPATH) != None:
             load_configs_to_tree(self.config_storage, self.get_setting(self.SETTING.REMOTE_SAVEPATH))
@@ -175,6 +173,10 @@ class MainWindowSignalHandler(Base):
         
         if self.get_setting(self.SETTING.UPDATE_ON_START):
             self.on_update_btn_clicked(self.update_btn)
+
+        if self.standalone_mode and not self.is_connected:
+            GLib.idle_add(self.on_connect_btn_clicked_standalone, self.connect_btn)
+
 
 
     #callbacks
@@ -379,14 +381,17 @@ class MainWindowSignalHandler(Base):
         LocationDetails().set(self.connection_details_widgets, self.conn_mgr.get_connection_status())
     
         if self.conn_mgr.get_connection_status():
+            self.is_connected = True
+
+            if self.standalone_mode:
+                self.conn_mgr.openvpn_config_set_protocol(self.standalone_path, self.proto_label)
+                self.proto_chooser_box.set_sensitive(False)
+                return
+
             if self.get_setting(self.SETTING.CURRENT_CONNECTED) != None:
                 self.conn_mgr.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
                                                   self.get_setting(self.SETTING.REMOTE_SAVEPATH),
                                                   self.get_setting(self.SETTING.CURRENT_CONNECTED)), self.proto_label)
-            if self.standalone_mode:
-                self.conn_mgr.openvpn_config_set_protocol(self.standalone_path, self.proto_label)
-            self.proto_chooser_box.set_sensitive(False)
-            self.is_connected = True
 
         else:
             self.proto_label.hide()
