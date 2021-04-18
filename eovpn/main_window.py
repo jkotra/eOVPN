@@ -147,8 +147,8 @@ class MainWindowSignalHandler(Base):
 
         self.conn_mgr = eOVPNConnectionManager(self.statusbar, self.statusbar_icon, self.spinner)
         self.conn_mgr.get_version(callback=self.on_version)
-        self.current_manager = self.get_setting(self.SETTING.MANAGER)
-        if self.current_manager == "networkmanager":
+        current_manager = self.get_setting(self.SETTING.MANAGER)
+        if current_manager == "networkmanager":
             watch_vpn_status(update_callback=self.on_nm_connent_event)     
 
         self.update_status_ip_loc_flag()
@@ -185,7 +185,7 @@ class MainWindowSignalHandler(Base):
         if result:
 
             #update_status_ip_loc_flag() is called inside watch_vpn_status(). so, dont update here.
-            if self.current_manager != "networkmanager":      
+            if self.get_setting(self.SETTING.MANAGER) != "networkmanager":      
                 self.update_status_ip_loc_flag()
             
             connected_filename = os.path.split(config_connected)[-1]
@@ -194,7 +194,7 @@ class MainWindowSignalHandler(Base):
             self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.selected_cursor)
 
             #send notification
-            if self.get_setting(self.SETTING.NOTIFICATIONS) and (self.current_manager != "networkmanager"):
+            if self.get_setting(self.SETTING.NOTIFICATIONS) and (self.get_setting(self.SETTING.MANAGER) != "networkmanager"):
                 self.send_notification(gettext.gettext("Connected"),
                                        gettext.gettext("Connected to {}").format(self.get_setting(self.SETTING.LAST_CONNECTED)),
                                         True)            
@@ -211,12 +211,12 @@ class MainWindowSignalHandler(Base):
         logger.debug("result = {}".format(result))
         if result:
             self.set_setting(self.SETTING.CURRENT_CONNECTED, None)
-            if self.get_setting(self.SETTING.NOTIFICATIONS) and (self.current_manager != "networkmanager"):
+            if self.get_setting(self.SETTING.NOTIFICATIONS) and (self.get_setting(self.SETTING.MANAGER) != "networkmanager"):
                 self.send_notification(gettext.gettext("Disconnected"),
                                        gettext.gettext("Disconnected from {}").format(self.get_setting(self.SETTING.LAST_CONNECTED)),
                                         False)
 
-            if self.current_manager != "networkmanager":      
+            if self.get_setting(self.SETTING.MANAGER) != "networkmanager":      
                 self.update_status_ip_loc_flag()
 
     def on_version(self, result):
@@ -227,6 +227,8 @@ class MainWindowSignalHandler(Base):
 
         if result is False:
             self.connect_btn.set_sensitive(False)
+            if self.get_setting(self.SETTING.MANAGER) == "openvpn":
+                self.statusbar.push(1, "OpenVPN not found!")
             if self.get_setting(self.SETTING.MANAGER) == "networkmanager":
                 self.set_setting(self.SETTING.MANAGER, "openvpn")
                 self.conn_mgr.get_version(callable=self.on_version)

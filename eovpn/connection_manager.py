@@ -54,7 +54,8 @@ class eOVPNConnectionManager(Base):
     
     def __push_to_statusbar(self, message):
         if self.statusbar is not None:
-            self.statusbar.push(1, message)
+            if type(message) is str:
+                self.statusbar.push(1, message)
 
     def connect(self, openvpn_config, auth_file=None, ca=None, logfile=None, callback=None) -> bool:
 
@@ -186,7 +187,7 @@ class eOVPNConnectionManager(Base):
             pass
 
         if callable(callback):
-            callback((version != None) or (version != False))
+            callback(version)
             self.__push_to_statusbar(version)
         
         if self.is_openvpn:

@@ -249,6 +249,8 @@ class SettingsWindowSignalHandler(Base):
         if self.get_setting(self.SETTING.CONNECT_ON_LAUNCH):
             self.connect_on_launch_switch.set_state(True)
 
+        self.on_mgr_change_revealer.set_reveal_child(False)    
+
 
     def on_settings_window_delete_event(self, window, event) -> bool:
         window.hide()
@@ -376,15 +378,10 @@ class SettingsWindowSignalHandler(Base):
         self.set_setting(self.SETTING.NOTIFICATIONS, True)
         self.set_setting(self.SETTING.MANAGER, "networkmanager" if (self.is_nm_supported != None) else "openvpn")
 
-        #remote GtkPaned size from Gsetting.
-        settings = Gio.Settings.new(self.APP_ID)
-        settings.reset("treeview-height")
+        self.set_setting("treeview-height", 250)
         self.get_widget("main_paned").set_position(250)
         
         #Setup Tab
-        self.nm_radio.set_active(False)
-        self.ovpn_radio.set_active(False)
-        self.req_auth.set_active(False)
         self.auth_user.set_text("")
         self.auth_pass.set_text("")
         
