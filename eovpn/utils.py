@@ -10,7 +10,7 @@ import requests
 from gi.repository import GLib, Gtk, GLib
 import gettext
 
-from .eovpn_base import ThreadManager, SettingsManager
+from .eovpn_base import ThreadManager
 import re
 import subprocess
 
@@ -136,19 +136,16 @@ def validate_remote(remote, spinner = None):
     ThreadManager().create(remote_validate, None, True)    
 
 
-def set_crt_auto():
-
-    settings = SettingsManager()
-
-    if not settings.get_setting("crt_set_explicit") and settings.get_setting("crt") is None:
-
-        files = os.listdir(settings.get_setting("remote_savepath"))                       
+def set_ca_automatic(self):
+    if not self.get_setting(self.SETTING.CA_SET_EXPLICIT) and self.get_setting(self.SETTING.CA) is None:
+        files = os.listdir(self.get_setting(self.SETTING.REMOTE_SAVEPATH))                       
         crt_found = list(filter(crt.findall, files))
-        logger.debug("crt.findall = {}".format(crt_found))
 
-        if len(crt_found) >= 1 and settings.get_setting("crt_set_explicit") != True:
-            settings.set_setting("crt", os.path.join(settings.get_setting("remote_savepath"),
-                                                 crt_found[-1]))        
+        if len(crt_found) >= 1:
+            file = crt_found[-1]
+            ca = os.path.join(self.get_setting(self.SETTING.REMOTE_SAVEPATH), file)
+            self.set_setting(self.SETTING.CA, ca)
+
 
 def is_selinux_enforcing():
     try:

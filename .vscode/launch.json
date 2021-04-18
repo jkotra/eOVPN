@@ -5,10 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "eOVPN",
             "type": "python",
             "request": "launch",
-            "program": "${file}",
+            "program": "${cwd}/run_program_debug.py",
+
+            // to debug standalone mode, uncomment below line.
+            // "args": ["--config", "ipvanish-SG-Singapore-sin-a01.ovpn"],
+
             "console": "integratedTerminal",
             "env": {
                 "EOVPN_DEBUG": "DEBUG",

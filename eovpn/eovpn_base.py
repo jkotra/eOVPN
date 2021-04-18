@@ -8,11 +8,13 @@ import threading
 import gi
 gi.require_version('Notify', '0.7')
 gi.require_version('Secret', '1')
-from gi.repository import Gtk, GLib, GdkPixbuf, Notify, Secret
+from gi.repository import Gtk, Gio, GLib, GdkPixbuf, Notify, Secret
 
 eovpn_standalone = {"is_standalone": False, "path": None}
 _builder_record = {}
 _widget_record = {}
+
+_settings_backup = {}
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +24,29 @@ def set_standalone(path):
 
 def get_standalone():
     return (eovpn_standalone["is_standalone"], eovpn_standalone["path"])
+
+
+class Settings:
+    CURRENT_CONNECTED = "current-connected"
+    LAST_CONNECTED = "last-connected"
+    LAST_CONNECTED_CURSOR = "last-connected-cursor"
+    UPDATE_ON_START = "update-on-start"
+    CONNECT_ON_LAUNCH = "connect-on-launch"
+    NOTIFICATIONS = "notifications"
+    TREEVIEW_HEIGHT = "treeview-height"
+    MANAGER = "manager"
+    REQ_AUTH = "req-auth"
+    CA = "ca"
+    CA_SET_EXPLICIT = "ca-set-explicit"
+    REMOTE_TYPE = "remote-type"
+    REMOTE = "remote"
+    REMOTE_SAVEPATH = "remote-savepath"
+    AUTH_USER = "auth-user"
+    AUTH_PASS = "auth-pass"
+    NM_ACTIVE_UUID = "nm-active-uuid"
+
+    all_settings = ["current-connected", "last-connected", "last-connected-cursor", "update-on-start", "connect-on-launch",
+    "notifications", "treeview-height", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid"]
 
 class Base:
 
@@ -51,6 +76,8 @@ class Base:
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")
         self.EOVPN_GRESOURCE_PREFIX = "/com/github/jkotra/" + self.APP_NAME.lower()
         self.EOVPN_CSS = self.EOVPN_GRESOURCE_PREFIX + "/css/main.css"
+        self.SETTING = Settings()
+        self.__settings = Gio.Settings.new(self.APP_ID)
     
     def get_builder(self, ui_resource_name):
         if ui_resource_name not in _builder_record.keys():
@@ -102,6 +129,62 @@ class Base:
             notif.set_image_from_pixbuf(self.get_image("com.github.jkotra.eovpn.svg", "icons", (64,64)))   
         notif.show()
 
+    def get_setting(self, key):
+        v = self.__settings.get_value(key)
+        v_type = v.get_type_string()
+
+        if v_type == 'b':
+            v = v.get_boolean()
+        elif v_type == 'i':
+            v = v.get_int32()
+        elif v_type == 's':
+            v = v.get_string()
+            if v == "null":
+                v = None
+        else:
+            pass
+
+        logger.debug("{} {}".format(key, v))
+        return v            
+
+    def set_setting(self, key, value):
+        g_value = None
+
+        if value is None:
+            g_value = self.__settings.reset(key)
+            return
+
+        if type(value) is bool:
+            g_value = GLib.Variant.new_boolean(value)
+        if type(value) is int:
+            g_value = GLib.Variant.new_int32(value)
+        if type(value) is str:
+            g_value = GLib.Variant.new_string(value)
+        else:
+            pass
+        
+        logger.debug("{} {}".format(key, g_value))
+        if g_value is not None:
+            self.__settings.set_value(key, g_value)
+
+    def reset_all_settings(self):
+        _settings_backup = {} #empty it!
+        
+        for key in self.SETTING.all_settings:
+
+            #backup first
+            v = self.__settings.get_value(key)
+            _settings_backup[key] = v
+
+            #reset
+            self.__settings.reset(key)
+        self.__settings.sync()    
+    
+    def undo_reset_settings(self):
+        for k,v in _settings_backup.items():
+            self.__settings.set_value(k,v) 
+        self.__settings.sync()    
+
 class ThreadManager:
     
     def create(self, function_to_run, arguments, is_daemon=False, join=False):
@@ -119,51 +202,3 @@ class ThreadManager:
     def __join_thread(self, thread):
         thread.join()
         logger.info("{} joined!".format(str(thread)))
-
-
-class SettingsManager(Base):
-
-    
-    def __init_config(self) -> bool:
-        if os.path.exists(self.EOVPN_CONFIG_DIR + "/settings.json"):
-            return True
-        else:
-            try:
-                f = open(self.EOVPN_CONFIG_DIR + "/settings.json", 'w+')
-                settings = {}
-                f.write(json.dumps(settings, indent=2))
-
-                f.close()
-            except Exception as e:
-                #TODO - LOG to stdout
-                logger.critical(str(e))
-                return False
-
-            return True
-
-    def get_setting(self, setting):
-        self.__init_config()
-
-        f = open(self.EOVPN_CONFIG_DIR + "/settings.json", 'r')
-        content = f.read()
-        
-        json_content = json.loads(content)
-        try:
-            return json_content[setting]
-        except:
-            return None
-
-    def set_setting(self, setting, value):
-        self.__init_config()
-
-        f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), 'r')
-        content = f.read()
-
-        json_content = json.loads(content)
-
-        f = open(os.path.join(self.EOVPN_CONFIG_DIR, "settings.json"), 'w+')
-        json_content[setting] = value
-        f.write(json.dumps(json_content, indent=2))
-        f.close()
-
-        logger.debug(json_content)

@@ -4,15 +4,14 @@ import gettext
 
 from gi.repository import GLib, Secret
 
-from .eovpn_base import ThreadManager, SettingsManager
+from .eovpn_base import Base, ThreadManager
 from .openvpn import OpenVPN
 from .networkmanager.bindings import NetworkManager
 
 
 logger = logging.getLogger(__name__)
 
-class eOVPNConnectionManager(SettingsManager):
-
+class eOVPNConnectionManager(Base):
     # this class deals with connecting and disconneting vpn
 
     def __init__(self, statusbar=None, statusbar_icon=None, spinner=None):
@@ -30,7 +29,7 @@ class eOVPNConnectionManager(SettingsManager):
         self.is_openvpn = False
         self.is_nm = False
 
-        self.current_manager = self.get_setting("manager")
+        self.current_manager = self.get_setting(self.SETTING.MANAGER)
 
         if self.current_manager == "openvpn":
             self.openvpn_manager = OpenVPN(60)
@@ -55,7 +54,8 @@ class eOVPNConnectionManager(SettingsManager):
     
     def __push_to_statusbar(self, message):
         if self.statusbar is not None:
-            self.statusbar.push(1, message)
+            if type(message) is str:
+                self.statusbar.push(1, message)
 
     def connect(self, openvpn_config, auth_file=None, ca=None, logfile=None, callback=None) -> bool:
 
@@ -94,10 +94,10 @@ class eOVPNConnectionManager(SettingsManager):
 
          
         elif self.is_nm:     
-            nm_username = self.get_setting("auth_user")
+            nm_username = self.get_setting(self.SETTING.AUTH_USER)
             nm_password = None
             if nm_username is not None:
-                nm_password = Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {"username": self.get_setting("auth_user")}, None)
+                nm_password = Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {"username": self.get_setting(self.SETTING.AUTH_USER)}, None)
 
             uuid = self.nm_manager.add_connection(openvpn_config.encode('utf-8'),
                                                (nm_username.encode('utf-8') if nm_username is not None else None),
@@ -106,7 +106,7 @@ class eOVPNConnectionManager(SettingsManager):
             connection_result = self.nm_manager.activate_connection(uuid)
 
             self.uuid = uuid
-            self.set_setting("nm_active_uuid", self.uuid.decode('utf-8'))
+            self.set_setting(self.SETTING.NM_ACTIVE_UUID, self.uuid.decode('utf-8'))
 
             if not connection_result:
                 self.__set_statusbar_icon(False)
@@ -140,8 +140,8 @@ class eOVPNConnectionManager(SettingsManager):
             ThreadManager().create(disconnect_openvpn_cli, (), is_daemon=True)    
 
         elif self.is_nm:
-            if (self.get_setting("nm_active_uuid") != None):
-                self.uuid = self.get_setting("nm_active_uuid").encode('utf-8')
+            if (self.get_setting(self.SETTING.NM_ACTIVE_UUID) != None):
+                self.uuid = self.get_setting(self.SETTING.NM_ACTIVE_UUID).encode('utf-8')
 
                 is_uuid_found = self.nm_manager.is_vpn_activated(self.uuid)
 
@@ -158,7 +158,7 @@ class eOVPNConnectionManager(SettingsManager):
             disconnect_result = self.nm_manager.disconnect(self.uuid)
             self.nm_manager.delete_connection(self.uuid)
             self.uuid = None
-            self.set_setting("nm_active_uuid", None)
+            self.set_setting(self.SETTING.NM_ACTIVE_UUID, None)
 
             self.spinner.stop()
             if disconnect_result:
@@ -187,7 +187,7 @@ class eOVPNConnectionManager(SettingsManager):
             pass
 
         if callable(callback):
-            callback((version != None) or (version != False))
+            callback(version)
             self.__push_to_statusbar(version)
         
         if self.is_openvpn:

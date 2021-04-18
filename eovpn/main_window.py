@@ -12,7 +12,7 @@ import gettext
 
 from gi.repository import Gtk, GLib, Gdk, GdkPixbuf, Gio
 
-from .eovpn_base import Base, SettingsManager, ThreadManager, get_standalone
+from .eovpn_base import Base, ThreadManager, get_standalone
 from .settings_window import SettingsWindow
 from .log_window import LogWindow
 from .about_dialog import AboutWindow
@@ -47,7 +47,7 @@ class MainWindow(Base, Gtk.Builder):
 
 
 
-class MainWindowSignalHandler(SettingsManager):
+class MainWindowSignalHandler(Base):
     def __init__(self, builder):
         super(MainWindowSignalHandler, self).__init__()
         
@@ -75,10 +75,9 @@ class MainWindowSignalHandler(SettingsManager):
         self.proto_label = self.builder.get_object("openvpn_proto")
 
         self.config_selected = None
-        self.config_connected = None
         self.selected_cursor = None
         self.proto_override = None #consider true if it's either UDP or TCP
-        self.is_connected = False
+        self.is_connected = None
         self.no_network = False
 
         self.standalone_mode = False
@@ -88,8 +87,7 @@ class MainWindowSignalHandler(SettingsManager):
         logger.debug("SELinux_Enforcing={}".format(self.se_enforcing))
 
         #load_settings
-        self.settings = Gio.Settings.new(self.APP_ID)
-        paned_height = self.settings.get_int("treeview-height")
+        paned_height = self.get_setting(self.SETTING.TREEVIEW_HEIGHT)
         
         if paned_height != -1:
             self.paned.set_position(paned_height)
@@ -130,20 +128,11 @@ class MainWindowSignalHandler(SettingsManager):
         logger.debug("Testing if NM is supported...")
         is_nm_supported = NetworkManager().get_version()
 
-        if self.get_setting("manager") is None:
-            self.set_setting("manager", "networkmanager" if (is_nm_supported != None) else "openvpn")
+        if self.get_setting(self.SETTING.MANAGER) is None:
+            self.set_setting(self.SETTING.MANAGER, "networkmanager" if (is_nm_supported != None) else "openvpn")
         
-        if (self.get_setting("manager") == "networkmanager") and (is_nm_supported is None):
-            self.set_setting("manager", "openvpn")
-
-
-        self.conn_mgr = eOVPNConnectionManager(self.statusbar, self.statusbar_icon, self.spinner)
-        self.conn_mgr.get_version(callback=self.on_version)
-        self.current_manager = self.get_setting("manager")
-        if self.current_manager == "networkmanager":
-            watch_vpn_status(update_callback=self.on_nm_connent_event)
-
-        self.update_status_ip_loc_flag()
+        if (self.get_setting(self.SETTING.MANAGER) == "networkmanager") and (is_nm_supported is None):
+            self.set_setting(self.SETTING.MANAGER, "openvpn")
 
         is_standalone, ovpn_config = get_standalone()
         if is_standalone:
@@ -152,29 +141,42 @@ class MainWindowSignalHandler(SettingsManager):
             self.connect_btn.connect("clicked", self.on_connect_btn_clicked_standalone)
             self.standalone_mode = True
             self.standalone_path = ovpn_config
-            GLib.idle_add(self.on_connect_btn_clicked_standalone, self.connect_btn)
+        else:
+            self.connect_btn.connect("clicked", self.on_connect_btn_clicked)    
 
 
-        if self.get_setting("remote_savepath") != None:
-            load_configs_to_tree(self.config_storage, self.get_setting("remote_savepath"))
+        self.conn_mgr = eOVPNConnectionManager(self.statusbar, self.statusbar_icon, self.spinner)
+        self.conn_mgr.get_version(callback=self.on_version)
+        current_manager = self.get_setting(self.SETTING.MANAGER)
+        if current_manager == "networkmanager":
+            watch_vpn_status(update_callback=self.on_nm_connent_event)     
+
+        self.update_status_ip_loc_flag()
+
+        if self.get_setting(self.SETTING.REMOTE_SAVEPATH) != None:
+            load_configs_to_tree(self.config_storage, self.get_setting(self.SETTING.REMOTE_SAVEPATH))
         
-        if self.get_setting("last_connected") != None:
-            logger.debug("last_connected = {}".format(self.get_setting("last_connected")))
-            if self.get_setting("last_connected_cursor") != None:
-                i = self.get_setting("last_connected_cursor")
+        if self.get_setting(self.SETTING.LAST_CONNECTED) != None:
+            logger.debug("last_connected = {}".format(self.get_setting(self.SETTING.LAST_CONNECTED)))
+            if self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR) != None:
+                i = self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR)
                 self.config_tree.set_cursor(i)
                 self.config_tree.scroll_to_cell(i)
-                self.config_selected = self.get_setting("last_connected")
+                self.config_selected = self.get_setting(self.SETTING.LAST_CONNECTED)
 
                 logger.debug("restored cursor = {} | config_selected = {}".format(i, self.config_selected))
                 self.menu_view_config.show()
 
-                if self.get_setting("connect_on_launch") and is_standalone == False:
+                if self.get_setting(self.SETTING.CONNECT_ON_LAUNCH):
                     if (self.is_connected is False) and (self.no_network is False):
                         self.on_connect_btn_clicked(self.connect_btn)
         
-        if self.get_setting("update_on_start") and is_standalone == False:
+        if self.get_setting(self.SETTING.UPDATE_ON_START):
             self.on_update_btn_clicked(self.update_btn)
+
+        if self.standalone_mode and not self.is_connected:
+            GLib.idle_add(self.on_connect_btn_clicked_standalone, self.connect_btn)
+
 
 
     #callbacks
@@ -183,33 +185,38 @@ class MainWindowSignalHandler(SettingsManager):
         if result:
 
             #update_status_ip_loc_flag() is called inside watch_vpn_status(). so, dont update here.
-            if self.current_manager != "networkmanager":      
+            if self.get_setting(self.SETTING.MANAGER) != "networkmanager":      
                 self.update_status_ip_loc_flag()
-
-            self.config_connected = config_connected
-            self.set_setting("last_connected", config_connected)
-            self.set_setting("last_connected_cursor", self.selected_cursor)
+            
+            connected_filename = os.path.split(config_connected)[-1]
+            self.set_setting(self.SETTING.CURRENT_CONNECTED, connected_filename)
+            self.set_setting(self.SETTING.LAST_CONNECTED, connected_filename)
+            self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.selected_cursor)
 
             #send notification
-            if self.get_setting("notifications") and (self.current_manager != "networkmanager"):
+            if self.get_setting(self.SETTING.NOTIFICATIONS) and (self.get_setting(self.SETTING.MANAGER) != "networkmanager"):
                 self.send_notification(gettext.gettext("Connected"),
-                                       gettext.gettext("Connected to {}").format(self.get_setting("last_connected")),
+                                       gettext.gettext("Connected to {}").format(self.get_setting(self.SETTING.LAST_CONNECTED)),
                                         True)            
 
             logger.debug("saved to config: cursor={} config={}".format(self.config_selected, self.selected_cursor))
+            self.is_connected = True
+            return True
         else:
             self.statusbar.push(1, gettext.gettext("Failed to connect!"))
+            self.is_connected = False
+            return False
 
     def on_disconnect(self, result):
         logger.debug("result = {}".format(result))
         if result:
-            self.config_connected = None
-            if self.get_setting("notifications") and (self.current_manager != "networkmanager"):
+            self.set_setting(self.SETTING.CURRENT_CONNECTED, None)
+            if self.get_setting(self.SETTING.NOTIFICATIONS) and (self.get_setting(self.SETTING.MANAGER) != "networkmanager"):
                 self.send_notification(gettext.gettext("Disconnected"),
-                                       gettext.gettext("Disconnected from {}").format(self.get_setting("last_connected")),
+                                       gettext.gettext("Disconnected from {}").format(self.get_setting(self.SETTING.LAST_CONNECTED)),
                                         False)
 
-            if self.current_manager != "networkmanager":      
+            if self.get_setting(self.SETTING.MANAGER) != "networkmanager":      
                 self.update_status_ip_loc_flag()
 
     def on_version(self, result):
@@ -220,8 +227,10 @@ class MainWindowSignalHandler(SettingsManager):
 
         if result is False:
             self.connect_btn.set_sensitive(False)
-            if self.get_setting("manager") == "networkmanager":
-                self.set_setting("manager", "openvpn")
+            if self.get_setting(self.SETTING.MANAGER) == "openvpn":
+                self.statusbar.push(1, "OpenVPN not found!")
+            if self.get_setting(self.SETTING.MANAGER) == "networkmanager":
+                self.set_setting(self.SETTING.MANAGER, "openvpn")
                 self.conn_mgr.get_version(callable=self.on_version)
 
     def on_update(self, result):
@@ -232,18 +241,22 @@ class MainWindowSignalHandler(SettingsManager):
 
     def on_nm_connent_event(self, connection_result=None, error=None):
         if connection_result is True:
-            text = gettext.gettext("Connected to {}").format(self.config_connected.split("/")[-1])
+            self.is_connected = True
+            filename = self.get_setting(self.SETTING.CURRENT_CONNECTED)
+            text = gettext.gettext("Connected to {}").format(filename)
             self.statusbar.push(1, text)
             self.statusbar_icon.set_from_icon_name("network-vpn-symbolic", 1)
-            if self.get_setting("notifications"):
+            if self.get_setting(self.SETTING.NOTIFICATIONS):
                 self.send_notification(gettext.gettext("Connected"),
-                                       gettext.gettext("Connected to {}").format(self.get_setting("last_connected")),
+                                       gettext.gettext("Connected to {}").format(self.get_setting(self.SETTING.LAST_CONNECTED)),
                                         True)
         elif connection_result is False:
-                if self.get_setting("notifications"):
-                    self.send_notification(gettext.gettext("Disconnected"),
-                                           gettext.gettext("Disconnected from {}").format(self.get_setting("last_connected")),
-                                           False)
+            self.is_connected = False
+            if self.get_setting(self.SETTING.NOTIFICATIONS):
+
+                self.send_notification(gettext.gettext("Disconnected"),
+                                        gettext.gettext("Disconnected from {}").format(self.get_setting(self.SETTING.LAST_CONNECTED)),
+                                        False)
                 
                 #delete failed connection
                 if error is not None:
@@ -259,7 +272,7 @@ class MainWindowSignalHandler(SettingsManager):
 
     def on_main_paned_position_notify(self, paned, position):
         paned_height = self.paned.get_position()
-        self.settings.set_int("treeview-height", paned_height)
+        self.set_setting(self.SETTING.TREEVIEW_HEIGHT, paned_height)
         return True
 
     def on_menu_exit_clicked(self, window):
@@ -281,7 +294,7 @@ class MainWindowSignalHandler(SettingsManager):
 
         def test_ping():
             
-            f = open(os.path.join(self.EOVPN_CONFIG_DIR, self.get_setting("remote_savepath"), self.config_selected)).read()
+            f = open(os.path.join(self.EOVPN_CONFIG_DIR, self.get_setting(self.SETTING.REMOTE_SAVEPATH), self.config_selected)).read()
             for line in f.split("\n"):
                 if "remote" in line:
                     openvpn_addr = line.split(" ")[1]
@@ -318,7 +331,7 @@ class MainWindowSignalHandler(SettingsManager):
             spinner.stop()
 
         if self.config_selected is not None:
-            file = os.path.join(self.EOVPN_CONFIG_DIR, self.get_setting("remote_savepath"), self.config_selected)
+            file = os.path.join(self.EOVPN_CONFIG_DIR, self.get_setting(self.SETTING.REMOTE_SAVEPATH), self.config_selected)
             if os.path.isfile(file):
                 spinner.start()
                 ThreadManager().create(test_ping, (), True)
@@ -370,14 +383,17 @@ class MainWindowSignalHandler(SettingsManager):
         LocationDetails().set(self.connection_details_widgets, self.conn_mgr.get_connection_status())
     
         if self.conn_mgr.get_connection_status():
-            if self.config_connected != None:
-                self.conn_mgr.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
-                                                  self.get_setting("remote_savepath"),
-                                                  self.config_connected), self.proto_label)
+            self.is_connected = True
+
             if self.standalone_mode:
                 self.conn_mgr.openvpn_config_set_protocol(self.standalone_path, self.proto_label)
-            self.proto_chooser_box.set_sensitive(False)
-            self.is_connected = True
+                self.proto_chooser_box.set_sensitive(False)
+                return
+
+            if self.get_setting(self.SETTING.CURRENT_CONNECTED) != None:
+                self.conn_mgr.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
+                                                  self.get_setting(self.SETTING.REMOTE_SAVEPATH),
+                                                  self.get_setting(self.SETTING.CURRENT_CONNECTED)), self.proto_label)
 
         else:
             self.proto_label.hide()
@@ -399,13 +415,13 @@ class MainWindowSignalHandler(SettingsManager):
             cs = builder.get_object("config_storage")
 
             try:
-                download_remote_to_destination(self.get_setting("remote"), self.get_setting("remote_savepath"))
+                download_remote_to_destination(self.get_setting(self.SETTING.REMOTE), self.get_setting(self.SETTING.REMOTE_SAVEPATH))
             except Exception as e:
                 logger.error(e)
                 self.spinner.stop()
                 return False
 
-            load_configs_to_tree(cs, self.get_setting("remote_savepath"))
+            load_configs_to_tree(cs, self.get_setting(self.SETTING.REMOTE_SAVEPATH))
             self.spinner.stop()
             self.statusbar.push(1, gettext.gettext("Configs updated."))
             logger.debug("configs updated!")
@@ -423,7 +439,7 @@ class MainWindowSignalHandler(SettingsManager):
 
     def on_view_config_clicked(self, user_data):
 
-        url = "file://{savepath}/{config}".format(savepath=self.get_setting("remote_savepath"),
+        url = "file://{savepath}/{config}".format(savepath=self.get_setting(self.SETTING.REMOTE_SAVEPATH),
                                                   config=self.config_selected)
         Gio.AppInfo.launch_default_for_uri(url)
 
@@ -437,6 +453,7 @@ class MainWindowSignalHandler(SettingsManager):
             return True
         
         is_vpn_running = self.conn_mgr.get_connection_status()
+        logger.debug("is_vpn_running={}".format(is_vpn_running))
 
         if is_vpn_running:
             dlg = self.builder.get_object("openvpn_running_dlg")
@@ -444,7 +461,7 @@ class MainWindowSignalHandler(SettingsManager):
             return False
 
         try:
-            config_file = os.path.join(self.get_setting("remote_savepath"), self.config_selected)
+            config_file = os.path.join(self.get_setting(self.SETTING.REMOTE_SAVEPATH), self.config_selected)
             if self.proto_override is not None:
                 config_content = open(config_file, "r").read()
                 for line in config_content.split("\n"):
@@ -466,12 +483,12 @@ class MainWindowSignalHandler(SettingsManager):
         auth_file = None
         crt = None
         
-        if self.get_setting("req_auth"):
+        if self.get_setting(self.SETTING.REQ_AUTH):
             auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt")
 
-        if self.get_setting("crt") is not None:    
-            crt = self.get_setting("crt")
-            if self.se_enforcing and (self.get_setting("manager") != "openvpn"):
+        if self.get_setting(self.SETTING.CA) is not None:    
+            crt = self.get_setting(self.SETTING.CA)
+            if self.se_enforcing and (self.get_setting(self.SETTING.MANAGER) != "openvpn"):
                 home_dir = GLib.get_home_dir()
                 se_friendly_path = os.path.join(home_dir, ".cert")
                 if not os.path.exists(se_friendly_path):
@@ -486,9 +503,11 @@ class MainWindowSignalHandler(SettingsManager):
         working_dir = os.path.dirname(self.standalone_path)
 
         if self.is_connected:
-            return False
+            self.conn_mgr.disconnect(self.on_disconnect)
+            return True
         
         is_vpn_running = self.conn_mgr.get_connection_status()
+        logger.debug("is_vpn_running={}".format(is_vpn_running))
 
         if is_vpn_running:
             dlg = self.builder.get_object("openvpn_running_dlg")
@@ -505,7 +524,7 @@ class MainWindowSignalHandler(SettingsManager):
         if os.path.isfile(os.path.join(working_dir, "auth.txt")):
             auth_file = os.path.join(working_dir, "auth.txt") #1st preference
         else:
-            if self.get_setting("req_auth"):
+            if self.get_setting(self.SETTING.REQ_AUTH):
                 auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt") #2nd preference
 
         crt_re = re.compile(r'.crt|cert')
@@ -516,7 +535,7 @@ class MainWindowSignalHandler(SettingsManager):
             crt_filename = crt_result[-1]
             crt = os.path.join(working_dir, crt_filename)
 
-            if self.se_enforcing and (self.get_setting("manager") != "openvpn"):
+            if self.se_enforcing and (self.get_setting(self.SETTING.MANAGER) != "openvpn"):
                 home_dir = GLib.get_home_dir()
                 se_friendly_path = os.path.join(home_dir, ".cert")
                 if not os.path.exists(se_friendly_path):
