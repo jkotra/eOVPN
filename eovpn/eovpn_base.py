@@ -168,8 +168,6 @@ class Base:
             self.__settings.set_value(key, g_value)
 
     def reset_all_settings(self):
-        _settings_backup = {} #empty it!
-        
         for key in self.SETTING.all_settings:
 
             #backup first
