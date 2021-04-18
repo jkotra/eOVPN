@@ -41,6 +41,15 @@
 
   <releases>
 
+    <release version="0.25" date="2021-04-18">
+      <description>
+        <ul>
+          <li>Use Gio.Settings to store settings</li>
+          <li>Password is now stored in keyring (NM only)</li>
+        </ul>
+      </description>
+    </release>  
+    
     <release version="0.24" date="2021-04-07">
       <description>
         <ul>
