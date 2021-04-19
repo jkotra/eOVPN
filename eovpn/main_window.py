@@ -181,7 +181,7 @@ class MainWindowSignalHandler(Base):
 
     #callbacks
     def on_connect(self, result, config_connected):
-        logger.info("result = {}".format(result))
+        logger.info("connect_callback={}".format(result))
         if result:
 
             #update_status_ip_loc_flag() is called inside watch_vpn_status(). so, dont update here.
@@ -208,7 +208,7 @@ class MainWindowSignalHandler(Base):
             return False
 
     def on_disconnect(self, result):
-        logger.debug("result = {}".format(result))
+        logger.debug("disconnect_callback={}".format(result))
         if result:
             self.set_setting(self.SETTING.CURRENT_CONNECTED, None)
             if self.get_setting(self.SETTING.NOTIFICATIONS) and (self.get_setting(self.SETTING.MANAGER) != "networkmanager"):
@@ -228,7 +228,7 @@ class MainWindowSignalHandler(Base):
         if result is False:
             self.connect_btn.set_sensitive(False)
             if self.get_setting(self.SETTING.MANAGER) == "openvpn":
-                self.statusbar.push(1, "OpenVPN not found!")
+                self.statusbar.push(1, gettext.gettext("OpenVPN not found!"))
             if self.get_setting(self.SETTING.MANAGER) == "networkmanager":
                 self.set_setting(self.SETTING.MANAGER, "openvpn")
                 self.conn_mgr.get_version(callable=self.on_version)
