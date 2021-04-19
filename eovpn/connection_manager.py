@@ -38,10 +38,10 @@ class eOVPNConnectionManager(Base):
             self.nm_manager = NetworkManager()
             self.is_nm = True
         else:
-            self.__push_to_statusbar("Manager not selected.")
-            self.__set_statusbar_icon(False, False)
+            self._push_to_statusbar("Manager not selected.")
+            self._set_statusbar_icon(False, False)
 
-    def __set_statusbar_icon(self, result: bool, connected: bool = False):
+    def _set_statusbar_icon(self, result: bool, connected: bool = False):
         if self.statusbar_icon is not None:
             if result and connected:
                 self.statusbar_icon.set_from_icon_name("network-vpn-symbolic", 1)
@@ -52,7 +52,7 @@ class eOVPNConnectionManager(Base):
             else:
                 self.statusbar_icon.set_from_icon_name("dialog-error-symbolic", 1)
     
-    def __push_to_statusbar(self, message):
+    def _push_to_statusbar(self, message):
         if self.statusbar is not None:
             if type(message) is str:
                 self.statusbar.push(1, message)
@@ -60,14 +60,14 @@ class eOVPNConnectionManager(Base):
     def connect(self, openvpn_config, auth_file=None, ca=None, logfile=None, callback=None) -> bool:
 
         self.spinner.start()
-        self.__push_to_statusbar(gettext.gettext("Connecting.."))
+        self._push_to_statusbar(gettext.gettext("Connecting.."))
 
         #check if config requires auth
         f = open(openvpn_config, "r")
         if "auth-user-pass" in f.read() and auth_file is None:
             self.spinner.stop()
-            self.__push_to_statusbar(gettext.gettext("Config requires authorization (auth-user-pass)"))
-            self.__set_statusbar_icon(False, False)
+            self._push_to_statusbar(gettext.gettext("Config requires authorization (auth-user-pass)"))
+            self._set_statusbar_icon(False, False)
             return False
         
         if self.is_openvpn:
@@ -75,16 +75,16 @@ class eOVPNConnectionManager(Base):
                 connection_result = self.openvpn_manager.connect("--config", openvpn_config, "--auth-user-pass", auth_file, "--ca", ca,
                      "--log", logfile, "--daemon")
                 if type(connection_result) is not bool:
-                    self.__push_to_statusbar(connection_result)
-                    self.__set_statusbar_icon(False, False)
+                    self._push_to_statusbar(connection_result)
+                    self._set_statusbar_icon(False, False)
                     self.spinner.stop()
                     return False
 
                 if connection_result:
-                    self.__push_to_statusbar(gettext.gettext("Connected to {}.").format(openvpn_config.split('/')[-1]))
-                    self.__set_statusbar_icon(True, connected=True)
+                    self._push_to_statusbar(gettext.gettext("Connected to {}.").format(openvpn_config.split('/')[-1]))
+                    self._set_statusbar_icon(True, connected=True)
                 else:
-                    self.__set_statusbar_icon(False)
+                    self._set_statusbar_icon(False)
                 
                 self.spinner.stop()
                 callback(connection_result, openvpn_config)    
@@ -109,7 +109,7 @@ class eOVPNConnectionManager(Base):
             self.set_setting(self.SETTING.NM_ACTIVE_UUID, self.uuid.decode('utf-8'))
 
             if not connection_result:
-                self.__set_statusbar_icon(False)
+                self._set_statusbar_icon(False)
             
             callback(connection_result, openvpn_config)
                 
@@ -134,7 +134,7 @@ class eOVPNConnectionManager(Base):
                 disconnect_result = self.openvpn_manager.disconnect()
                 self.spinner.stop()
                 if disconnect_result:
-                    self.__push_to_statusbar(gettext.gettext("Disconnected."))
+                    self._push_to_statusbar(gettext.gettext("Disconnected."))
                 callback(disconnect_result)
 
             ThreadManager().create(disconnect_openvpn_cli, (), is_daemon=True)    
@@ -162,7 +162,7 @@ class eOVPNConnectionManager(Base):
 
             self.spinner.stop()
             if disconnect_result:
-                self.__push_to_statusbar(gettext.gettext("Disconnected."))
+                self._push_to_statusbar(gettext.gettext("Disconnected."))
             callback(disconnect_result)
 
         else:
@@ -188,7 +188,7 @@ class eOVPNConnectionManager(Base):
 
         if callable(callback):
             callback(version)
-            self.__push_to_statusbar(version)
+            self._push_to_statusbar(version)
         
         if self.is_openvpn:
             img = self.get_image("openvpn_black.svg","icons", (16,16))

@@ -256,7 +256,7 @@ class SettingsWindowSignalHandler(Base):
         window.hide()
         return True
 
-    def __download_and_load_configs(self):
+    def _download_and_load_configs(self):
         self.spinner.start()
 
         try:
@@ -329,7 +329,7 @@ class SettingsWindowSignalHandler(Base):
 
         
         if initial_remote is None:
-            ThreadManager().create(self.__download_and_load_configs, (), True)
+            ThreadManager().create(self._download_and_load_configs, (), True)
         
         if initial_remote is not None:
             set_ca_automatic(self)
@@ -410,7 +410,7 @@ class SettingsWindowSignalHandler(Base):
         except Exception as e:
             logger.error(e)
 
-        ThreadManager().create(self.__download_and_load_configs, ())
+        ThreadManager().create(self._download_and_load_configs, ())
         self.undo_reset_settings()
         self.update_settings_ui()
         self.on_revealer_close_btn_clicked(None) #button is not actually used so it's okay.

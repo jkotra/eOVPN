@@ -195,8 +195,8 @@ class ThreadManager:
         th.start()
         
         if join:
-            self.__join_thread(th)
+            self._join_thread(th)
     
-    def __join_thread(self, thread):
+    def _join_thread(self, thread):
         thread.join()
         logger.info("{} joined!".format(str(thread)))
