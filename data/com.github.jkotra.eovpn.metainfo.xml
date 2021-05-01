@@ -41,6 +41,15 @@
 
   <releases>
 
+    <release version="0.27" date="2021-05-01">
+      <description>
+        <ul>
+          <li>Backend Optimizations.</li>
+          <li>press Enter to connect and disconnect.</li>
+        </ul>
+      </description>
+    </release>  
+
     <release version="0.25" date="2021-04-18">
       <description>
         <ul>
