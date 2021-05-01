@@ -729,6 +729,7 @@
                         <property name="receives-default">True</property>
                         <property name="halign">center</property>
                         <property name="valign">center</property>
+                        <accelerator key="Return" signal="clicked"/>
                       </object>
                       <packing>
                         <property name="expand">False</property>

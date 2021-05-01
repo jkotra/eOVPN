@@ -63,7 +63,7 @@ class Base:
         #   ex: "Name": ["Lang"]
         #
         self.TRANSLATORS = {
-            "Jagadeesh Kotra": ["Telugu"],
+        #    "Jagadeesh Kotra": ["Telugu"],
         }
 
         self.EOVPN_SECRET_SCHEMA = Secret.Schema.new(self.APP_ID, Secret.SchemaFlags.NONE,
