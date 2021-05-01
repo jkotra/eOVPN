@@ -286,6 +286,21 @@ int delete_connection(char *uuid, int debug)
     return true;
 }
 
+char* get_active_vpn_connection_uuid(void){
+    NMClient *client = nm_client_new(NULL, NULL);
+    const GPtrArray *arr = nm_client_get_active_connections(client);
+
+    for (size_t i = 0; i < arr->len; i++)
+    {
+        const char* conn_type = nm_active_connection_get_connection_type(arr->pdata[i]);
+        if (strcmp(conn_type, "vpn") == 0){
+            return (char*)nm_active_connection_get_uuid(arr->pdata[i]);
+        }
+    }
+
+    return NULL;
+}
+
 int delete_all_vpn_connections(void)
 {
 
@@ -343,8 +358,6 @@ int is_vpn_activated(char *uuid)
 
     /*
     https://people.freedesktop.org/~lkundrak/nm-docs/nm-vpn-dbus-types.html
-    NM_VPN_CONNECTION_STATE_ACTIVATED = 5 //return true
-    NM_VPN_CONNECTION_STATE_FAILED = 6 /return false
     */
 
     NMClient *client = nm_client_new(NULL, NULL);

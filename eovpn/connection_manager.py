@@ -151,8 +151,9 @@ class eOVPNConnectionManager(Base):
                     self.uuid = None
             
             if self.uuid is None:
-                logger.info("unknown UUID! Deleting all VPN connections...")
-                self.nm_manager.delete_all_vpn_connections()
+                logger.info("unknown UUID!")
+                while(self.nm_manager.get_active_vpn_connection_uuid() is not None):
+                    self.nm_manager.disconnect(self.nm_manager.get_active_vpn_connection_uuid())
                 return True
                             
             disconnect_result = self.nm_manager.disconnect(self.uuid)

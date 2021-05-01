@@ -118,3 +118,8 @@ class NetworkManager:
             return True
         else:
             return res
+
+    def get_active_vpn_connection_uuid(self):
+        self.eovpn_nm.get_active_vpn_connection_uuid.restype = ctypes.c_char_p
+        uuid = self.eovpn_nm.get_active_vpn_connection_uuid()
+        return uuid
