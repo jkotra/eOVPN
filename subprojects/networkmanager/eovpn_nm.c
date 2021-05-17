@@ -39,7 +39,7 @@ char* add_connection_flatpak(char *config_name, char *username, char *password, 
     nm_vpn_plugin_info_new_from_file(NM_OPENVPN_FLATPAK_PLUGIN_NAME, &err);
     if (err != NULL)
     {
-        g_printerr(err->message);
+        g_printerr("%s\n", err->message);
         g_error_free(err);
         err = NULL;
         return false;
@@ -48,7 +48,7 @@ char* add_connection_flatpak(char *config_name, char *username, char *password, 
     NMVpnEditorPlugin *editor = nm_vpn_editor_plugin_load_from_file(NM_OPENVPN_FLATPAK_PLUGIN_SO, NULL, -1, NULL, NULL, &err);
     if (err != NULL)
     {
-        g_printerr(err->message);
+        g_printerr("%s\n", err->message);
         g_error_free(err);
         err = NULL;
         return false;
@@ -57,7 +57,7 @@ char* add_connection_flatpak(char *config_name, char *username, char *password, 
     NMConnection *conn = nm_vpn_editor_plugin_import(editor, config_name, &err);
     if (err != NULL)
     {
-        g_printerr(err->message);
+        g_printerr("%s\n", err->message);
         g_error_free(err);
         err = NULL;
         return false;
@@ -119,7 +119,7 @@ add_connection(char *config_name, char *username, char *password, char *ca, int 
     NMVpnEditorPlugin *editor = nm_vpn_plugin_info_load_editor_plugin(plugin, &err);
     if (err != NULL)
     {
-        g_printerr(err->message);
+        g_printerr("%s\n", err->message);
         g_error_free(err);
         err = NULL;
         return false;
@@ -128,7 +128,7 @@ add_connection(char *config_name, char *username, char *password, char *ca, int 
     NMConnection *conn = nm_vpn_editor_plugin_import(editor, config_name, &err);
     if (err != NULL)
     {
-        g_printerr(err->message);
+        g_printerr("%s\n", err->message);
         g_error_free(err);
         err = NULL;
         return false;
