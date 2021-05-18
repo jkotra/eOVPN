@@ -274,9 +274,6 @@ class MainWindowSignalHandler(Base):
         paned_height = self.paned.get_position()
         self.set_setting(self.SETTING.TREEVIEW_HEIGHT, paned_height)
         return True
-
-    def on_menu_exit_clicked(self, window):
-        window.close()
     
     def on_connect_prefs_tcp_btn_clicked(self, btn):
         self.proto_override = "TCP"

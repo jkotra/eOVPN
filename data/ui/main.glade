@@ -390,22 +390,6 @@
             <property name="position">4</property>
           </packing>
         </child>
-        <child>
-          <object class="GtkModelButton" id="menu_exit">
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="text" translatable="yes">Exit</property>
-            <property name="centered">True</property>
-            <signal name="clicked" handler="on_menu_exit_clicked" object="main_window" swapped="no"/>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="padding">4</property>
-            <property name="position">5</property>
-          </packing>
-        </child>
       </object>
     </child>
   </object>
