@@ -285,6 +285,12 @@ class MainWindowSignalHandler(Base):
         self.proto_choice["udp"].show()
         self.proto_choice["tcp"].hide()
   
+    def on_keyboard_shortcuts_btn_clicked(self, btn):
+        builder = Gtk.Builder()
+        builder.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "keyboard_shortcuts.ui")
+        window = builder.get_object("shortcuts")
+        window.set_transient_for(self.get_widget("main_window"))
+        window.show()
 
     #ping
     def on_ping_clicked(self, spinner):
