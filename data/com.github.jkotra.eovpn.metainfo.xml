@@ -41,6 +41,14 @@
 
   <releases>
 
+    <release version="0.30" date="2021-05-20">
+      <description>
+        <ul>
+          <li>UI enhancements.</li>
+        </ul>
+      </description>
+    </release> 
+
     <release version="0.27" date="2021-05-01">
       <description>
         <ul>

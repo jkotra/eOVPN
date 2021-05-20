@@ -27,7 +27,6 @@
         * [`eOVPN` also supports local directory/folder/zip]
 
 3. click `Save`.
-    * If it's for the first time, Configurations are automatically updated else the user needs to click `Update` from the menu to reflect changes.
 
 ---
 
