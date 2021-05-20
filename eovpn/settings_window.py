@@ -34,6 +34,8 @@ class SettingsWindow(Base, Gtk.Builder):
         self.window.set_transient_for(self.get_widget("main_window"))
         self.window.set_type_hint(Gdk.WindowTypeHint.DIALOG) #required for Xorg session
 
+        self.store_widget("settings_window", self.window)
+
     def show(self):
         self.window.show()    
 
@@ -178,7 +180,7 @@ class SettingsWindowSignalHandler(Base):
         nm = NetworkManager()
         res = nm.delete_all_vpn_connections()
         if res:
-            message_dialog("", gettext.gettext("Deleted all VPN connections (if any)!"))
+            message_dialog("", gettext.gettext("Deleted all VPN connections (if any)!"), self.get_widget("settings_window"))
             
 
     def update_settings_ui(self):
@@ -439,7 +441,7 @@ class SettingsWindowSignalHandler(Base):
             assert(any(is_dir) == False)
 
 
-        validate_remote(remote, self.spinner)
+        validate_remote(remote, self.spinner, self.get_widget("settings_window"))
 
     def save_btn_activate(self, editable):
         self.save_btn.set_sensitive(True)

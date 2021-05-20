@@ -19,11 +19,13 @@ logger = logging.getLogger(__name__)
 ovpn = re.compile('.ovpn')
 crt = re.compile(r'.crt|cert|pem')
 
-def message_dialog(primary_text, secondary_text):
+def message_dialog(primary_text, secondary_text, window=None):
     messagedialog = Gtk.MessageDialog(message_format="MessageDialog")
     messagedialog.set_markup("<span size='12000'><b>{}</b></span>".format(primary_text))
     messagedialog.format_secondary_text(secondary_text)
     messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
+    if window is not None:
+        messagedialog.set_transient_for(window)
     messagedialog.run()
     messagedialog.hide()
 
@@ -94,7 +96,7 @@ def download_remote_to_destination(remote, destination):
     return False  
 
 
-def validate_remote(remote, spinner = None):
+def validate_remote(remote, spinner = None, window = None):
 
     tmp_path = os.path.join(GLib.get_tmp_dir(), "eovpn_validate")
     logger.debug("tmp_path={}".format(tmp_path))
@@ -116,7 +118,7 @@ def validate_remote(remote, spinner = None):
                 return False
         except Exception as e:
             logger.error(e)
-            GLib.idle_add(message_dialog, "", str(e))
+            GLib.idle_add(message_dialog, "", str(e), window)
             if spinner is not None:
                 spinner.stop()
 
@@ -128,7 +130,8 @@ def validate_remote(remote, spinner = None):
             #show message dialog
             GLib.idle_add(message_dialog,
             "",
-            gettext.gettext("{} OpenVPN configuration's found.").format(len(configs)))
+            gettext.gettext("{} OpenVPN configuration's found.").format(len(configs)),
+            window)
         if spinner is not None:
             spinner.stop()
         
