@@ -505,9 +505,25 @@ class MainWindowSignalHandler(Base):
                 logger.debug("crt={}".format(crt))
         
         self.conn_mgr.connect(config_file, auth_file, crt, log_file, self.on_connect)
+    
+    # ask_auth callback
+    def ask_auth_save_clicked_cb(self, btn):
+        ask_auth_builder = self.get_widget("ask_auth")
+        username = ask_auth_builder.get_object("auth_user").get_text()
+        password = ask_auth_builder.get_object("auth_pass").get_text()
+        ca = ask_auth_builder.get_object("ca_chooser").get_filename()
+
+        with open(os.path.join(os.path.dirname(self.standalone_path), "eovpn.json"), "w+") as f:
+            f.write(json.dumps({"username": username, "password": password, "ca": ca}, indent=2))
+            f.close()
+        ask_auth_builder.get_object("ask_auth").destroy()
+        self.on_connect_btn_clicked_standalone(None)
 
     def on_connect_btn_clicked_standalone(self, button):
         working_dir = os.path.dirname(self.standalone_path)
+        config_name = os.path.basename(self.standalone_path)
+        if working_dir == '':
+            working_dir = os.getcwd()
 
         if self.is_connected:
             self.conn_mgr.disconnect(self.on_disconnect)
@@ -522,33 +538,54 @@ class MainWindowSignalHandler(Base):
             return False
         
         log_file = os.path.join(self.EOVPN_CONFIG_DIR, "session.log")
-
-        config_file = self.standalone_path
-        
-        auth_file = None
+        config_file = os.path.join(working_dir, config_name)
+        auth_file = working_dir + "/auth.txt" #not applicable for NM
         crt = None
 
-        if os.path.isfile(os.path.join(working_dir, "auth.txt")):
-            auth_file = os.path.join(working_dir, "auth.txt") #1st preference
+        if not os.path.exists(os.path.join(working_dir, "eovpn.json")):
+            builder = Gtk.Builder()
+            builder.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + '/ui/ask_auth.glade')
+            self.store_widget("ask_auth", builder)
+            builder.connect_signals(self)
+            win = builder.get_object("ask_auth")
+            if (self.get_setting(self.SETTING.MANAGER) == "networkmanager"):
+                builder.get_object("overwrite_warning").show()
+
+            ca_chooser = builder.get_object("ca_chooser")
+            ca_filter = Gtk.FileFilter()
+            ca_filter.add_pattern("*.ca")
+            ca_filter.add_pattern("*.pem")
+            ca_filter.add_pattern("*.crt")
+            ca_chooser.set_filter(ca_filter)
+
+            win.set_transient_for(self.get_widget("main_window"))
+            win.set_type_hint(Gdk.WindowTypeHint.DIALOG) #required for Xorg session
+            win.show()
+            return
+
+        auth_details = json.loads(open(os.path.join(working_dir, "eovpn.json"), 'r').read())
+        crt = auth_details["ca"]
+
+
+        if (self.get_setting(self.SETTING.MANAGER) == "openvpn"):
+            with open(auth_file, "w+") as f:
+                f.write("{}\n{}".format(auth_details["username"], auth_details["password"]))
+                f.close()
+               
         else:
-            if self.get_setting(self.SETTING.REQ_AUTH):
-                auth_file = os.path.join(self.EOVPN_CONFIG_DIR, "auth.txt") #2nd preference
-
-        crt_re = re.compile(r'.crt|cert')
-        files = os.listdir(working_dir)                       
-        crt_result = list(filter(crt_re.findall, files))
-        crt_filename = None
-        if len(crt_result) >= 1:
-            crt_filename = crt_result[-1]
-            crt = os.path.join(working_dir, crt_filename)
-
-            if self.se_enforcing and (self.get_setting(self.SETTING.MANAGER) != "openvpn"):
-                home_dir = GLib.get_home_dir()
-                se_friendly_path = os.path.join(home_dir, ".cert")
-                if not os.path.exists(se_friendly_path):
-                    os.mkdir(se_friendly_path)
-                shutil.copy(crt, se_friendly_path)
-                crt = os.path.join(se_friendly_path, crt_filename)
-                logger.debug("se friendly crt={}".format(crt)) 
-
+            #manager is NM
+            self.set_setting(self.SETTING.AUTH_USER, auth_details["username"])
+            self.set_setting(self.SETTING.AUTH_PASS, auth_details["password"])
+            self.set_setting(self.SETTING.CA, auth_details["ca"])
+       
+        if self.se_enforcing and (self.get_setting(self.SETTING.MANAGER) != "openvpn"):
+            home_dir = GLib.get_home_dir()
+            selinux_friendly_path = os.path.join(home_dir, ".cert")
+            if not os.path.exists(selinux_friendly_path):
+                os.mkdir(selinux_friendly_path)
+            shutil.copy(auth_details["ca"], selinux_friendly_path)
+            crt = os.path.join(selinux_friendly_path, auth_details["ca"])
+            self.set_setting(self.SETTING.CA, crt)
+        
+        print(config_file, auth_file, crt)
         self.conn_mgr.connect(config_file, auth_file, crt, log_file, self.on_connect)

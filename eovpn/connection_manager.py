@@ -71,6 +71,7 @@ class eOVPNConnectionManager(Base):
             return False
         
         if self.is_openvpn:
+            logger.debug("\nc={}\na={}\nca={}\nl={}".format(openvpn_config, auth_file, ca, logfile))
             def connect_to_openvpn_cli():
                 connection_result = self.openvpn_manager.connect("--config", openvpn_config, "--auth-user-pass", auth_file, "--ca", ca,
                      "--log", logfile, "--daemon")
@@ -101,7 +102,7 @@ class eOVPNConnectionManager(Base):
 
             uuid = self.nm_manager.add_connection(openvpn_config.encode('utf-8'),
                                                (nm_username.encode('utf-8') if nm_username is not None else None),
-                                               (nm_password.encode('utf-8') if nm_password is not None else None),
+                                               (nm_password.encode('utf-8') if nm_password is not None else self.get_setting(self.SETTING.AUTH_PASS).encode('utf-8')),
                                                (ca.encode('utf-8') if ca is not None else ca))
             connection_result = self.nm_manager.activate_connection(uuid)
 

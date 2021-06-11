@@ -6,6 +6,7 @@
     <file>ui/about.glade</file>
     <file>ui/log.glade</file>
     <file>ui/settings.glade</file>
+    <file>ui/ask_auth.glade</file>
     <file>ui/keyboard_shortcuts.ui</file>
   
   <file>icons/nm.svg</file>
