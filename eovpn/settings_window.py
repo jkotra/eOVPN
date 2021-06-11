@@ -399,7 +399,7 @@ class SettingsWindowSignalHandler(Base):
         
         #remove config from liststorage
         self.get_widget("config_storage").clear()
-        self.get_widget("menu_view_config").hide()
+        self.get_widget("menu_view_config").set_sensitive(False)
 
         self.inapp_notification_label.set_text(gettext.gettext("Settings deleted."))
         self.undo_reset_btn.show()

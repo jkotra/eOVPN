@@ -313,6 +313,8 @@
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkModelButton" id="view_config">
+            <property name="visible">True</property>
+            <property name="sensitive">False</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
             <property name="text" translatable="yes">View Config</property>
@@ -329,6 +331,7 @@
         <child>
           <object class="GtkModelButton" id="log_btn">
             <property name="visible">True</property>
+            <property name="sensitive">False</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
             <property name="text" translatable="yes">Log</property>

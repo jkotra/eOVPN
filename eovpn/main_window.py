@@ -120,6 +120,10 @@ class MainWindowSignalHandler(Base):
         self.menu_view_config = self.builder.get_object("view_config")
         self.store_widget("menu_view_config", self.menu_view_config)
 
+        if (self.get_setting(self.SETTING.MANAGER) != "networkmanager"):
+            self.builder.get_object("log_btn").set_sensitive(True)
+
+
         #reset session.log
         if os.path.exists(self.EOVPN_CONFIG_DIR) != True:
             os.mkdir(self.EOVPN_CONFIG_DIR)
@@ -165,7 +169,7 @@ class MainWindowSignalHandler(Base):
                 self.config_selected = self.get_setting(self.SETTING.LAST_CONNECTED)
 
                 logger.debug("restored cursor = {} | config_selected = {}".format(i, self.config_selected))
-                self.menu_view_config.show()
+                self.menu_view_config.set_sensitive(True)
 
                 if self.get_setting(self.SETTING.CONNECT_ON_LAUNCH):
                     if (self.is_connected is False) and (self.no_network is False):
@@ -362,7 +366,7 @@ class MainWindowSignalHandler(Base):
 
         try:
             self.selected_cursor = path[-1].get_indices()[-1]
-            self.menu_view_config.show()
+            self.menu_view_config.set_sensitive(True)
 
             #hide ping in connect_prefs
             self.connect_prefs_ping_label.hide()
