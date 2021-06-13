@@ -52,6 +52,7 @@ def load_configs_to_tree(storage, config_folder):
         for f in config_list:
             if f.endswith(".ovpn"):
                 storage.append([f])
+        return len(config_list)        
 
 
 def download_remote_to_destination(remote, destination):

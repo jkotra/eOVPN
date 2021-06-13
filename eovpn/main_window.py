@@ -70,6 +70,8 @@ class MainWindowSignalHandler(Base):
         self.config_storage = self.builder.get_object("config_storage")
         self.store_widget("config_storage", self.config_storage)
 
+        self.store_widget("message_overlay_box", self.builder.get_object("message_overlay_box"))
+
         self.config_tree = self.builder.get_object("config_treeview")
         self.statusbar_icon = self.builder.get_object("statusbar_icon")
         self.proto_label = self.builder.get_object("openvpn_proto")
@@ -140,7 +142,7 @@ class MainWindowSignalHandler(Base):
 
         is_standalone, ovpn_config = get_standalone()
         if is_standalone:
-            logger.info("Standalone Mode!")
+            logger.info("eOVPN running in standalone mode")
             self.config_tree.set_sensitive(False)
             self.connect_btn.connect("clicked", self.on_connect_btn_clicked_standalone)
             self.standalone_mode = True
@@ -158,7 +160,8 @@ class MainWindowSignalHandler(Base):
         self.update_status_ip_loc_flag()
 
         if self.get_setting(self.SETTING.REMOTE_SAVEPATH) != None:
-            load_configs_to_tree(self.config_storage, self.get_setting(self.SETTING.REMOTE_SAVEPATH))
+            if load_configs_to_tree(self.config_storage, self.get_setting(self.SETTING.REMOTE_SAVEPATH)) is not None:
+                self.builder.get_object("message_overlay_box").hide()
         
         if self.get_setting(self.SETTING.LAST_CONNECTED) != None:
             logger.debug("last_connected = {}".format(self.get_setting(self.SETTING.LAST_CONNECTED)))

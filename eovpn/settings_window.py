@@ -264,7 +264,8 @@ class SettingsWindowSignalHandler(Base):
         try:
             download_remote_to_destination(self.get_setting(self.SETTING.REMOTE), self.get_setting(self.SETTING.REMOTE_SAVEPATH))
             set_ca_automatic(self)
-            load_configs_to_tree(self.get_widget("config_storage") ,self.get_setting(self.SETTING.REMOTE_SAVEPATH))
+            if load_configs_to_tree(self.get_widget("config_storage") ,self.get_setting(self.SETTING.REMOTE_SAVEPATH)) is not None:
+                self.get_widget("message_overlay_box").hide()
         except Exception as e:
             logger.error(e)
 
@@ -400,6 +401,7 @@ class SettingsWindowSignalHandler(Base):
         #remove config from liststorage
         self.get_widget("config_storage").clear()
         self.get_widget("menu_view_config").set_sensitive(False)
+        self.get_widget("message_overlay_box").show()
 
         self.inapp_notification_label.set_text(gettext.gettext("Settings deleted."))
         self.undo_reset_btn.show()
