@@ -144,6 +144,7 @@ class MainWindowSignalHandler(Base):
         if is_standalone:
             logger.info("eOVPN running in standalone mode")
             self.config_tree.set_sensitive(False)
+            self.menu_view_config.hide()
             self.connect_btn.connect("clicked", self.on_connect_btn_clicked_standalone)
             self.standalone_mode = True
             self.standalone_path = ovpn_config
