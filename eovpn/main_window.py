@@ -539,10 +539,10 @@ class MainWindowSignalHandler(Base):
         
         log_file = os.path.join(self.EOVPN_CONFIG_DIR, "session.log")
         config_file = os.path.join(working_dir, config_name)
-        auth_file = working_dir + "/auth.txt" #not applicable for NM
+        auth_file = os.path.join(working_dir,"auth.txt") #not applicable for NM
         crt = None
 
-        if not os.path.exists(os.path.join(working_dir, "eovpn.json")):
+        if not os.path.exists(os.path.join(working_dir, "eovpn.json")) and self.conn_mgr.req_auth(config_file):
             builder = Gtk.Builder()
             builder.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + '/ui/ask_auth.glade')
             self.store_widget("ask_auth", builder)

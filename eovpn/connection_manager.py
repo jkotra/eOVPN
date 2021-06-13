@@ -40,6 +40,13 @@ class eOVPNConnectionManager(Base):
         else:
             self._push_to_statusbar("Manager not selected.")
             self._set_statusbar_icon(False, False)
+    
+    def req_auth(self, config_file):
+        f = open(config_file, "r")
+        if "auth-user-pass\n" in f.read():
+            return True
+        else:
+            return False    
 
     def _set_statusbar_icon(self, result: bool, connected: bool = False):
         if self.statusbar_icon is not None:
@@ -63,8 +70,7 @@ class eOVPNConnectionManager(Base):
         self._push_to_statusbar(gettext.gettext("Connecting.."))
 
         #check if config requires auth
-        f = open(openvpn_config, "r")
-        if "auth-user-pass" in f.read() and auth_file is None:
+        if self.req_auth(openvpn_config) and auth_file is None:
             self.spinner.stop()
             self._push_to_statusbar(gettext.gettext("Config requires authorization (auth-user-pass)"))
             self._set_statusbar_icon(False, False)
