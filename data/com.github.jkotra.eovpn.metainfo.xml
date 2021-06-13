@@ -41,6 +41,16 @@
 
   <releases>
 
+    <release version="0.40" date="2021-06-13">
+      <description>
+        <ul>
+          <li>Overlay image notifying user that application is not configured.</li>
+          <li>Syntax optimizations.</li>
+          <li>Improve menu UI</li>
+        </ul>
+      </description>
+    </release> 
+
     <release version="0.30" date="2021-05-20">
       <description>
         <ul>
