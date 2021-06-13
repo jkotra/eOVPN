@@ -92,7 +92,7 @@ class NetworkManager:
             ver = ver.decode('utf-8')
             ver = self.__NAME__ + " " + ver
 
-        if (ver != None) and is_openvpn_available:
+        if (ver is not None) and is_openvpn_available:
             return ver
 
     def get_connection_status(self) -> bool:

@@ -76,7 +76,7 @@ class SettingsWindowSignalHandler(Base):
         self.ovpn3_radio = self.builder.get_object("openvpn3_radio_btn")
         
         #TODO: move this to update UI elements
-        self.is_nm_supported = NetworkManager().get_version() != None
+        self.is_nm_supported = NetworkManager().get_version() is not None
         if not self.is_nm_supported:
             logger.warning("NM not found. hiding nm_radio btn.")
             self.nm_radio.hide()
@@ -379,7 +379,7 @@ class SettingsWindowSignalHandler(Base):
 
         #default settings
         self.set_setting(self.SETTING.NOTIFICATIONS, True)
-        self.set_setting(self.SETTING.MANAGER, "networkmanager" if (self.is_nm_supported != None) else "openvpn")
+        self.set_setting(self.SETTING.MANAGER, "networkmanager" if (self.is_nm_supported is not None) else "openvpn")
 
         self.set_setting("treeview-height", 250)
         self.get_widget("main_paned").set_position(250)

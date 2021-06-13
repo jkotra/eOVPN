@@ -135,7 +135,7 @@ class MainWindowSignalHandler(Base):
         is_nm_supported = NetworkManager().get_version()
 
         if self.get_setting(self.SETTING.MANAGER) is None:
-            self.set_setting(self.SETTING.MANAGER, "networkmanager" if (is_nm_supported != None) else "openvpn")
+            self.set_setting(self.SETTING.MANAGER, "networkmanager" if (is_nm_supported is not None) else "openvpn")
         
         if (self.get_setting(self.SETTING.MANAGER) == "networkmanager") and (is_nm_supported is None):
             self.set_setting(self.SETTING.MANAGER, "openvpn")
@@ -159,13 +159,13 @@ class MainWindowSignalHandler(Base):
 
         self.update_status_ip_loc_flag()
 
-        if self.get_setting(self.SETTING.REMOTE_SAVEPATH) != None:
+        if self.get_setting(self.SETTING.REMOTE_SAVEPATH) is not None:
             if load_configs_to_tree(self.config_storage, self.get_setting(self.SETTING.REMOTE_SAVEPATH)) is not None:
                 self.builder.get_object("message_overlay_box").hide()
         
-        if self.get_setting(self.SETTING.LAST_CONNECTED) != None:
+        if self.get_setting(self.SETTING.LAST_CONNECTED) is not None and self.get_setting(self.SETTING.REMOTE_SAVEPATH) is not None:
             logger.debug("last_connected = {}".format(self.get_setting(self.SETTING.LAST_CONNECTED)))
-            if self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR) != None:
+            if self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR) is not None:
                 i = self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR)
                 self.config_tree.set_cursor(i)
                 self.config_tree.scroll_to_cell(i)
@@ -400,7 +400,7 @@ class MainWindowSignalHandler(Base):
                 self.proto_chooser_box.set_sensitive(False)
                 return
 
-            if self.get_setting(self.SETTING.CURRENT_CONNECTED) != None:
+            if self.get_setting(self.SETTING.CURRENT_CONNECTED) is not None:
                 self.conn_mgr.openvpn_config_set_protocol(os.path.join(self.EOVPN_CONFIG_DIR,
                                                   self.get_setting(self.SETTING.REMOTE_SAVEPATH),
                                                   self.get_setting(self.SETTING.CURRENT_CONNECTED)), self.proto_label)

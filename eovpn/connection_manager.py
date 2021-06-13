@@ -147,7 +147,7 @@ class eOVPNConnectionManager(Base):
             ThreadManager().create(disconnect_openvpn_cli, (), is_daemon=True)    
 
         elif self.is_nm:
-            if (self.get_setting(self.SETTING.NM_ACTIVE_UUID) != None):
+            if (self.get_setting(self.SETTING.NM_ACTIVE_UUID) is not None):
                 self.uuid = self.get_setting(self.SETTING.NM_ACTIVE_UUID).encode('utf-8')
 
                 is_uuid_found = self.nm_manager.is_vpn_activated(self.uuid)
