@@ -7,6 +7,7 @@ import time
 import socket
 import pathlib
 import shutil
+import webbrowser
 
 import gettext
 
@@ -358,6 +359,9 @@ class MainWindowSignalHandler(Base):
     def on_log_btn_clicked(self, button):
         log_window = LogWindow()
         log_window.show()
+
+    def report_an_issue_btn_clicked_cb(self, button):
+        webbrowser.open("https://github.com/jkotra/eOVPN/issues/new")
 
 
     def on_about_btn_clicked(self, button):
