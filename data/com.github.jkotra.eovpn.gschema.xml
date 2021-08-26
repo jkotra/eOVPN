@@ -52,5 +52,8 @@
       <key type="b" name="connect-on-launch">
          <default>false</default>
       </key>
+      <key type="b" name="show-flag">
+         <default>false</default>
+      </key>
    </schema>
 </schemalist>

@@ -1,4 +1,8 @@
 
+body {
+    color: red;
+}
+
 .badge_proto {
     background-color: green;
     padding-top: 2px;
@@ -24,23 +28,25 @@
     color: white;
 }
 
-
-.bg_red {
-    background-color: rgb(119, 14, 14);
-}
-
-.bg_blue {
-    background-color: rgb(15, 55, 165);
-}
-
-.bg_green {
-    background-color: #26a269;
-}
-
-.bg_black {
-    background-color: black;
-}
-
 .reset_button {
     background: rgb(121, 21, 21);
+}
+
+.ip_text {
+    font-size: large;
+    font-weight: bold;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+
+.star {
+    
+    box-shadow: none;
+    border: transparent;
+    background: transparent;
+    padding: 0px;
+    -gtk-icon-shadow: none;
 }

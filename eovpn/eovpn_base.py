@@ -44,9 +44,10 @@ class Settings:
     AUTH_USER = "auth-user"
     AUTH_PASS = "auth-pass"
     NM_ACTIVE_UUID = "nm-active-uuid"
+    SHOW_FLAG = "show-flag"
 
     all_settings = ["current-connected", "last-connected", "last-connected-cursor", "update-on-start", "connect-on-launch",
-    "notifications", "treeview-height", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid"]
+    "notifications", "treeview-height", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag"]
 
 class Base:
 
