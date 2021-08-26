@@ -5,7 +5,6 @@ import gettext
 from gi.repository import GLib, Secret
 
 from .eovpn_base import Base, ThreadManager
-from .openvpn import OpenVPN
 from .networkmanager.bindings import NetworkManager
 
 
