@@ -4,7 +4,11 @@ import os
 from os import path, stat
 from urllib.parse import urlparse
 import shutil
+import requests
+import zipfile
 import gettext
+import re
+import io
 
 from gi.repository import Gtk, Gio, GLib, Gdk, Secret
 
@@ -20,6 +24,45 @@ from .utils import set_ca_automatic
 from .networkmanager.bindings import NetworkManager
 
 logger = logging.getLogger(__name__)
+
+def download_remote_to_destination(remote, destination):
+
+    ovpn = re.compile('.ovpn')
+    crt = re.compile(r'.crt|cert|pem')
+     
+    def make_zip_from_b(content):
+        return zipfile.ZipFile(io.BytesIO(content), "r")
+
+    def download_zip(remote):
+        remote_c = requests.get(remote, timeout=360)  
+        zip_file = make_zip_from_b(remote_c.content)
+        return zip_file
+
+    remote = os.path.expanduser(remote)
+    zip_file = download_zip(remote)
+        
+    #list of files inside zip
+    files_in_zip = zip_file.namelist()
+
+    configs = list( filter(ovpn.findall, files_in_zip) )
+    certs = list( filter(crt.findall, files_in_zip) )
+    all_files = configs + certs
+    if len(configs) > 0:
+        for file_name in all_files:      
+            file = zip_file.getinfo(file_name)
+            file.filename = os.path.basename(file.filename) #remove nested dir
+            logger.info(file.filename)
+            zip_file.extract(file, destination)
+        return True
+
+    return False  
+
+def validate_remote(remote):
+    tmp_path = os.path.join(GLib.get_tmp_dir(), "eovpn_validate")
+    logger.debug("tmp_path={}".format(tmp_path))
+
+    return download_remote_to_destination(remote, tmp_path)
+
 
 class SettingsWindow(Base, Gtk.Builder):
     def __init__(self):
@@ -102,9 +145,11 @@ class SettingsWindow(Base, Gtk.Builder):
         #username
         username_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
         button = Gtk.Button.new_from_icon_name("avatar-default-symbolic")
+        button.set_sensitive(False)
         button.set_margin_start(4)
         username_box.append(button)
         self.username_entry = Gtk.Entry.new()
+        self.username_entry.set_placeholder_text("Username / Email")
         self.username_entry.set_hexpand(True)
         self.username_entry.set_margin_start(6)
         self.username_entry.set_margin_end(6)
@@ -113,9 +158,11 @@ class SettingsWindow(Base, Gtk.Builder):
         #password
         password_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
         button = Gtk.Button.new_from_icon_name("dialog-password-symbolic")
+        button.set_sensitive(False)
         button.set_margin_start(4)
         password_box.append(button)
         self.password_entry = Gtk.PasswordEntry.new()
+        self.password_entry.set_property("placeholder-text", "Password")
         self.password_entry.set_show_peek_icon(True)
         self.password_entry.set_hexpand(True)
         self.password_entry.set_margin_start(6)
@@ -125,6 +172,7 @@ class SettingsWindow(Base, Gtk.Builder):
         #CA
         ca_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
         button = Gtk.Button.new_from_icon_name("application-certificate-symbolic")
+        button.set_sensitive(False)
         button.set_margin_start(4)
         ca_box.append(button)
         self.ca_chooser_btn = Gtk.Button.new_with_label("(None)")
@@ -134,6 +182,11 @@ class SettingsWindow(Base, Gtk.Builder):
 
         #Filechooserdialog
         file_chooser_dialog = Gtk.FileChooserNative(action=Gtk.FileChooserAction.OPEN)
+        file_chooser_dialog.set_transient_for(self.window)
+        ca_filter = Gtk.FileFilter()
+        ca_filter.add_mime_type("application/pkix-cert")
+        file_chooser_dialog.add_filter(ca_filter)
+
         
         def choose_ca(button):
             file_chooser_dialog.show()
@@ -155,9 +208,9 @@ class SettingsWindow(Base, Gtk.Builder):
             if (username := self.get_setting(self.SETTING.AUTH_USER)) is not None:
                 self.username_entry.set_text(username)
 
-            if (password := self.get_setting(self.SETTING.AUTH_PASS)) is not None:
-                # load from keyring
-                pass
+            if (username := self.get_setting(self.SETTING.AUTH_USER)) is not None:
+                if (password := Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {"username": username}, None)) is not None:
+                    self.password_entry.set_text(password)
 
 
         #Prefs - Setup
@@ -208,7 +261,7 @@ class SettingsWindow(Base, Gtk.Builder):
         v_box.append(label)
 
         img = Gtk.Image.new()
-        img.set_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/icons/flag.svg")
+        img.set_from_icon_name("preferences-desktop-locale-symbolic")
 
         h_box.append(img)
 
@@ -229,13 +282,23 @@ class SettingsWindow(Base, Gtk.Builder):
         #attach to pref box
         frame.set_child(list_box)
         self.pref_box.append(frame)
+        self.remove_all_vpn_btn = Gtk.Button.new_with_label("Delete All VPN Connections!")
+        self.remove_all_vpn_btn.set_margin_start(4)
+        self.remove_all_vpn_btn.set_margin_end(4)
+        self.remove_all_vpn_btn.set_margin_bottom(8)
+        self.remove_all_vpn_btn.set_margin_top(8)
+        self.remove_all_vpn_btn.get_style_context().add_class("destructive-action")
+        self.remove_all_vpn_btn.set_valign(Gtk.Align.END)
+        self.remove_all_vpn_btn.set_vexpand(True)
+        self.pref_box.append(self.remove_all_vpn_btn)
+        self.pref_box.set_vexpand(True)
         self.window.set_child(self.stack)
         
 
         #connect signals
-        self.reset_btn.connect("clicked", self.signals.on_reset_btn_clicked, [entry, self.username_entry, self.password_entry], [self.ca_chooser_btn], [self.ask_auth_switch, self.notif_switch, self.flag_switch])
+        self.reset_btn.connect("clicked", self.signals.on_reset_btn_clicked, [entry, self.username_entry, self.password_entry], [self.ca_chooser_btn], [self.ask_auth_switch, self.notif_switch, self.flag_switch], self.window)
         entry.connect("changed", self.signals.process_config_entry, self.revealer)
-        self.validate_btn.connect("clicked", self.signals.on_validate_btn_click)
+        self.validate_btn.connect("clicked", self.signals.on_validate_btn_click, entry, self.window)
         self.username_entry.connect("changed", self.signals.process_username)
         self.password_entry.connect("changed", self.signals.process_password)
         file_chooser_dialog.connect("response", self.signals.process_ca, self.ca_chooser_btn)
@@ -243,6 +306,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.ask_auth_switch.connect("state-set", self.signals.req_auth ,self.user_pass_ca_box)
         self.notif_switch.connect("state-set", self.signals.notification_set)
         self.flag_switch.connect("state-set", self.signals.show_flag_set)
+        self.remove_all_vpn_btn.connect("clicked", lambda _: NetworkManager().delete_all_vpn_connections())
 
 
     def show(self):
@@ -279,7 +343,12 @@ class Signals(Base):
 
     def process_password(self, entry):
         if entry.get_text() != "":
-            self.set_setting(self.SETTING.AUTH_PASS, entry.get_text())
+            attributes = { "username": self.get_setting(self.SETTING.AUTH_USER)}
+            if attributes["username"] is None:
+                entry.set_text("")
+                return
+            Secret.password_store(self.EOVPN_SECRET_SCHEMA, attributes, Secret.COLLECTION_DEFAULT,
+                                                    "password", entry.get_text(), None)
         else:
             self.set_setting(self.SETTING.AUTH_PASS, None)
 
@@ -294,7 +363,7 @@ class Signals(Base):
     def show_flag_set(self, switch, state):
         self.set_setting(self.SETTING.SHOW_FLAG, state)
 
-    def on_reset_btn_clicked(self, button, entries, buttons, switches):
+    def on_reset_btn_clicked(self, button, entries, buttons, switches, window):
         self.reset_all_settings()
 
         for e in entries:
@@ -306,5 +375,12 @@ class Signals(Base):
         for s in switches:
             s.set_state(False)
 
-    def on_validate_btn_click(self, button):
-        pass
+    def on_validate_btn_click(self, button, entry, window):
+        if validate_remote(entry.get_text()):
+            md = Gtk.MessageDialog()
+            md.set_property("message-type", Gtk.MessageType.INFO)
+            md.set_transient_for(window)
+            md.set_markup("Valid Remote")
+            md.add_button("_Ok", 1)
+            md.connect("response", lambda x, d: md.hide())
+            md.show()
