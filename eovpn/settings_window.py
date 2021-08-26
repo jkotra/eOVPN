@@ -239,6 +239,8 @@ class SettingsWindow(Base, Gtk.Builder):
         h_box.append(v_box)
 
         self.notif_switch = Gtk.Switch.new()
+        if self.get_setting(self.SETTING.NOTIFICATIONS) is True:
+            self.notif_switch.set_state(True) 
         self.notif_switch.set_halign(Gtk.Align.CENTER)
         self.notif_switch.set_valign(Gtk.Align.CENTER)
         h_box.append(self.notif_switch)
@@ -250,7 +252,6 @@ class SettingsWindow(Base, Gtk.Builder):
 
         ###########FLAG###########
 
-        # Notifications
         list_box_row = Gtk.ListBoxRow.new()
         h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
         v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
@@ -268,6 +269,8 @@ class SettingsWindow(Base, Gtk.Builder):
         h_box.append(v_box)
 
         self.flag_switch = Gtk.Switch.new()
+        if self.get_setting(self.SETTING.SHOW_FLAG) is True:
+            self.flag_switch.set_state(True) 
         self.flag_switch.set_halign(Gtk.Align.CENTER)
         self.flag_switch.set_valign(Gtk.Align.CENTER)
         h_box.append(self.flag_switch)
