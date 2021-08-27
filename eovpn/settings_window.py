@@ -58,10 +58,12 @@ def download_remote_to_destination(remote, destination):
     return False  
 
 def validate_remote(remote):
-    tmp_path = os.path.join(GLib.get_tmp_dir(), "eovpn_validate")
-    logger.debug("tmp_path={}".format(tmp_path))
+    #tmp_path = os.path.join(GLib.get_tmp_dir(),)
+    #logger.debug("tmp_path={}".format(tmp_path))
+    save_path = os.path.join(GLib.get_user_config_dir(), "eovpn", "CONFIGS")
 
-    return download_remote_to_destination(remote, tmp_path)
+
+    return download_remote_to_destination(remote, save_path)
 
 
 class SettingsWindow(Base, Gtk.Builder):
@@ -365,9 +367,18 @@ class Signals(Base):
 
     def show_flag_set(self, switch, state):
         self.set_setting(self.SETTING.SHOW_FLAG, state)
+        if state:
+            self.get_widget("flag").show()
+        else:
+            self.get_widget("flag").hide()
 
     def on_reset_btn_clicked(self, button, entries, buttons, switches, window):
         self.reset_all_settings()
+        
+        try:
+            shutil.rmtree(os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS"))
+        except Exception:
+            pass    
 
         for e in entries:
             e.set_text('')
@@ -378,8 +389,13 @@ class Signals(Base):
         for s in switches:
             s.set_state(False)
 
+        for r in self.get_widget("config_rows"):
+            self.get_widget("config_box").remove(r)
+
+
     def on_validate_btn_click(self, button, entry, window):
         if validate_remote(entry.get_text()):
+            ucf = self.get_something("update_config_func")()
             md = Gtk.MessageDialog()
             md.set_property("message-type", Gtk.MessageType.INFO)
             md.set_transient_for(window)

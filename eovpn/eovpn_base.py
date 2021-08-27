@@ -13,6 +13,7 @@ from gi.repository import Gtk, Gio, GLib, GdkPixbuf, Notify, Secret
 eovpn_standalone = {"is_standalone": False, "path": None}
 _builder_record = {}
 _widget_record = {}
+_obj_record = {}
 
 _settings_backup = {}
 
@@ -96,6 +97,12 @@ class Base:
     def store_widget(self, name, widget):
         _widget_record[name] = widget
 
+    def get_something(self, obj):
+        if obj in _obj_record.keys():
+            return _obj_record[obj]
+
+    def store_something(self, name, obj):
+        _obj_record[name] = obj
 
     def get_logo(self):
         img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/com.github.jkotra.eovpn.svg", -1, 128, True)
