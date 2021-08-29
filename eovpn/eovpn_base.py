@@ -76,6 +76,7 @@ class Base:
 
 
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")
+        self.EOVPN_OVPN_CONFIG_DIR = os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS")
         self.EOVPN_GRESOURCE_PREFIX = "/com/github/jkotra/" + self.APP_NAME.lower()
         self.EOVPN_CSS = self.EOVPN_GRESOURCE_PREFIX + "/css/main.css"
         self.SETTING = Settings()
@@ -104,27 +105,20 @@ class Base:
     def store_something(self, name, obj):
         _obj_record[name] = obj
 
-    def get_logo(self):
-        img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/com.github.jkotra.eovpn.svg", -1, 128, True)
-        return img
 
-    def get_image(self, image_name, image_cat, scale=False):
-        img = GdkPixbuf.Pixbuf.new_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/{}/".format(image_cat) + image_name)
-        if scale is not False:
-            w, h = scale
-            img = img.scale_simple(w, h, GdkPixbuf.InterpType.BILINEAR)
-        return img
-
-
-    def get_country_image(self, country_alpha_code):
+    def get_country_pixbuf(self, country_code):
 
         try:
-            img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/" + country_alpha_code.lower() + ".svg", 72, -1, True)
+            return GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/" + country_code + ".svg",
+                                                             128,
+                                                             -1,
+                                                             True)
         except Exception as e:
             logger.error(str(e))
-            img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/uno.svg", 72, -1, True)
-
-        return img
+            return GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/uno.svg",
+                                                             128,
+                                                             -1,
+                                                             True)
 
     def send_notification(self, action, message, connection_event=None):
         Notify.init("com.github.jkotra.eovpn")

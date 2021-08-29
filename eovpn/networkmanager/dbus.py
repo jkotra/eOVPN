@@ -63,4 +63,4 @@ class NMDbus:
            is_connection_deletion_required = reason in [5, 6, 7, 8 , 9, 10]
            GLib.timeout_add_seconds(1, update_callback, False, (error_reasons[reason] if is_connection_deletion_required else None))
         else:
-            pass
+            update_callback([status, reason])

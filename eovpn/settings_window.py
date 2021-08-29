@@ -15,12 +15,6 @@ from gi.repository import Gtk, Gio, GLib, Gdk, Secret
 from .eovpn_base import Base, ThreadManager
 from .connection_manager import eOVPNConnectionManager
 
-from .utils import validate_remote
-from .utils import load_configs_to_tree
-from .utils import download_remote_to_destination
-from .utils import message_dialog
-from .utils import set_ca_automatic
-
 from .networkmanager.bindings import NetworkManager
 
 logger = logging.getLogger(__name__)
@@ -368,9 +362,9 @@ class Signals(Base):
     def show_flag_set(self, switch, state):
         self.set_setting(self.SETTING.SHOW_FLAG, state)
         if state:
-            self.get_widget("flag").show()
+            self.get_something("flag").show()
         else:
-            self.get_widget("flag").hide()
+            self.get_something("flag").hide()
 
     def on_reset_btn_clicked(self, button, entries, buttons, switches, window):
         self.reset_all_settings()
@@ -395,7 +389,7 @@ class Signals(Base):
 
     def on_validate_btn_click(self, button, entry, window):
         if validate_remote(entry.get_text()):
-            ucf = self.get_something("update_config_func")()
+            self.get_something("update_config_func")()
             md = Gtk.MessageDialog()
             md.set_property("message-type", Gtk.MessageType.INFO)
             md.set_transient_for(window)

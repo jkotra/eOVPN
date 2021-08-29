@@ -27,6 +27,10 @@ class eOVPNConnectionManager(Base):
 
 
     def connect(self, openvpn_config, callback=None) -> bool:
+
+        if self.get_connection_status():
+            self.disconnect()
+            return
          
         nm_username = self.get_setting(self.SETTING.AUTH_USER)
         nm_password = None
@@ -53,31 +57,21 @@ class eOVPNConnectionManager(Base):
         self.nm_manager.delete_connection(self.uuid)
 
 
-    def disconnect(self, callback=None):
+    def disconnect(self):
+        
+        if self.uuid is None:
+            while(self.nm_manager.get_active_vpn_connection_uuid() is not None):
+                self.nm_manager.disconnect(self.nm_manager.get_active_vpn_connection_uuid())
+            return 
 
-        if (self.get_setting(self.SETTING.NM_ACTIVE_UUID) is not None):
-            self.uuid = self.get_setting(self.SETTING.NM_ACTIVE_UUID).encode('utf-8')
-            is_uuid_found = self.nm_manager.is_vpn_activated(self.uuid)
+        is_uuid_found = self.nm_manager.is_vpn_activated(self.uuid)
 
-            if (is_uuid_found == True) or (is_uuid_found != -1):
-                logger.info("current vpn UUID ({}) matches one in settings.json.".format(self.uuid))
-            else:
-                self.uuid = None
-            
-            if self.uuid is None:
-                logger.info("unknown UUID!")
-                while(self.nm_manager.get_active_vpn_connection_uuid() is not None):
-                    self.nm_manager.disconnect(self.nm_manager.get_active_vpn_connection_uuid())
-                return True
-                            
-            disconnect_result = self.nm_manager.disconnect(self.uuid)
+        if (is_uuid_found == True):
+            logger.info("current vpn UUID ({}).".format(self.uuid))
+            self.nm_manager.disconnect(self.uuid)
             self.nm_manager.delete_connection(self.uuid)
             self.uuid = None
             self.set_setting(self.SETTING.NM_ACTIVE_UUID, None)
-
-        else:
-            pass
-
         
     def get_connection_status(self) -> bool:
         return self.nm_manager.get_connection_status()

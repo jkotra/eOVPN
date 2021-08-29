@@ -36,13 +36,14 @@
     font-weight: bold;
 }
 
-
 .progress-yellow trough progress {
-    background-color: yellow;
+    background-color: #fdd804;
+    border-bottom-color: #fdd804;
 }
 
-.progress-green trough progress {
-    background-color: rgb(75, 255, 75);
+.progress-full-green trough progress {
+    background-color: #3E8914;
+    border-bottom-color: #3E8914;
 }
 
 

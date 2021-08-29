@@ -2,7 +2,9 @@ import logging
 from .settings_window import SettingsWindow
 from .connection_manager import eOVPNConnectionManager
 from .networkmanager.dbus import NMDbus
-from gi.repository import Gtk, Gio, GdkPixbuf, GObject
+from gi.repository import Gtk, Gio, GdkPixbuf, GObject, GLib, Gdk
+from .ip_lookup.lookup import Lookup
+from .utils import ovpn_is_auth_required
 import os
 import time
 import threading
@@ -30,22 +32,35 @@ class MainWindow(Base, Gtk.Builder):
         self.signals = Signals()
         self.CM = eOVPNConnectionManager()
         self.nmdbus = NMDbus()
+        self.lookup = Lookup()
         self.nmdbus.watch(self.on_nm_connection_event)
     
+    def on_select_row(self, listbox, row):
+        self.selected_row = row
+        if ovpn_is_auth_required(self.EOVPN_OVPN_CONFIG_DIR + "/" + row.get_child().get_label()):
+            if self.get_setting(self.SETTING.REQ_AUTH) is False:
+                self.connect_btn.set_sensitive(False)
+            else:
+                self.connect_btn.set_sensitive(True)
+
+
+    def get_selected_config(self):
+        try:
+            row = self.selected_row.get_child().get_label()
+            return row
+        except AttributeError:
+            return None                                                    
 
     def setup(self):
-        box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #top most box
-        main_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0) #main
-        box.append(main_box)
+        self.box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #top most box
+        self.paned = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
 
-        inner_left = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #ListBox
-        inner_left.set_hexpand(True)
+        self.inner_left = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #ListBox
+        self.paned.set_start_child(self.inner_left)
+        self.inner_left.set_size_request(200, 200)
 
-        inner_right = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
-        inner_right.set_hexpand(True)
-
-        main_box.append(inner_left)
-        main_box.append(inner_right)
+        self.inner_right = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #Info
+        self.paned.set_end_child(self.inner_right)
 
         viewport = Gtk.Viewport().new()
         viewport.set_vexpand(True)
@@ -53,13 +68,10 @@ class MainWindow(Base, Gtk.Builder):
 
         scrolled_window = Gtk.ScrolledWindow().new()
 
-
-        def row_selected(box, row):
-            self.selected_row = row
-
-        list_box = Gtk.ListBox.new()
-        self.store_widget("config_box", list_box)
-        list_box.connect("row-selected", row_selected)
+        self.list_box = Gtk.ListBox.new()
+        self.store_widget("config_box", self.list_box)
+       
+        self.list_box.connect("row-selected", self.on_select_row)
         config_rows = []
         
         def update_config_rows():
@@ -71,6 +83,8 @@ class MainWindow(Base, Gtk.Builder):
             configs.sort()
         
             for file in configs:
+                if not file.endswith("ovpn"):
+                    continue
                 row = Gtk.ListBoxRow.new()
                 label = Gtk.Label.new(file)
                 label.set_halign(Gtk.Align.START)
@@ -78,63 +92,65 @@ class MainWindow(Base, Gtk.Builder):
                 config_rows.append(row)
         
             for r in config_rows:
-                list_box.append(r)
+                self.list_box.append(r)
         
         update_config_rows()
-        self.store_widget("config_rows", config_rows)
+        self.store_something("config_rows", config_rows)
         self.store_something("update_config_func", update_config_rows)
-        scrolled_window.set_child(list_box)
+        scrolled_window.set_child(self.list_box)
         viewport.set_child(scrolled_window)
-        inner_left.append(viewport)
+        self.inner_left.append(viewport)
 
         # Right Side
-        #this contains - Country Image(Optional), IP, Location
-        top_info_box = Gtk.Box().new(Gtk.Orientation.VERTICAL, 4)
-        top_info_box.set_margin_top(12)
-        top_info_box.set_vexpand(True)
-        inner_right.append(top_info_box)
-
-        ## image
-        pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/us.svg",
-                                                             128,
-                                                             -1,
-                                                             True)
-        img = Gtk.Picture.new_for_pixbuf(pixbuf)
+        
+        img = Gtk.Picture.new()
         img.set_halign(Gtk.Align.CENTER)
-        top_info_box.append(img)
+        self.store_something("flag", img)
         if self.get_setting(self.SETTING.SHOW_FLAG) is False:
             img.hide()
-        self.store_widget("flag", img)    
+        self.inner_right.append(img)
 
-        ip_addr = Gtk.Label().new("IP: 127.0.0.1")
-        ip_addr.get_style_context().add_class("ip_text")
-        top_info_box.append(ip_addr)
-        top_info_box.append(Gtk.Label().new("Location: New York"))
+        #this contains - OpenVPN info
+        h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 6)
+        h_box.set_halign(Gtk.Align.CENTER)
+        self.ip_addr = Gtk.Label.new("0.0.0.0")
+        self.ip_addr.set_valign(Gtk.Align.CENTER)
+        self.ip_addr.get_style_context().add_class("ip_text")
+        self.ip_addr.set_vexpand(True)
+        h_box.append(self.ip_addr)
+
+        #copy_btn = Gtk.Button.new_from_icon_name("edit-copy-symbolic")
+        #copy_btn.set_halign(Gtk.Align.CENTER)
+        #copy_btn.set_valign(Gtk.Align.CENTER)
+        #copy_btn.connect("clicked", self.signals.copy_ip, self.ip_addr.get_label())
+        #h_box.append(copy_btn)
+
+        self.inner_right.append(h_box)
+        ThreadManager().create(self.update_set_ip_flag, ())
 
         self.connect_btn = Gtk.Button().new_with_label("Connect")
-        self.connect_btn.set_margin_top(15)
-        self.connect_btn.set_margin_bottom(15)
-        self.connect_btn.set_margin_start(15)
-        self.connect_btn.set_margin_end(15)
+        self.connect_btn.set_margin_top(10)
+        self.connect_btn.set_margin_bottom(10)
+        self.connect_btn.set_margin_start(10)
+        self.connect_btn.set_margin_end(10)
         self.connect_btn.set_valign(Gtk.Align.END)
-        self.connect_btn.connect("clicked", lambda _: self.signals.connect(self.selected_row.get_child().get_label(), self.CM, self.progress_bar))
-        inner_right.append(self.connect_btn)
+        self.connect_btn.set_vexpand(True)
 
-
+        self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config, self.CM)
+        self.inner_right.append(self.connect_btn)
         # END OF RIGHT
-        
-        self.progress_bar = Gtk.ProgressBar().new()
-        box.append(self.progress_bar)
+
+        self.progress_bar = Gtk.ProgressBar.new()
+        #self.progress_bar.set_valign(Gtk.Align.END)
+        #self.box.append(self.progress_bar)
 
         if self.CM.get_connection_status():
             self.connect_btn.set_label("Disconnect")
             self.connect_btn.get_style_context().add_class("destructive-action")
+            self.progress_bar.get_style_context().add_class("progress-full-green")
             self.progress_bar.set_fraction(1.0)
-            self.progress_bar.get_style_context().add_class("progress-green")
-            self.connect_btn.connect("clicked", self.signals.disconnect, self.CM)
         else:
             self.progress_bar.get_style_context().add_class("progress-yellow")
-            self.progress_bar.set_pulse_step(0.05)   
 
         # popover
         def open_about_dialog(widget, data):
@@ -154,14 +170,8 @@ class MainWindow(Base, Gtk.Builder):
         action.connect("activate", open_about_dialog)
         self.app.add_action(action)
 
-        def open_settings_window(widget, data):
-            window = SettingsWindow()
-            window.show()
-
-
-
         action = Gio.SimpleAction().new("settings", None)
-        action.connect("activate", open_settings_window)
+        action.connect("activate", lambda x, d: SettingsWindow().show())
         self.app.add_action(action)
 
         menu = Gio.Menu().new()
@@ -176,26 +186,50 @@ class MainWindow(Base, Gtk.Builder):
         menu_button.set_icon_name("open-menu-symbolic")
         menu_button.set_popover(popover)
         header_bar.pack_end(menu_button)
-
-        spinner = Gtk.Spinner()
-        header_bar.pack_end(spinner)
-
-        self.window.set_child(box)    
+        
+        #finally!
+        self.box.append(self.paned)
+        self.box.append(self.progress_bar)
+        self.window.set_child(self.box)    
+    
+    def update_set_ip_flag(self):
+        self.lookup.update()
+        self.get_something("flag").set_pixbuf(self.get_country_pixbuf(self.lookup.country_code))
+        self.ip_addr.set_label(self.lookup.ip)
 
     def on_nm_connection_event(self, result, error=None):
         if error is not None:
             print(error)
+            self.progress_bar.set_text(error)
+            self.progress_bar.set_fraction(1)
+            return
+
+        if type(result) is list:
+            print(self.progress_bar.get_fraction())
+            prev = self.progress_bar.get_fraction()
+            if prev < 0.95:
+                self.progress_bar.set_fraction(prev + 0.25)
             return
 
         if result:
+            ThreadManager().create(self.update_set_ip_flag, ())
             self.connect_btn.set_label("Disconnect")
             self.connect_btn.get_style_context().add_class("destructive-action")
-            self.progress_bar.set_fraction(1.0)
-            self.progress_bar.get_style_context().add_class("progress-green")
-            self.connect_btn.connect("clicked", self.signals.disconnect, self.CM)
+            p_ctx = self.progress_bar.get_style_context()
+            p_ctx.remove_class("progress-yellow")
+            p_ctx.add_class("progress-full-green")
+            self.progress_bar.set_fraction(1.0) 
+            self.set_setting(self.SETTING.LAST_CONNECTED, self.get_selected_config())
+            # save last cursor
+            # TODO
+                      
         else:
+            ThreadManager().create(self.update_set_ip_flag, ())
             self.connect_btn.set_label("Connect")
             self.connect_btn.get_style_context().remove_class("destructive-action")
+            p_ctx = self.progress_bar.get_style_context()
+            p_ctx.remove_class("progress-full-green")
+            p_ctx.add_class("progress-yellow")
             self.progress_bar.set_fraction(0)
 
     def show(self):
@@ -209,9 +243,12 @@ class Signals(Base):
     def __init__(self):
         super().__init__()
     
-    def connect(self, config, manager, progressbar):
-        print(config, manager, progressbar)
-        manager.connect("/home/jkotra/Documents/ipvanish/" + config)
+    def connect(self, button, config, manager):
+        config = config()
+        if config is None and manager.get_connection_status():
+            manager.connect(None)
+            return
+        manager.connect(self.EOVPN_CONFIG_DIR + "/CONFIGS/" + config)
 
     def disconnect(self, button, manager):
         manager.disconnect()
