@@ -105,6 +105,29 @@ class Base:
     def store_something(self, name, obj):
         _obj_record[name] = obj
 
+    def send_connected_notification(self):
+        if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
+            return
+        Notify.init("com.github.jkotra.eovpn")
+        notif = Notify.Notification.new("Connected", "Connected to VPN")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/notification_connected.svg",
+                                                             128,
+                                                             -1,
+                                                             True)
+        notif.set_image_from_pixbuf(pixbuf)
+        notif.show()
+
+    def send_disconnected_notification(self):
+        if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
+            return
+        Notify.init("com.github.jkotra.eovpn")
+        notif = Notify.Notification.new("Disconnected", "Disconnected from VPN")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/notification_disconnected.svg",
+                                                             128,
+                                                             -1,
+                                                             True)
+        notif.set_image_from_pixbuf(pixbuf)
+        notif.show()
 
     def get_country_pixbuf(self, country_code):
 

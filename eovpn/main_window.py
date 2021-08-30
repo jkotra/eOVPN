@@ -65,7 +65,7 @@ class MainWindow(Base, Gtk.Builder):
         viewport = Gtk.Viewport().new()
         viewport.set_vexpand(True)
         viewport.set_hexpand(True)
-
+        
         scrolled_window = Gtk.ScrolledWindow().new()
 
         self.list_box = Gtk.ListBox.new()
@@ -97,9 +97,14 @@ class MainWindow(Base, Gtk.Builder):
         update_config_rows()
         self.store_something("config_rows", config_rows)
         self.store_something("update_config_func", update_config_rows)
-        scrolled_window.set_child(self.list_box)
-        viewport.set_child(scrolled_window)
-        self.inner_left.append(viewport)
+        
+        #scrolled_window.set_child(self.list_box)
+        #viewport.set_child(scrolled_window)
+
+        scrolled_window.set_child(viewport)
+        viewport.set_child(self.list_box)
+
+        self.inner_left.append(scrolled_window)
 
         # Right Side
         
@@ -113,17 +118,13 @@ class MainWindow(Base, Gtk.Builder):
         #this contains - OpenVPN info
         h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 6)
         h_box.set_halign(Gtk.Align.CENTER)
+        self.ip_text = Gtk.Label.new("IP: ")
         self.ip_addr = Gtk.Label.new("0.0.0.0")
         self.ip_addr.set_valign(Gtk.Align.CENTER)
         self.ip_addr.get_style_context().add_class("ip_text")
         self.ip_addr.set_vexpand(True)
+        h_box.append(self.ip_text)
         h_box.append(self.ip_addr)
-
-        #copy_btn = Gtk.Button.new_from_icon_name("edit-copy-symbolic")
-        #copy_btn.set_halign(Gtk.Align.CENTER)
-        #copy_btn.set_valign(Gtk.Align.CENTER)
-        #copy_btn.connect("clicked", self.signals.copy_ip, self.ip_addr.get_label())
-        #h_box.append(copy_btn)
 
         self.inner_right.append(h_box)
         ThreadManager().create(self.update_set_ip_flag, ())
@@ -220,6 +221,7 @@ class MainWindow(Base, Gtk.Builder):
             p_ctx.add_class("progress-full-green")
             self.progress_bar.set_fraction(1.0) 
             self.set_setting(self.SETTING.LAST_CONNECTED, self.get_selected_config())
+            self.send_connected_notification()
             # save last cursor
             # TODO
                       
@@ -231,6 +233,7 @@ class MainWindow(Base, Gtk.Builder):
             p_ctx.remove_class("progress-full-green")
             p_ctx.add_class("progress-yellow")
             self.progress_bar.set_fraction(0)
+            self.send_disconnected_notification()
 
     def show(self):
         self.setup()

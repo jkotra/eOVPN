@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <object class="GtkApplicationWindow" id="main_window">
-    <property name="can-focus">0</property>
     <property name="default-width">800</property>
     <property name="default-height">400</property>
     <child>
@@ -10,7 +9,6 @@
     </child>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header_bar">
-        <property name="can-focus">0</property>
       </object>
     </child>
   </object>
