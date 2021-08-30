@@ -4,7 +4,7 @@ from .connection_manager import eOVPNConnectionManager
 from .networkmanager.dbus import NMDbus
 from gi.repository import Gtk, Gio, GdkPixbuf, GObject, GLib, Gdk
 from .ip_lookup.lookup import Lookup
-from .utils import ovpn_is_auth_required
+from .utils import ovpn_is_auth_required, validate_remote
 import os
 import time
 import threading
@@ -166,6 +166,10 @@ class MainWindow(Base, Gtk.Builder):
             about.set_website("https://github.com/jkotra/eOVPN")
             about.set_transient_for(self.window)
             about.show()
+        
+        action = Gio.SimpleAction().new("update", None)
+        action.connect("activate", lambda x, d: validate_remote(self.get_setting(self.SETTING.REMOTE)))
+        self.app.add_action(action)
 
         action = Gio.SimpleAction().new("about", None)
         action.connect("activate", open_about_dialog)
@@ -176,7 +180,7 @@ class MainWindow(Base, Gtk.Builder):
         self.app.add_action(action)
 
         menu = Gio.Menu().new()
-        menu.insert(0, "Update")
+        menu.insert(0, "Update", "app.update")
         menu.insert(1, "Settings", "app.settings")
         menu.insert(2, "About", "app.about")
         popover = Gtk.PopoverMenu().new_from_model(menu)

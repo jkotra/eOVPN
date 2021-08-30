@@ -14,50 +14,12 @@ from gi.repository import Gtk, Gio, GLib, Gdk, Secret
 
 from .eovpn_base import Base, ThreadManager
 from .connection_manager import eOVPNConnectionManager
+from .utils import validate_remote
 
 from .networkmanager.bindings import NetworkManager
 
 logger = logging.getLogger(__name__)
 
-def download_remote_to_destination(remote, destination):
-
-    ovpn = re.compile('.ovpn')
-    crt = re.compile(r'.crt|cert|pem')
-     
-    def make_zip_from_b(content):
-        return zipfile.ZipFile(io.BytesIO(content), "r")
-
-    def download_zip(remote):
-        remote_c = requests.get(remote, timeout=360)  
-        zip_file = make_zip_from_b(remote_c.content)
-        return zip_file
-
-    remote = os.path.expanduser(remote)
-    zip_file = download_zip(remote)
-        
-    #list of files inside zip
-    files_in_zip = zip_file.namelist()
-
-    configs = list( filter(ovpn.findall, files_in_zip) )
-    certs = list( filter(crt.findall, files_in_zip) )
-    all_files = configs + certs
-    if len(configs) > 0:
-        for file_name in all_files:      
-            file = zip_file.getinfo(file_name)
-            file.filename = os.path.basename(file.filename) #remove nested dir
-            logger.info(file.filename)
-            zip_file.extract(file, destination)
-        return True
-
-    return False  
-
-def validate_remote(remote):
-    #tmp_path = os.path.join(GLib.get_tmp_dir(),)
-    #logger.debug("tmp_path={}".format(tmp_path))
-    save_path = os.path.join(GLib.get_user_config_dir(), "eovpn", "CONFIGS")
-
-
-    return download_remote_to_destination(remote, save_path)
 
 
 class SettingsWindow(Base, Gtk.Builder):
