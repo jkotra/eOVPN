@@ -97,9 +97,6 @@ class MainWindow(Base, Gtk.Builder):
         update_config_rows()
         self.store_something("config_rows", config_rows)
         self.store_something("update_config_func", update_config_rows)
-        
-        #scrolled_window.set_child(self.list_box)
-        #viewport.set_child(scrolled_window)
 
         scrolled_window.set_child(viewport)
         viewport.set_child(self.list_box)
@@ -107,7 +104,6 @@ class MainWindow(Base, Gtk.Builder):
         self.inner_left.append(scrolled_window)
 
         # Right Side
-        
         img = Gtk.Picture.new()
         img.set_halign(Gtk.Align.CENTER)
         self.store_something("flag", img)
@@ -123,8 +119,14 @@ class MainWindow(Base, Gtk.Builder):
         self.ip_addr.set_valign(Gtk.Align.CENTER)
         self.ip_addr.get_style_context().add_class("ip_text")
         self.ip_addr.set_vexpand(True)
+        cpy_btn = Gtk.Button.new_from_icon_name("edit-copy-symbolic")
+        cpy_btn.set_valign(Gtk.Align.CENTER)
+        cpy_btn.set_halign(Gtk.Align.CENTER)
+        cpy_btn.connect("clicked", lambda x: Gdk.Display.get_default().get_clipboard().set(self.ip_addr.get_label()))
+
         h_box.append(self.ip_text)
         h_box.append(self.ip_addr)
+        h_box.append(cpy_btn)
 
         self.inner_right.append(h_box)
         ThreadManager().create(self.update_set_ip_flag, ())
