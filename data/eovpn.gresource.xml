@@ -3,11 +3,7 @@
   <gresource prefix="/com/github/jkotra/eovpn/">
   
     <file>ui/main.ui</file>
-    <file>ui/about.glade</file>
-    <file>ui/log.glade</file>
     <file>ui/settings.ui</file>
-    <file>ui/ask_auth.glade</file>
-    <file>ui/keyboard_shortcuts.ui</file>
   
   <file>icons/nm.svg</file>
   <file>icons/nm_black.svg</file>

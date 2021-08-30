@@ -34,7 +34,6 @@ class Settings:
     UPDATE_ON_START = "update-on-start"
     CONNECT_ON_LAUNCH = "connect-on-launch"
     NOTIFICATIONS = "notifications"
-    TREEVIEW_HEIGHT = "treeview-height"
     MANAGER = "manager"
     REQ_AUTH = "req-auth"
     CA = "ca"
@@ -48,7 +47,7 @@ class Settings:
     SHOW_FLAG = "show-flag"
 
     all_settings = ["current-connected", "last-connected", "last-connected-cursor", "update-on-start", "connect-on-launch",
-    "notifications", "treeview-height", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag"]
+    "notifications", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag"]
 
 class Base:
 

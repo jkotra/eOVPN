@@ -344,9 +344,14 @@ class Signals(Base):
 
         for s in switches:
             s.set_state(False)
+        
+        rows = self.get_something("config_rows")
+        listbox = self.get_widget("config_box")
 
-        for r in self.get_widget("config_rows"):
-            self.get_widget("config_box").remove(r)
+        print(rows)
+
+        for r in rows:
+            listbox.remove(r)
 
 
     def on_validate_btn_click(self, button, entry, window):

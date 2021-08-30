@@ -50,8 +50,14 @@ def download_remote_to_destination(remote, destination):
 
 def validate_remote(remote):
     save_path = os.path.join(GLib.get_user_config_dir(), "eovpn", "CONFIGS")
-    if len(os.listdir(save_path)) > 1:
-        shutil.rmtree(save_path)
+    
+    if os.path.exists(save_path):
+        if len(os.listdir(save_path)) > 1:
+            shutil.rmtree(save_path)
+    else:
+        os.mkdir(save_path)        
+
+
     return download_remote_to_destination(remote, save_path)
 
 def ovpn_is_auth_required(ovpn_file):

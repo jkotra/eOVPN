@@ -29,6 +29,8 @@ class MainWindow(Base, Gtk.Builder):
         self.store_widget("main_window", self.window)
         
         self.selected_row = None
+        self.selected_config = None
+        self.connected_cursor = None
         self.signals = Signals()
         self.CM = eOVPNConnectionManager()
         self.nmdbus = NMDbus()
@@ -37,6 +39,7 @@ class MainWindow(Base, Gtk.Builder):
     
     def on_select_row(self, listbox, row):
         self.selected_row = row
+        self.selected_config = self.selected_row.get_child().get_label()
         if ovpn_is_auth_required(self.EOVPN_OVPN_CONFIG_DIR + "/" + row.get_child().get_label()):
             if self.get_setting(self.SETTING.REQ_AUTH) is False:
                 self.connect_btn.set_sensitive(False)
@@ -46,7 +49,7 @@ class MainWindow(Base, Gtk.Builder):
 
     def get_selected_config(self):
         try:
-            row = self.selected_row.get_child().get_label()
+            row = self.list_box.get_selected_row().get_child().get_label()
             return row
         except AttributeError:
             return None                                                    
@@ -70,9 +73,9 @@ class MainWindow(Base, Gtk.Builder):
 
         self.list_box = Gtk.ListBox.new()
         self.store_widget("config_box", self.list_box)
-       
         self.list_box.connect("row-selected", self.on_select_row)
-        config_rows = []
+        self.available_configs = []
+        self.list_box_rows = []
         
         def update_config_rows():
             try:
@@ -81,6 +84,8 @@ class MainWindow(Base, Gtk.Builder):
                configs = []    
             
             configs.sort()
+            self.available_configs = []
+            self.list_box_rows = []
         
             for file in configs:
                 if not file.endswith("ovpn"):
@@ -89,13 +94,18 @@ class MainWindow(Base, Gtk.Builder):
                 label = Gtk.Label.new(file)
                 label.set_halign(Gtk.Align.START)
                 row.set_child(label)
-                config_rows.append(row)
-        
-            for r in config_rows:
-                self.list_box.append(r)
+                self.list_box.append(row)
+                self.list_box_rows.append(row)
+                self.available_configs.append(file)
+
+            if cur := self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR) != -1:
+                self.list_box.select_row(self.list_box_rows[cur])
+                self.list_box.grab_focus()
+
+
         
         update_config_rows()
-        self.store_something("config_rows", config_rows)
+        self.store_something("config_rows", self.list_box_rows)
         self.store_something("update_config_func", update_config_rows)
 
         scrolled_window.set_child(viewport)
@@ -197,7 +207,7 @@ class MainWindow(Base, Gtk.Builder):
         #finally!
         self.box.append(self.paned)
         self.box.append(self.progress_bar)
-        self.window.set_child(self.box)    
+        self.window.set_child(self.box) 
     
     def update_set_ip_flag(self):
         self.lookup.update()
@@ -229,7 +239,7 @@ class MainWindow(Base, Gtk.Builder):
             self.set_setting(self.SETTING.LAST_CONNECTED, self.get_selected_config())
             self.send_connected_notification()
             # save last cursor
-            # TODO
+            self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.available_configs.index(self.get_selected_config()))
                       
         else:
             ThreadManager().create(self.update_set_ip_flag, ())
