@@ -226,7 +226,7 @@ class MainWindow(Base, Gtk.Builder):
             print(self.progress_bar.get_fraction())
             prev = self.progress_bar.get_fraction()
             if prev < 0.95:
-                self.progress_bar.set_fraction(prev + 0.25)
+                self.progress_bar.set_fraction(prev + 0.35)
             return
 
         if result:
