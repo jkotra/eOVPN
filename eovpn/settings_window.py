@@ -8,6 +8,7 @@ import zipfile
 import gettext
 import re
 import io
+import gettext
 
 from gi.repository import Gtk, Gio, GLib, Gdk, Secret
 
@@ -36,7 +37,7 @@ class SettingsWindow(Base, Gtk.Builder):
 
     def setup(self):
         
-        self.reset_btn = Gtk.Button.new_with_label("Reset")
+        self.reset_btn = Gtk.Button.new_with_label(gettext.gettext("Reset"))
         self.reset_btn.get_style_context().add_class("destructive-action")
         self.header = self.get_object("settings_header_bar")
         self.header.pack_start(self.reset_btn)
@@ -53,11 +54,11 @@ class SettingsWindow(Base, Gtk.Builder):
 
         self.pref_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
 
-        self.stack.add_titled(self.main_box, "setup", "Setup")
-        self.stack.add_titled(self.pref_box, "general", "General")
+        self.stack.add_titled(self.main_box, "setup", gettext.gettext("Setup"))
+        self.stack.add_titled(self.pref_box, "general", gettext.gettext("General"))
 
         
-        label = Gtk.Label.new("Configuration Source")
+        label = Gtk.Label.new(gettext.gettext("Configuration Source"))
         label.set_halign(Gtk.Align.START)
         label.set_margin_start(4)
         label.get_style_context().add_class("bold")
@@ -73,7 +74,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.main_box.append(entry)
 
         self.revealer = Gtk.Revealer.new()
-        self.validate_btn = Gtk.Button.new_with_label("Validate & Load")
+        self.validate_btn = Gtk.Button.new_with_label(gettext.gettext("Validate & Load"))
         self.validate_btn.get_style_context().add_class("suggested-action")
         self.validate_btn.set_margin_start(12)
         self.validate_btn.set_margin_end(12)
@@ -86,7 +87,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.auth_box.set_margin_top(12)
 
         ask_auth_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
-        label = Gtk.Label.new("Authentication")
+        label = Gtk.Label.new(gettext.gettext("Authentication"))
         label.set_halign(Gtk.Align.START)
         label.set_margin_start(4)
         label.get_style_context().add_class("bold")
@@ -106,7 +107,7 @@ class SettingsWindow(Base, Gtk.Builder):
         button.set_margin_start(4)
         username_box.append(button)
         self.username_entry = Gtk.Entry.new()
-        self.username_entry.set_placeholder_text("Username / Email")
+        self.username_entry.set_placeholder_text(gettext.gettext("Username / Email"))
         self.username_entry.set_hexpand(True)
         self.username_entry.set_margin_start(6)
         self.username_entry.set_margin_end(6)
@@ -119,7 +120,7 @@ class SettingsWindow(Base, Gtk.Builder):
         button.set_margin_start(4)
         password_box.append(button)
         self.password_entry = Gtk.PasswordEntry.new()
-        self.password_entry.set_property("placeholder-text", "Password")
+        self.password_entry.set_property("placeholder-text", gettext.gettext("Password"))
         self.password_entry.set_show_peek_icon(True)
         self.password_entry.set_hexpand(True)
         self.password_entry.set_margin_start(6)
@@ -188,7 +189,7 @@ class SettingsWindow(Base, Gtk.Builder):
         v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
         v_box.set_hexpand(True)
 
-        label = Gtk.Label.new("Notifications")
+        label = Gtk.Label.new(gettext.gettext("Notifications"))
         v_box.set_valign(Gtk.Align.CENTER)
         v_box.append(label)
 
@@ -217,7 +218,7 @@ class SettingsWindow(Base, Gtk.Builder):
         v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
         v_box.set_hexpand(True)
 
-        label = Gtk.Label.new("Show Flag")
+        label = Gtk.Label.new(gettext.gettext("Show Flag"))
         v_box.set_valign(Gtk.Align.CENTER)
         v_box.append(label)
 
@@ -245,7 +246,7 @@ class SettingsWindow(Base, Gtk.Builder):
         #attach to pref box
         frame.set_child(list_box)
         self.pref_box.append(frame)
-        self.remove_all_vpn_btn = Gtk.Button.new_with_label("Delete All VPN Connections!")
+        self.remove_all_vpn_btn = Gtk.Button.new_with_label(gettext.gettext("Delete All VPN Connections!"))
         self.remove_all_vpn_btn.set_margin_start(4)
         self.remove_all_vpn_btn.set_margin_end(4)
         self.remove_all_vpn_btn.set_margin_bottom(8)

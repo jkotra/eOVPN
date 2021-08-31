@@ -8,6 +8,7 @@ from .utils import ovpn_is_auth_required, validate_remote
 import os
 import time
 import threading
+import gettext
 
 from .eovpn_base import Base, ThreadManager
 logger = logging.getLogger(__name__)
@@ -125,7 +126,7 @@ class MainWindow(Base, Gtk.Builder):
         #this contains - OpenVPN info
         h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 6)
         h_box.set_halign(Gtk.Align.CENTER)
-        self.ip_text = Gtk.Label.new("IP: ")
+        self.ip_text = Gtk.Label.new(gettext.gettext("IP: "))
         self.ip_addr = Gtk.Label.new("0.0.0.0")
         self.ip_addr.set_valign(Gtk.Align.CENTER)
         self.ip_addr.get_style_context().add_class("ip_text")
@@ -141,7 +142,7 @@ class MainWindow(Base, Gtk.Builder):
         self.inner_right.append(h_box)
         ThreadManager().create(self.update_set_ip_flag, ())
 
-        self.connect_btn = Gtk.Button().new_with_label("Connect")
+        self.connect_btn = Gtk.Button().new_with_label(gettext.gettext("Connect"))
         self.connect_btn.set_margin_top(10)
         self.connect_btn.set_margin_bottom(10)
         self.connect_btn.set_margin_start(10)
