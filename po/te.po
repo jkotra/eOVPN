@@ -1,16 +1,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-08-31 14:16+0000\n"
-"PO-Revision-Date: 2021-08-31 14:16+0000\n"
+"POT-Creation-Date: 2021-08-31 15:50+0000\n"
+"PO-Revision-Date: 2021-08-31 15:55+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: en\n"
+"Language: te\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.0\n"
-"X-Poedit-Basepath: eovpn\n"
+"X-Poedit-Basepath: ../eovpn\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: .\n"
 
@@ -18,29 +18,33 @@ msgstr ""
 msgid "IP: "
 msgstr ""
 
-#: main_window.py:145
+#: main_window.py:145 main_window.py:249
 msgid "Connect"
-msgstr ""
+msgstr "కనెక్ట్"
+
+#: main_window.py:161 main_window.py:236
+msgid "Disconnect"
+msgstr "డిస్కోనెక్ట"
 
 #: settings_window.py:40
 msgid "Reset"
-msgstr ""
+msgstr "రీసెట్"
 
 #: settings_window.py:57
 msgid "Setup"
-msgstr ""
+msgstr "సెటప్"
 
 #: settings_window.py:58
 msgid "General"
-msgstr ""
+msgstr "జనరల్"
 
 #: settings_window.py:61
 msgid "Configuration Source"
-msgstr ""
+msgstr "కన్ఫిగరేషన్ మూలం"
 
 #: settings_window.py:77
 msgid "Validate & Load"
-msgstr ""
+msgstr "లోడ్"
 
 #: settings_window.py:90
 msgid "Authentication"
@@ -48,20 +52,20 @@ msgstr ""
 
 #: settings_window.py:110
 msgid "Username / Email"
-msgstr ""
+msgstr "పేరు"
 
 #: settings_window.py:123
 msgid "Password"
-msgstr ""
+msgstr "పాస్వర్డ్"
 
 #: settings_window.py:192
 msgid "Notifications"
-msgstr ""
+msgstr "నోటిఫికెషన్స్"
 
 #: settings_window.py:221
 msgid "Show Flag"
-msgstr ""
+msgstr "జండా చూపించాలా?"
 
 #: settings_window.py:249
 msgid "Delete All VPN Connections!"
-msgstr ""
+msgstr "అన్ని VPN కనెక్షన్స్ ని తొలగించు!"

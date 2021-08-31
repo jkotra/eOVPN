@@ -158,7 +158,7 @@ class MainWindow(Base, Gtk.Builder):
         #self.box.append(self.progress_bar)
 
         if self.CM.get_connection_status():
-            self.connect_btn.set_label("Disconnect")
+            self.connect_btn.set_label(gettext.gettext("Disconnect"))
             self.connect_btn.get_style_context().add_class("destructive-action")
             self.progress_bar.get_style_context().add_class("progress-full-green")
             self.progress_bar.set_fraction(1.0)
@@ -233,7 +233,7 @@ class MainWindow(Base, Gtk.Builder):
 
         if result:
             ThreadManager().create(self.update_set_ip_flag, ())
-            self.connect_btn.set_label("Disconnect")
+            self.connect_btn.set_label(gettext.gettext("Disconnect"))
             self.connect_btn.get_style_context().add_class("destructive-action")
             p_ctx = self.progress_bar.get_style_context()
             p_ctx.remove_class("progress-yellow")
@@ -246,7 +246,7 @@ class MainWindow(Base, Gtk.Builder):
                       
         else:
             ThreadManager().create(self.update_set_ip_flag, ())
-            self.connect_btn.set_label("Connect")
+            self.connect_btn.set_label(gettext.gettext("Connect"))
             self.connect_btn.get_style_context().remove_class("destructive-action")
             p_ctx = self.progress_bar.get_style_context()
             p_ctx.remove_class("progress-full-green")
