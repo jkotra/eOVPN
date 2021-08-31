@@ -36,16 +36,6 @@ class MainWindow(Base, Gtk.Builder):
         self.nmdbus = NMDbus()
         self.lookup = Lookup()
         self.nmdbus.watch(self.on_nm_connection_event)
-    
-    def on_select_row(self, listbox, row):
-        self.selected_row = row
-        self.selected_config = self.selected_row.get_child().get_label()
-        if ovpn_is_auth_required(self.EOVPN_OVPN_CONFIG_DIR + "/" + row.get_child().get_label()):
-            if self.get_setting(self.SETTING.REQ_AUTH) is False:
-                self.connect_btn.set_sensitive(False)
-            else:
-                self.connect_btn.set_sensitive(True)
-
 
     def get_selected_config(self):
         try:
@@ -73,9 +63,22 @@ class MainWindow(Base, Gtk.Builder):
 
         self.list_box = Gtk.ListBox.new()
         self.store_widget("config_box", self.list_box)
-        self.list_box.connect("row-selected", self.on_select_row)
         self.available_configs = []
         self.list_box_rows = []
+
+        #add placeholder
+        v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
+        v_box.set_valign(Gtk.Align.CENTER)
+        lbl = Gtk.Label.new("No Configs Added!")
+        lbl.get_style_context().add_class("bold")
+        btn = Gtk.Button.new_with_label("Open Settings")
+        btn.get_style_context().add_class("suggested-action")
+        btn.set_valign(Gtk.Align.START)
+        btn.set_halign(Gtk.Align.CENTER)
+        btn.connect("clicked", lambda x: SettingsWindow().show())
+        v_box.append(lbl)
+        v_box.append(btn)
+        self.list_box.set_placeholder(v_box)
         
         def update_config_rows():
             try:
@@ -98,14 +101,12 @@ class MainWindow(Base, Gtk.Builder):
                 self.list_box_rows.append(row)
                 self.available_configs.append(file)
 
-            if cur := self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR) != -1:
+            self.store_something("config_rows", self.list_box_rows)
+            if (cur := self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR)) != -1:
                 self.list_box.select_row(self.list_box_rows[cur])
-                self.list_box.grab_focus()
-
 
         
         update_config_rows()
-        self.store_something("config_rows", self.list_box_rows)
         self.store_something("update_config_func", update_config_rows)
 
         scrolled_window.set_child(viewport)

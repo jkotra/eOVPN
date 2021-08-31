@@ -342,16 +342,17 @@ class Signals(Base):
             b.set_label('(None)')     
 
         for s in switches:
-            s.set_state(False)
+            # both switches are enabled by default
+            s.set_state(True)
         
         rows = self.get_something("config_rows")
         listbox = self.get_widget("config_box")
 
-        print(rows)
-
         for r in rows:
             listbox.remove(r)
 
+        self.store_something("config_rows", [])
+        
 
     def on_validate_btn_click(self, button, entry, window):
         if validate_remote(entry.get_text()):
