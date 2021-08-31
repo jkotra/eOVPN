@@ -4,7 +4,6 @@ import os
 from os import path, stat
 from urllib.parse import urlparse
 import shutil
-import requests
 import zipfile
 import gettext
 import re

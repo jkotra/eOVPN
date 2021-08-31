@@ -5,7 +5,7 @@ import io
 import shutil
 import re
 import subprocess
-import requests
+import urllib.request
 
 from gi.repository import GLib, Gtk, GLib
 import gettext
@@ -25,8 +25,8 @@ def download_remote_to_destination(remote, destination):
         return zipfile.ZipFile(io.BytesIO(content), "r")
 
     def download_zip(remote):
-        remote_c = requests.get(remote, timeout=360)  
-        zip_file = make_zip_from_b(remote_c.content)
+        remote_c = urllib.request.urlopen(remote)  
+        zip_file = make_zip_from_b(remote_c.read())
         return zip_file
 
     remote = os.path.expanduser(remote)
