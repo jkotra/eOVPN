@@ -169,6 +169,9 @@ class SettingsWindow(Base, Gtk.Builder):
                 if (password := Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {"username": username}, None)) is not None:
                     self.password_entry.set_text(password)
 
+            if (ca := self.get_setting(self.SETTING.CA)) is not None:
+                self.ca_chooser_btn.set_label(os.path.basename(ca))  
+
 
         #Prefs - Setup
         frame = Gtk.Frame.new()
