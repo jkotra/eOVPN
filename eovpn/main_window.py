@@ -133,7 +133,6 @@ class MainWindow(Base, Gtk.Builder):
         cpy_btn = Gtk.Button.new_from_icon_name("edit-copy-symbolic")
         cpy_btn.set_valign(Gtk.Align.CENTER)
         cpy_btn.set_halign(Gtk.Align.CENTER)
-        cpy_btn.connect("clicked", lambda x: Gdk.Display.get_default().get_clipboard().set(self.ip_addr.get_label()))
 
         h_box.append(self.ip_text)
         h_box.append(self.ip_addr)
@@ -150,7 +149,6 @@ class MainWindow(Base, Gtk.Builder):
         self.connect_btn.set_valign(Gtk.Align.END)
         self.connect_btn.set_vexpand(True)
 
-        self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config, self.CM)
         self.inner_right.append(self.connect_btn)
         # END OF RIGHT
 
@@ -209,6 +207,9 @@ class MainWindow(Base, Gtk.Builder):
         self.box.append(self.paned)
         self.box.append(self.progress_bar)
         self.window.set_child(self.box) 
+
+        cpy_btn.connect("clicked", lambda x: Gdk.Display.get_default().get_clipboard().set(self.ip_addr.get_label()))
+        self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config, self.CM)
     
     def update_set_ip_flag(self):
         self.lookup.update()

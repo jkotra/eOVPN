@@ -132,15 +132,15 @@ class Base:
 
         try:
             return GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/" + country_code + ".svg",
-                                                             128,
-                                                             128,
-                                                             False)
+                                                               -1,
+                                                               128,
+                                                               True)
         except Exception as e:
             logger.error(str(e))
             return GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/uno.svg",
-                                                             128,
-                                                             128,
-                                                             False)
+                                                               -1,
+                                                               128,
+                                                               True)
 
     def send_notification(self, action, message, connection_event=None):
         Notify.init("com.github.jkotra.eovpn")
