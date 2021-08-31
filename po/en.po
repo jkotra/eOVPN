@@ -1,0 +1,67 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2021-08-31 14:16+0000\n"
+"PO-Revision-Date: 2021-08-31 14:16+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.0\n"
+"X-Poedit-Basepath: eovpn\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: main_window.py:129
+msgid "IP: "
+msgstr ""
+
+#: main_window.py:145
+msgid "Connect"
+msgstr ""
+
+#: settings_window.py:40
+msgid "Reset"
+msgstr ""
+
+#: settings_window.py:57
+msgid "Setup"
+msgstr ""
+
+#: settings_window.py:58
+msgid "General"
+msgstr ""
+
+#: settings_window.py:61
+msgid "Configuration Source"
+msgstr ""
+
+#: settings_window.py:77
+msgid "Validate & Load"
+msgstr ""
+
+#: settings_window.py:90
+msgid "Authentication"
+msgstr ""
+
+#: settings_window.py:110
+msgid "Username / Email"
+msgstr ""
+
+#: settings_window.py:123
+msgid "Password"
+msgstr ""
+
+#: settings_window.py:192
+msgid "Notifications"
+msgstr ""
+
+#: settings_window.py:221
+msgid "Show Flag"
+msgstr ""
+
+#: settings_window.py:249
+msgid "Delete All VPN Connections!"
+msgstr ""
