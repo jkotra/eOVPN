@@ -43,7 +43,16 @@ class MainWindow(Base, Gtk.Builder):
             row = self.list_box.get_selected_row().get_child().get_label()
             return row
         except AttributeError:
-            return None                                                    
+            return None  
+
+    def row_changed(self, listbox, row):
+        if ovpn_is_auth_required(self.EOVPN_OVPN_CONFIG_DIR + row.get_child().get_label()) and self.get_setting(self.SETTING.REQ_AUTH) is False:
+            self.connect_btn.set_sensitive(False)
+            self.connect_btn.set_tooltip_text("Authentication Required!")
+        else:
+            self.connect_btn.set_sensitive(True)
+            self.connect_btn.set_tooltip_text("")
+
 
     def setup(self):
         self.box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #top most box
@@ -63,6 +72,7 @@ class MainWindow(Base, Gtk.Builder):
         scrolled_window = Gtk.ScrolledWindow().new()
 
         self.list_box = Gtk.ListBox.new()
+        self.list_box.connect("row-selected", self.row_changed)
         self.store_widget("config_box", self.list_box)
         self.available_configs = []
         self.list_box_rows = []
