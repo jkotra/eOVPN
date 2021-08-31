@@ -346,8 +346,7 @@ class Signals(Base):
             b.set_label('(None)')     
 
         for s in switches:
-            # both switches are enabled by default
-            s.set_state(True)
+            s.set_state(False)
         
         rows = self.get_something("config_rows")
         listbox = self.get_widget("config_box")
@@ -356,6 +355,10 @@ class Signals(Base):
             listbox.remove(r)
 
         self.store_something("config_rows", [])
+
+        #default values
+        switches[-1].set_state(True)
+        switches[-2].set_state(True) 
 
 
     def on_validate_btn_click(self, button, entry):

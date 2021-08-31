@@ -25,9 +25,12 @@ def download_remote_to_destination(remote, destination):
         return zipfile.ZipFile(io.BytesIO(content), "r")
 
     def download_zip(remote):
-        remote_c = urllib.request.urlopen(remote)  
-        zip_file = make_zip_from_b(remote_c.read())
-        return zip_file
+        if os.path.exists(remote):
+            f = open(remote, "rb")
+            return make_zip_from_b(f.read())
+        else:
+            remote_c = urllib.request.urlopen(remote)  
+            return make_zip_from_b(remote_c.read())
 
     remote = os.path.expanduser(remote)
     zip_file = download_zip(remote)
