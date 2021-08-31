@@ -73,7 +73,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.main_box.append(entry)
 
         self.revealer = Gtk.Revealer.new()
-        self.validate_btn = Gtk.Button.new_with_label("Validate")
+        self.validate_btn = Gtk.Button.new_with_label("Validate & Load")
         self.validate_btn.get_style_context().add_class("suggested-action")
         self.validate_btn.set_margin_start(12)
         self.validate_btn.set_margin_end(12)
@@ -258,7 +258,7 @@ class SettingsWindow(Base, Gtk.Builder):
         #connect signals
         self.reset_btn.connect("clicked", self.signals.on_reset_btn_clicked, [entry, self.username_entry, self.password_entry], [self.ca_chooser_btn], [self.ask_auth_switch, self.notif_switch, self.flag_switch], self.window)
         entry.connect("changed", self.signals.process_config_entry, self.revealer)
-        self.validate_btn.connect("clicked", self.signals.on_validate_btn_click, entry, self.window)
+        self.validate_btn.connect("clicked", self.signals.on_validate_btn_click, entry)
         self.username_entry.connect("changed", self.signals.process_username)
         self.password_entry.connect("changed", self.signals.process_password)
         file_chooser_dialog.connect("response", self.signals.process_ca, self.ca_chooser_btn)
@@ -352,15 +352,16 @@ class Signals(Base):
             listbox.remove(r)
 
         self.store_something("config_rows", [])
-        
 
-    def on_validate_btn_click(self, button, entry, window):
-        if validate_remote(entry.get_text()):
-            self.get_something("update_config_func")()
-            md = Gtk.MessageDialog()
-            md.set_property("message-type", Gtk.MessageType.INFO)
-            md.set_transient_for(window)
-            md.set_markup("Valid Remote")
-            md.add_button("_Ok", 1)
-            md.connect("response", lambda x, d: md.hide())
-            md.show()
+
+    def on_validate_btn_click(self, button, entry):
+
+        #remove all rows first
+        rows = self.get_something("config_rows")
+        listbox = self.get_widget("config_box")
+
+        for r in rows:
+            listbox.remove(r)
+
+        validate_remote(entry.get_text())
+        self.get_something("update_config_func")()
