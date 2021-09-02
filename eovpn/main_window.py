@@ -187,6 +187,7 @@ class MainWindow(Base, Gtk.Builder):
             about.set_version("1.0")
             about.set_website("https://github.com/jkotra/eOVPN")
             about.set_transient_for(self.window)
+            about.set_modal(True)
             about.show()
         
         action = Gio.SimpleAction().new("update", None)
