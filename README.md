@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="static/connected.png" alt="eOVPN" height='500'>
+<img src="static/window_connected_with_flag.png" alt="eOVPN">
 
 
 </div>
@@ -24,7 +24,7 @@
     * **Configuration Source**: This refers to a link that contains a zip file with OpenVPN configurations. 
         * Example: [IPVanish](https://www.ipvanish.com/software/configs/configs.zip), [NordVPN](https://downloads.nordcdn.com/configs/archives/servers/ovpn.zip)
 
-        * [`eOVPN` also supports local directory/folder/zip]
+        * [`eOVPN` also supports local zip]
 
 3. click `Save`.
 
@@ -58,9 +58,6 @@ Refer: [Python Logging Levels](https://docs.python.org/3/library/logging.html#le
 
 ### Dependencies
 
-```
-pip install -r requirements.txt
-```
 
 eOVPN uses [meson build system](https://mesonbuild.com/), to build the project:
 
