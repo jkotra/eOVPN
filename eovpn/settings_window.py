@@ -328,9 +328,9 @@ class Signals(Base):
     def show_flag_set(self, switch, state):
         self.set_setting(self.SETTING.SHOW_FLAG, state)
         if state:
-            self.get_something("flag").show()
+            self.get_widget("flag").show()
         else:
-            self.get_something("flag").hide()
+            self.get_widget("flag").hide()
 
     def on_reset_btn_clicked(self, button, entries, buttons, switches, window):
         self.reset_all_settings()
@@ -358,8 +358,9 @@ class Signals(Base):
         self.store_something("config_rows", [])
 
         #default values
-        switches[-1].set_state(True)
-        switches[-2].set_state(True) 
+        switches[0].set_state(False) #Notifications
+        switches[1].set_state(True) #Flag
+        self.get_widget("flag").hide()
 
 
     def on_validate_btn_click(self, button, entry):

@@ -126,7 +126,7 @@ class MainWindow(Base, Gtk.Builder):
         # Right Side
         img = Gtk.Picture.new()
         img.set_halign(Gtk.Align.CENTER)
-        self.store_something("flag", img)
+        self.store_widget("flag", img)
         if self.get_setting(self.SETTING.SHOW_FLAG) is False:
             img.hide()
         self.inner_right.append(img)
@@ -239,12 +239,16 @@ class MainWindow(Base, Gtk.Builder):
         header_bar.pack_end(menu_button)
 
         if (cur := self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR)) != -1:
-            self.list_box.select_row(self.list_box_rows[cur])
-            adj = self.scrolled_window.get_vadjustment()
-            v = self.get_setting(self.SETTING.LISTBOX_V_ADJUST)
-            adj.set_value(v)
-            adj.set_upper(v)
-            adj.set_lower(v+1)
+            try:
+                self.list_box.select_row(self.list_box_rows[cur])
+                adj = self.scrolled_window.get_vadjustment()
+                v = self.get_setting(self.SETTING.LISTBOX_V_ADJUST)
+                adj.set_value(v)
+                adj.set_upper(v)
+                adj.set_lower(v+1)
+            except Exception as e:
+                logger.error(e)
+                pass 
         
         #finally!
         self.box.append(self.paned)
@@ -256,7 +260,7 @@ class MainWindow(Base, Gtk.Builder):
     
     def update_set_ip_flag(self):
         self.lookup.update()
-        self.get_something("flag").set_pixbuf(self.get_country_pixbuf(self.lookup.country_code))
+        self.get_widget("flag").set_pixbuf(self.get_country_pixbuf(self.lookup.country_code))
         self.ip_addr.set_label(self.lookup.ip)
 
     def on_nm_connection_event(self, result, error=None):
