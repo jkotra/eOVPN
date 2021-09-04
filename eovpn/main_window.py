@@ -69,7 +69,7 @@ class MainWindow(Base, Gtk.Builder):
         viewport.set_vexpand(True)
         viewport.set_hexpand(True)
         
-        scrolled_window = Gtk.ScrolledWindow().new()
+        self.scrolled_window = Gtk.ScrolledWindow().new()
 
         self.list_box = Gtk.ListBox.new()
         self.list_box.connect("row-selected", self.row_changed)
@@ -113,17 +113,15 @@ class MainWindow(Base, Gtk.Builder):
                 self.available_configs.append(file)
 
             self.store_something("config_rows", self.list_box_rows)
-            if (cur := self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR)) != -1:
-                self.list_box.select_row(self.list_box_rows[cur])
 
         
         update_config_rows()
         self.store_something("update_config_func", update_config_rows)
 
-        scrolled_window.set_child(viewport)
+        self.scrolled_window.set_child(viewport)
         viewport.set_child(self.list_box)
 
-        self.inner_left.append(scrolled_window)
+        self.inner_left.append(self.scrolled_window)
 
         # Right Side
         img = Gtk.Picture.new()
@@ -239,6 +237,14 @@ class MainWindow(Base, Gtk.Builder):
         menu_button.set_icon_name("open-menu-symbolic")
         menu_button.set_popover(popover)
         header_bar.pack_end(menu_button)
+
+        if (cur := self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR)) != -1:
+            self.list_box.select_row(self.list_box_rows[cur])
+            adj = self.scrolled_window.get_vadjustment()
+            v = self.get_setting(self.SETTING.LISTBOX_V_ADJUST)
+            adj.set_value(v)
+            adj.set_upper(v)
+            adj.set_lower(v+1)
         
         #finally!
         self.box.append(self.paned)
@@ -278,6 +284,8 @@ class MainWindow(Base, Gtk.Builder):
             self.set_setting(self.SETTING.LAST_CONNECTED, self.get_selected_config())
             self.send_connected_notification()
             # save last cursor
+            adj = self.scrolled_window.get_vadjustment()
+            self.set_setting(self.SETTING.LISTBOX_V_ADJUST, float(adj.get_value()))
             self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.available_configs.index(self.get_selected_config()))
                       
         else:

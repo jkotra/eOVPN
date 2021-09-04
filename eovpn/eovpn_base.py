@@ -45,9 +45,10 @@ class Settings:
     AUTH_PASS = "auth-pass"
     NM_ACTIVE_UUID = "nm-active-uuid"
     SHOW_FLAG = "show-flag"
+    LISTBOX_V_ADJUST = "listbox-v-adjust"
 
     all_settings = ["current-connected", "last-connected", "last-connected-cursor", "update-on-start", "connect-on-launch",
-    "notifications", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag"]
+    "notifications", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag", "listbox-v-adjust"]
 
 class Base:
 
@@ -165,6 +166,8 @@ class Base:
             v = v.get_string()
             if v == "null":
                 v = None
+        elif v_type == "d":
+            v = v.get_double()        
         else:
             pass
 
@@ -182,6 +185,8 @@ class Base:
             g_value = GLib.Variant.new_boolean(value)
         if type(value) is int:
             g_value = GLib.Variant.new_int32(value)
+        if type(value) is float:
+            g_value = GLib.Variant.new_double(value)    
         if type(value) is str:
             g_value = GLib.Variant.new_string(value)
         else:
