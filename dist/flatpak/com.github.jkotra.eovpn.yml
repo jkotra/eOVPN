@@ -9,7 +9,6 @@ finish-args:
   - --share=network
   - --socket=x11
   - --socket=wayland
-  - --device=dri
   - --talk-name=org.freedesktop.Flatpak
   - --talk-name=org.freedesktop.Notifications
   - --filesystem=home
@@ -17,7 +16,6 @@ finish-args:
   - --socket=system-bus
 
 modules:
-  - python3-modules.json
 
   - name: intltool
     cleanup:
