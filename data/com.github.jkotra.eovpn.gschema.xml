@@ -50,7 +50,7 @@
          <default>false</default>
       </key>
       <key type="b" name="show-flag">
-         <default>true</default>
+         <default>false</default>
       </key>
    </schema>
 </schemalist>

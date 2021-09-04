@@ -189,6 +189,14 @@ class MainWindow(Base, Gtk.Builder):
             about.set_transient_for(self.window)
             about.set_modal(True)
             about.show()
+
+        def open_ks(widget, data):
+            builder = Gtk.Builder()
+            builder.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/keyboard_shortcuts.ui")
+            window = builder.get_object("shortcuts_window")
+            window.set_transient_for(self.window)
+            window.set_modal(True)
+            window.show()
         
         action = Gio.SimpleAction().new("update", None)
         action.connect("activate", lambda x, d: validate_remote(self.get_setting(self.SETTING.REMOTE)))
@@ -198,14 +206,31 @@ class MainWindow(Base, Gtk.Builder):
         action.connect("activate", open_about_dialog)
         self.app.add_action(action)
 
+        action = Gio.SimpleAction().new("keyboard_shortcuts", None)
+        action.connect("activate", open_ks)
+        self.app.add_action(action)
+
         action = Gio.SimpleAction().new("settings", None)
         action.connect("activate", lambda x, d: SettingsWindow().show())
         self.app.add_action(action)
 
+        #add shortcuts
+        self.app.set_accels_for_action("app.keyboard_shortcuts", ["<Primary>question"])
+        self.app.set_accels_for_action("app.settings", ["<Primary>S"])
+        self.app.set_accels_for_action("app.update", ["<Primary>U"])
+        self.app.set_accels_for_action("app.about", ["<Primary>A"])
+
+        action = Gio.SimpleAction.new("connect", None)
+        action.connect('activate', self.signals.connect_via_ks, self.get_selected_config, self.CM)
+        self.app.add_action(action)
+        self.app.set_accels_for_action("app.connect", ["<Primary>C", "<Primary>D"])
+
+
         menu = Gio.Menu().new()
         menu.insert(0, "Update", "app.update")
         menu.insert(1, "Settings", "app.settings")
-        menu.insert(2, "About", "app.about")
+        menu.insert(2, "Keyboard Shortcuts", "app.keyboard_shortcuts")
+        menu.insert(3, "About", "app.about")
         popover = Gtk.PopoverMenu().new_from_model(menu)
 
         header_bar = self.get_object("header_bar")
@@ -282,6 +307,10 @@ class Signals(Base):
             manager.connect(None)
             return
         manager.connect(self.EOVPN_CONFIG_DIR + "/CONFIGS/" + config)
+
+    def connect_via_ks(self, action, data, config, manager):
+        print("action received:", action)
+        self.connect(None, config, manager)    
 
     def disconnect(self, button, manager):
         manager.disconnect()
