@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <object class="GtkShortcutsWindow" id="shortcuts">
+  <object class="GtkShortcutsWindow" id="shortcuts_window">
     <property name="modal">True</property>
     <child>
       <object class="GtkShortcutsSection">
@@ -14,21 +14,38 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
-                <property name="title" translatable="yes" context="shortcut window">Connect / Disconnect</property>
-                <property name="accelerator">Return</property>
+                <property name="title" translatable="yes" context="shortcut window">Connect</property>
+                <property name="accelerator">&lt;primary&gt;C</property>
               </object>
             </child>
-
-            <!--
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="visible">True</property>
-                <property name="title" translatable="yes" context="shortcut window">Open Keyboard Shortcuts</property>
-                <property name="accelerator">&lt;Ctrl&gt;question</property>
+                <property name="title" translatable="yes" context="shortcut window">Disconnect</property>
+                <property name="accelerator">&lt;primary&gt;D</property>
               </object>
             </child>
-
-          -->
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">True</property>
+                <property name="title" translatable="yes" context="shortcut window">Open Settings</property>
+                <property name="accelerator">&lt;primary&gt;S</property>
+              </object>
+            </child>
+              <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">True</property>
+                <property name="title" translatable="yes" context="shortcut window">Open About</property>
+                <property name="accelerator">&lt;primary&gt;A</property>
+              </object>
+            </child>
+              <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="visible">True</property>
+                <property name="title" translatable="yes" context="shortcut window">Open Keyboard Shortcuts</property>
+                <property name="accelerator">&lt;primary&gt;question</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

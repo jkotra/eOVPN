@@ -1,10 +1,11 @@
-import os, sys
+import sys
 import argparse
 import logging
 
 import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk, GLib, Gio
+gi.require_version("Gtk", "4.0")
+
+from gi.repository import Gtk, GLib, Gio, Gdk
 
 logger = logging.getLogger(__name__)
 
@@ -17,12 +18,12 @@ class eovpn(Base):
         self.app = app
 
     def start(self):
-        css = Gtk.CssProvider()
-        css.load_from_resource(self.EOVPN_CSS)
-        context = Gtk.StyleContext()
-        screen = Gdk.Screen.get_default()
-        context.add_provider_for_screen(screen, css,
-                                        Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+        css_provider = Gtk.CssProvider()
+        css_provider.load_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/css/main.css")
+        display = Gdk.Display.get_default()
+        Gtk.StyleContext.add_provider_for_display(display, css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+
+
         main_window = MainWindow(self.app)
         main_window.show()                            
 

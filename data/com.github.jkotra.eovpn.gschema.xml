@@ -4,9 +4,6 @@
       <key type="b" name="notifications">
          <default>true</default>
       </key>
-      <key type="i" name="treeview-height">
-         <default>250</default>
-      </key>
       <key type="s" name="manager">
          <default>"networkmanager"</default>
       </key>
@@ -41,7 +38,7 @@
          <default>"null"</default>
       </key>
       <key type="i" name="last-connected-cursor">
-         <default>0</default>
+         <default>-1</default>
       </key>
       <key type="s" name="current-connected">
          <default>"null"</default>
@@ -51,6 +48,12 @@
       </key>
       <key type="b" name="connect-on-launch">
          <default>false</default>
+      </key>
+      <key type="b" name="show-flag">
+         <default>false</default>
+      </key>
+      <key type="d" name="listbox-v-adjust">
+         <default>0</default>
       </key>
    </schema>
 </schemalist>

@@ -5,10 +5,7 @@ project('eovpn',
 
 i18n = import('i18n')
 python = import('python')
-python_instllation = python.find_installation(  modules: [
-      'requests',
-      'psutil'
-    ],)
+python_instllation = python.find_installation()
 
 gnome = import('gnome')
 project_id = 'com.github.jkotra.eovpn'

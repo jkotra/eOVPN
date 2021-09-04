@@ -13,6 +13,7 @@ from gi.repository import Gtk, Gio, GLib, GdkPixbuf, Notify, Secret
 eovpn_standalone = {"is_standalone": False, "path": None}
 _builder_record = {}
 _widget_record = {}
+_obj_record = {}
 
 _settings_backup = {}
 
@@ -33,7 +34,6 @@ class Settings:
     UPDATE_ON_START = "update-on-start"
     CONNECT_ON_LAUNCH = "connect-on-launch"
     NOTIFICATIONS = "notifications"
-    TREEVIEW_HEIGHT = "treeview-height"
     MANAGER = "manager"
     REQ_AUTH = "req-auth"
     CA = "ca"
@@ -44,9 +44,11 @@ class Settings:
     AUTH_USER = "auth-user"
     AUTH_PASS = "auth-pass"
     NM_ACTIVE_UUID = "nm-active-uuid"
+    SHOW_FLAG = "show-flag"
+    LISTBOX_V_ADJUST = "listbox-v-adjust"
 
     all_settings = ["current-connected", "last-connected", "last-connected-cursor", "update-on-start", "connect-on-launch",
-    "notifications", "treeview-height", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid"]
+    "notifications", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag", "listbox-v-adjust"]
 
 class Base:
 
@@ -74,6 +76,7 @@ class Base:
 
 
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")
+        self.EOVPN_OVPN_CONFIG_DIR = os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS/")
         self.EOVPN_GRESOURCE_PREFIX = "/com/github/jkotra/" + self.APP_NAME.lower()
         self.EOVPN_CSS = self.EOVPN_GRESOURCE_PREFIX + "/css/main.css"
         self.SETTING = Settings()
@@ -95,28 +98,50 @@ class Base:
     def store_widget(self, name, widget):
         _widget_record[name] = widget
 
+    def get_something(self, obj):
+        if obj in _obj_record.keys():
+            return _obj_record[obj]
 
-    def get_logo(self):
-        img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/com.github.jkotra.eovpn.svg", -1, 128, True)
-        return img
+    def store_something(self, name, obj):
+        _obj_record[name] = obj
 
-    def get_image(self, image_name, image_cat, scale=False):
-        img = GdkPixbuf.Pixbuf.new_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/{}/".format(image_cat) + image_name)
-        if scale is not False:
-            w, h = scale
-            img = img.scale_simple(w, h, GdkPixbuf.InterpType.BILINEAR)
-        return img
+    def send_connected_notification(self):
+        if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
+            return
+        Notify.init("com.github.jkotra.eovpn")
+        notif = Notify.Notification.new("Connected", "Connected to VPN")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/notification_connected.svg",
+                                                             128,
+                                                             -1,
+                                                             True)
+        notif.set_image_from_pixbuf(pixbuf)
+        notif.show()
 
+    def send_disconnected_notification(self):
+        if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
+            return
+        Notify.init("com.github.jkotra.eovpn")
+        notif = Notify.Notification.new("Disconnected", "Disconnected from VPN")
+        pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/notification_disconnected.svg",
+                                                             128,
+                                                             -1,
+                                                             True)
+        notif.set_image_from_pixbuf(pixbuf)
+        notif.show()
 
-    def get_country_image(self, country_alpha_code):
+    def get_country_pixbuf(self, country_code):
 
         try:
-            img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/" + country_alpha_code.lower() + ".svg", 72, -1, True)
+            return GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/" + country_code + ".svg",
+                                                               -1,
+                                                               128,
+                                                               True)
         except Exception as e:
             logger.error(str(e))
-            img = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/uno.svg", 72, -1, True)
-
-        return img
+            return GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/country_flags/svg/uno.svg",
+                                                               -1,
+                                                               128,
+                                                               True)
 
     def send_notification(self, action, message, connection_event=None):
         Notify.init("com.github.jkotra.eovpn")
@@ -141,6 +166,8 @@ class Base:
             v = v.get_string()
             if v == "null":
                 v = None
+        elif v_type == "d":
+            v = v.get_double()        
         else:
             pass
 
@@ -158,6 +185,8 @@ class Base:
             g_value = GLib.Variant.new_boolean(value)
         if type(value) is int:
             g_value = GLib.Variant.new_int32(value)
+        if type(value) is float:
+            g_value = GLib.Variant.new_double(value)    
         if type(value) is str:
             g_value = GLib.Variant.new_string(value)
         else:
