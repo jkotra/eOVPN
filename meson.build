@@ -41,9 +41,7 @@ subdir('po')
 subdir('data')
 
 
-if get_option('nm')
-  subproject('networkmanager')
-endif
+subproject('networkmanager')
 
 install_subdir(
   'eovpn',
