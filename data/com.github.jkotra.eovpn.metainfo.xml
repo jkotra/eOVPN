@@ -43,6 +43,13 @@
   </provides>
 
   <releases>
+<release version="1.01" date="2021-09-05">
+      <description>
+        <ul>
+          <li>Bug fixes.</li>
+        </ul>
+      </description>
+    </release> 
 
     <release version="1.0" date="2021-09-04">
       <description>
