@@ -14,7 +14,7 @@ from gi.repository import Gtk, Gio, GLib, Gdk, Secret
 
 from .eovpn_base import Base, ThreadManager
 from .connection_manager import eOVPNConnectionManager
-from .utils import validate_remote
+from .utils import validate_remote, is_selinux_enforcing
 
 from .networkmanager.bindings import NetworkManager
 
@@ -319,7 +319,16 @@ class Signals(Base):
 
     def process_ca(self, chooser, response, button):
         if response == Gtk.ResponseType.ACCEPT:
-            self.set_setting(self.SETTING.CA, chooser.get_file().get_path())
+            ca_path = chooser.get_file().get_path()
+            if is_selinux_enforcing():
+                home_dir = GLib.get_home_dir()
+                se_friendly_path = os.path.join(home_dir, ".cert")
+                if not os.path.exists(se_friendly_path):
+                    os.mkdir(se_friendly_path)
+                shutil.copy(ca_path, se_friendly_path)
+                self.set_setting(self.SETTING.CA, os.path.join(se_friendly_path, os.path.basename(ca_path)))
+            else:
+                self.set_setting(self.SETTING.CA, ca_path)
             button.set_label(chooser.get_file().get_basename())      
 
     def notification_set(self, switch, state):
