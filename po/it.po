@@ -1,0 +1,71 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2021-08-31 15:50+0000\n"
+"PO-Revision-Date: 2021-09-05 12:15+0100\n"
+"Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
+"Language-Team: Italian\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.0\n"
+"X-Poedit-Basepath: ../eovpn\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: main_window.py:129
+msgid "IP: "
+msgstr "IP: "
+
+#: main_window.py:145 main_window.py:249
+msgid "Connect"
+msgstr "Connetti"
+
+#: main_window.py:161 main_window.py:236
+msgid "Disconnect"
+msgstr "Disconnetti"
+
+#: settings_window.py:40
+msgid "Reset"
+msgstr "Ripristina"
+
+#: settings_window.py:57
+msgid "Setup"
+msgstr "Configurazione"
+
+#: settings_window.py:58
+msgid "General"
+msgstr "Generale"
+
+#: settings_window.py:61
+msgid "Configuration Source"
+msgstr "Sorgente di configurazione"
+
+#: settings_window.py:77
+msgid "Validate & Load"
+msgstr "Convalida & carica"
+
+#: settings_window.py:90
+msgid "Authentication"
+msgstr Autenticazione"
+
+#: settings_window.py:110
+msgid "Username / Email"
+msgstr "Nome utente / e-mail"
+
+#: settings_window.py:123
+msgid "Password"
+msgstr "Password"
+
+#: settings_window.py:192
+msgid "Notifications"
+msgstr "నోటిఫికెషన్స్"
+
+#: settings_window.py:221
+msgid "Show Flag"
+msgstr "జండా చూపించాలా?"
+
+#: settings_window.py:249
+msgid "Delete All VPN Connections!"
+msgstr "అన్ని VPN కనెక్షన్స్ ని తొలగించు!"
