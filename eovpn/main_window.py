@@ -182,7 +182,7 @@ class MainWindow(Base, Gtk.Builder):
             about.set_artists(["Jagadeesh Kotra"])
             about.set_copyright("Jagadeesh Kotra")
             about.set_license_type(Gtk.License.LGPL_3_0)
-            about.set_version("1.0")
+            about.set_version(self.APP_VERSION)
             about.set_website("https://github.com/jkotra/eOVPN")
             about.set_transient_for(self.window)
             about.set_modal(True)
