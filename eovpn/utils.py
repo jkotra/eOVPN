@@ -58,7 +58,7 @@ def validate_remote(remote):
         if len(os.listdir(save_path)) > 1:
             shutil.rmtree(save_path)
     else:
-        os.mkdirs(save_path)        
+        os.makedirs(save_path)        
 
 
     return download_remote_to_destination(remote, save_path)
