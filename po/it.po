@@ -1,0 +1,111 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2021-09-05 16:06+0000\n"
+"PO-Revision-Date: 2021-09-05 13:36+0100\n"
+"Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
+"Language-Team: itallian\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.0\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPath-0: data\n"
+"X-Poedit-SearchPath-1: eovpn\n"
+
+#: data/com.github.jkotra.eovpn.desktop:3
+#: data/com.github.jkotra.eovpn.desktop:4
+msgid "eOVPN"
+msgstr "eOVPN"
+
+#: data/com.github.jkotra.eovpn.desktop:5
+msgid "OpenVPN Configuration Manager"
+msgstr "Gestore configurazione OpenVPN"
+
+#: data/ui/keyboard_shortcuts.ui:13
+msgctxt "shortcut window"
+msgid "General"
+msgstr "Generale"
+
+#: data/ui/keyboard_shortcuts.ui:17
+msgctxt "shortcut window"
+msgid "Connect"
+msgstr "Connetti"
+
+#: data/ui/keyboard_shortcuts.ui:24
+msgctxt "shortcut window"
+msgid "Disconnect"
+msgstr "Disconnetti"
+
+#: data/ui/keyboard_shortcuts.ui:31
+msgctxt "shortcut window"
+msgid "Open Settings"
+msgstr "Apri Impostazioni"
+
+#: data/ui/keyboard_shortcuts.ui:38
+msgctxt "shortcut window"
+msgid "Open About"
+msgstr "Apri Informazioni"
+
+#: data/ui/keyboard_shortcuts.ui:45
+msgctxt "shortcut window"
+msgid "Open Keyboard Shortcuts"
+msgstr "Apri Scorciatoie da Tastiera"
+
+#: eovpn/main_window.py:137
+msgid "IP: "
+msgstr "IP: "
+
+#: eovpn/main_window.py:153 eovpn/main_window.py:297
+msgid "Connect"
+msgstr "Connetti"
+
+#: eovpn/main_window.py:169 eovpn/main_window.py:282
+msgid "Disconnect"
+msgstr "Disconnetti"
+
+#: eovpn/settings_window.py:41
+msgid "Reset"
+msgstr "Ripristina"
+
+#: eovpn/settings_window.py:58
+msgid "Setup"
+msgstr "Configurazione"
+
+#: eovpn/settings_window.py:59
+msgid "General"
+msgstr "Generale"
+
+#: eovpn/settings_window.py:62
+msgid "Configuration Source"
+msgstr "Sorgente di configurazione"
+
+#: eovpn/settings_window.py:78
+msgid "Validate & Load"
+msgstr "Convalida & Carica"
+
+#: eovpn/settings_window.py:91
+msgid "Authentication"
+msgstr "Autenticazione"
+
+#: eovpn/settings_window.py:111
+msgid "Username / Email"
+msgstr "Nome utente / e-mail"
+
+#: eovpn/settings_window.py:124
+msgid "Password"
+msgstr "Password"
+
+#: eovpn/settings_window.py:193
+msgid "Notifications"
+msgstr "Notifiche"
+
+#: eovpn/settings_window.py:222
+msgid "Show Flag"
+msgstr "Mostra Bandiera"
+
+#: eovpn/settings_window.py:250
+msgid "Delete All VPN Connections!"
+msgstr "Elimina tutte le connessioni VPN!"
