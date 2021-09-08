@@ -44,6 +44,15 @@
 
   <releases>
 
+  <release version="1.06" date="2021-09-08">
+      <description>
+        <ul>
+          <li>fix critical bug during connection.</li>
+          <li>log additional debug information regarding NM version and OpenVPN plugin.</li>
+        </ul>
+      </description>
+  </release> 
+
   <release version="1.05" date="2021-09-08">
       <description>
         <ul>
