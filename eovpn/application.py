@@ -39,25 +39,14 @@ def launch_eovpn():
     app.add_main_option("debug", ord("d"), GLib.OptionFlags.NONE,
                         GLib.OptionArg.STRING, "Show Debug Messages.", "[CRITICAL|ERROR|WARNING|INFO|DEBUG]")                    
 
-    app.add_main_option("config", ord("c"), GLib.OptionFlags.NONE,
-                        GLib.OptionArg.NONE, "OpenVPN configuration file.", "[*.ovpn]")
     app.connect('activate', on_activate)
     app.connect('command-line', do_command_line)
     
     #handle --config -c
     parser = argparse.ArgumentParser(prog="eovpn", add_help=False)
-    parser.add_argument('-c', '--config',nargs="?", dest='openvpn_config',type=str, action='store', help="openvpn config file.", default=None, required=False)
     args, _ = parser.parse_known_args(sys.argv[1:])
 
 
-    if args.openvpn_config is not None:
-        try:
-            #single line validation ;)
-            assert open(args.openvpn_config, "r").read().split("\n")[0] == "client"
-            set_standalone(args.openvpn_config)
-        except Exception as e:
-            logger.error(e)
-    
     # as glib dont support our custom command, remove these from sys.argv.
     # the above declared `add_main_option` is essentially a dummy placeholder.
     if "-c" in sys.argv: sys.argv.remove("-c")
@@ -73,6 +62,11 @@ def do_command_line(app, args):
     if args.contains("debug"):
         debug_lvl = args.lookup_value("debug", None)
         debug_lvl = debug_lvl.get_string()
+        if debug_lvl.isnumeric():
+            debug_lvl = int(debug_lvl)
+            assert(debug_lvl <= 50)
+        else:
+            assert(debug_lvl in ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "NOTSET"])    
 
         if debug_lvl is not None:
             logging.basicConfig(level=debug_lvl, format='%(levelname)s:%(name)s.py:%(funcName)s:%(message)s')
