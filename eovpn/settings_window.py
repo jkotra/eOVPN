@@ -143,8 +143,12 @@ class SettingsWindow(Base, Gtk.Builder):
         file_chooser_dialog = Gtk.FileChooserNative(action=Gtk.FileChooserAction.OPEN)
         file_chooser_dialog.set_transient_for(self.window)
         ca_filter = Gtk.FileFilter()
+        ca_filter.set_name("CA / CRT")
         ca_filter.add_mime_type("application/pkix-cert")
         file_chooser_dialog.add_filter(ca_filter)
+        default_path = Gio.File.new_for_path(self.EOVPN_OVPN_CONFIG_DIR)
+        file_chooser_dialog.set_current_folder(default_path)
+
 
         
         def choose_ca(button):
@@ -180,7 +184,7 @@ class SettingsWindow(Base, Gtk.Builder):
                         logger.warning("Password is empty!")
                         return
                     self.password_entry.set_text(pwd)
-                    
+
                 Secret.password_lookup(self.EOVPN_SECRET_SCHEMA, {"username": username}, None, on_password_lookup)
 
             if (ca := self.get_setting(self.SETTING.CA)) is not None:
