@@ -70,7 +70,7 @@ def ovpn_is_auth_required(ovpn_file):
     if "auth-user-pass" in data:
         return True
     else:
-        pass
+        return False
 
 def is_selinux_enforcing():
     

@@ -21,14 +21,14 @@ class MainWindow(Base, Gtk.Builder):
         super().__init__()
         Gtk.Builder.__init__(self)
         self.app = app
-        
+
         self.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "main.ui")
         self.window = self.get_object("main_window")
         self.window.set_title("eOVPN")
         self.window.set_icon_name(self.APP_ID)
         self.app.add_window(self.window)
         self.store_widget("main_window", self.window)
-        
+
         self.selected_row = None
         self.selected_config = None
         self.connected_cursor = None
@@ -44,10 +44,10 @@ class MainWindow(Base, Gtk.Builder):
             row = self.list_box.get_selected_row().get_child().get_label()
             return row
         except AttributeError:
-            return None  
+            return None
 
     def row_changed(self, listbox, row):
-        if ovpn_is_auth_required(self.EOVPN_OVPN_CONFIG_DIR + row.get_child().get_label()) and self.get_setting(self.SETTING.REQ_AUTH) is False:
+        if ovpn_is_auth_required(self.EOVPN_OVPN_CONFIG_DIR + "/" + self.get_selected_config()) and self.get_setting(self.SETTING.REQ_AUTH) is False:
             self.connect_btn.set_sensitive(False)
             self.connect_btn.set_tooltip_text("Authentication Required!")
         else:
@@ -69,11 +69,12 @@ class MainWindow(Base, Gtk.Builder):
         viewport = Gtk.Viewport().new()
         viewport.set_vexpand(True)
         viewport.set_hexpand(True)
-        
+
         self.scrolled_window = Gtk.ScrolledWindow().new()
 
         self.list_box = Gtk.ListBox.new()
         self.list_box.connect("row-selected", self.row_changed)
+        self.store_something("row_changed", self.row_changed)
         self.store_widget("config_box", self.list_box)
         self.available_configs = []
         self.list_box_rows = []
@@ -91,17 +92,17 @@ class MainWindow(Base, Gtk.Builder):
         v_box.append(lbl)
         v_box.append(btn)
         self.list_box.set_placeholder(v_box)
-        
+
         def update_config_rows():
             try:
                configs = os.listdir(os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS"))
             except:
-               configs = []    
-            
+               configs = []
+
             configs.sort()
             self.available_configs = []
             self.list_box_rows = []
-        
+
             for file in configs:
                 if not file.endswith("ovpn"):
                     continue
@@ -115,7 +116,7 @@ class MainWindow(Base, Gtk.Builder):
 
             self.store_something("config_rows", self.list_box_rows)
 
-        
+
         update_config_rows()
         self.store_something("update_config_func", update_config_rows)
 
@@ -196,7 +197,7 @@ class MainWindow(Base, Gtk.Builder):
             window.set_transient_for(self.window)
             window.set_modal(True)
             window.show()
-        
+
         action = Gio.SimpleAction().new("update", None)
         action.connect("activate", lambda x, d: validate_remote(self.get_setting(self.SETTING.REMOTE)))
         self.app.add_action(action)
@@ -233,7 +234,7 @@ class MainWindow(Base, Gtk.Builder):
         popover = Gtk.PopoverMenu().new_from_model(menu)
 
         header_bar = self.get_object("header_bar")
-        
+
         menu_button = Gtk.MenuButton().new()
         menu_button.set_icon_name("open-menu-symbolic")
         menu_button.set_popover(popover)
@@ -249,16 +250,16 @@ class MainWindow(Base, Gtk.Builder):
                 adj.set_lower(v+1)
             except Exception as e:
                 logger.error(e)
-                pass 
-        
+                pass
+
         #finally!
         self.box.append(self.paned)
         self.box.append(self.progress_bar)
-        self.window.set_child(self.box) 
+        self.window.set_child(self.box)
 
         cpy_btn.connect("clicked", lambda x: Gdk.Display.get_default().get_clipboard().set(self.ip_addr.get_label()))
         self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config, self.CM)
-    
+
     def update_set_ip_flag(self):
         self.lookup.update()
         self.get_widget("flag").set_pixbuf(self.get_country_pixbuf(self.lookup.country_code))
@@ -285,14 +286,14 @@ class MainWindow(Base, Gtk.Builder):
             p_ctx = self.progress_bar.get_style_context()
             p_ctx.remove_class("progress-yellow")
             p_ctx.add_class("progress-full-green")
-            self.progress_bar.set_fraction(1.0) 
+            self.progress_bar.set_fraction(1.0)
             self.set_setting(self.SETTING.LAST_CONNECTED, self.get_selected_config())
             self.send_connected_notification()
             # save last cursor
             adj = self.scrolled_window.get_vadjustment()
             self.set_setting(self.SETTING.LISTBOX_V_ADJUST, float(adj.get_value()))
             self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.available_configs.index(self.get_selected_config()))
-                      
+
         else:
             ThreadManager().create(self.update_set_ip_flag, ())
             self.connect_btn.set_label(gettext.gettext("Connect"))
@@ -313,7 +314,7 @@ class Signals(Base):
 
     def __init__(self):
         super().__init__()
-    
+
     def connect(self, button, config, manager):
         config = config()
         if config is None and manager.get_connection_status():
@@ -323,7 +324,7 @@ class Signals(Base):
 
     def connect_via_ks(self, action, data, config, manager):
         print("action received:", action)
-        self.connect(None, config, manager)    
+        self.connect(None, config, manager)
 
     def disconnect(self, button, manager):
         manager.disconnect()
