@@ -34,6 +34,7 @@ class MainWindow(Base, Gtk.Builder):
         self.connected_cursor = None
         self.signals = Signals()
         self.CM = eOVPNConnectionManager()
+        self.nm_version = self.CM.get_version()
         self.nmdbus = NMDbus()
         self.lookup = Lookup()
         self.nmdbus.watch(self.on_nm_connection_event)
