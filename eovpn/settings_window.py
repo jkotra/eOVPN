@@ -168,8 +168,20 @@ class SettingsWindow(Base, Gtk.Builder):
                 self.username_entry.set_text(username)
 
             if (username := self.get_setting(self.SETTING.AUTH_USER)) is not None:
-                if (password := Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {"username": username}, None)) is not None:
-                    self.password_entry.set_text(password)
+                
+                def on_password_lookup(source, result):
+                    logger.info(result.__str__())
+                    try:
+                        pwd = Secret.password_lookup_finish(result)
+                    except Exception:
+                        if (pwd := self.get_setting(self.SETTING.AUTH_PASS)) is not None:
+                            self.password_entry.set_text(pwd)    
+                    if pwd is None:
+                        logger.warning("Password is empty!")
+                        return
+                    self.password_entry.set_text(pwd)
+                    
+                Secret.password_lookup(self.EOVPN_SECRET_SCHEMA, {"username": username}, None, on_password_lookup)
 
             if (ca := self.get_setting(self.SETTING.CA)) is not None:
                 self.ca_chooser_btn.set_label(os.path.basename(ca))  
@@ -307,13 +319,24 @@ class Signals(Base):
 
 
     def process_password(self, entry):
+
+        def on_password_stored(source, result):
+            try:
+                is_pwd_stored = Secret.password_store_finish(result)
+                logger.debug(is_pwd_stored)
+            except Exception:
+                #save as plain text
+                self.set_setting(self.SETTING.AUTH_PASS, entry.get_text())
+                logger.warning("Password saved as plain text!") 
+
+
         if entry.get_text() != "":
             attributes = { "username": self.get_setting(self.SETTING.AUTH_USER)}
             if attributes["username"] is None:
                 entry.set_text("")
                 return
             Secret.password_store(self.EOVPN_SECRET_SCHEMA, attributes, Secret.COLLECTION_DEFAULT,
-                                                    "password", entry.get_text(), None)
+                                                    "password", entry.get_text(), None, on_password_stored)
         else:
             self.set_setting(self.SETTING.AUTH_PASS, None)
 

@@ -17,6 +17,12 @@ _obj_record = {}
 
 _settings_backup = {}
 
+EOVPN_SECRET_SCHEMA = Secret.Schema.new("com.github.jkotra.eovpn", Secret.SchemaFlags.NONE,
+	                                          {
+		                                        "username": Secret.SchemaAttributeType.STRING
+	                                          }
+                                        )
+
 logger = logging.getLogger(__name__)
 
 def set_standalone(path):
@@ -68,11 +74,7 @@ class Base:
         #    "Jagadeesh Kotra": ["Telugu"],
         }
 
-        self.EOVPN_SECRET_SCHEMA = Secret.Schema.new(self.APP_ID, Secret.SchemaFlags.NONE,
-	                                          {
-		                                        "username": Secret.SchemaAttributeType.STRING
-	                                          }
-                                                    )
+        self.EOVPN_SECRET_SCHEMA = EOVPN_SECRET_SCHEMA
 
 
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")

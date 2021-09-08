@@ -37,12 +37,15 @@ class eOVPNConnectionManager(Base):
         nm_ca = self.get_setting(self.SETTING.CA)
 
         if nm_username is not None:
-            nm_password = Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {"username": self.get_setting(self.SETTING.AUTH_USER)}, None)
-
+            try:
+                nm_password = Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {"username": self.get_setting(self.SETTING.AUTH_USER)}, None)
+            except Exception:
+                nm_password = self.get_setting(self.SETTING.AUTH_PASS)
+                
             uuid = self.nm_manager.add_connection(openvpn_config.encode('utf-8'),
-                                               (nm_username.encode('utf-8') if nm_username is not None else None),
-                                               (nm_password.encode('utf-8') if nm_password is not None else None),
-                                               (nm_ca.encode('utf-8') if nm_ca is not None else None))
+                                               (nm_username.encode('utf-8')),
+                                               (nm_password.encode('utf-8')),
+                                               (nm_ca.encode('utf-8')))
             connection_result = self.nm_manager.activate_connection(uuid)
 
             self.uuid = uuid
