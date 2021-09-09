@@ -34,7 +34,13 @@ class MainWindow(Base, Gtk.Builder):
         self.connected_cursor = None
         self.signals = Signals()
         self.CM = eOVPNConnectionManager()
-        self.nm_version = self.CM.get_version()
+        self.critical_errors = []
+        self.nm_version, self.is_openvpn_available = self.CM.get_version()
+        logger.debug("%s | %s", self.nm_version, self.is_openvpn_available)
+        if self.nm_version is None:
+            self.critical_errors.append("Unable to Find NetworkManager.")
+        if self.is_openvpn_available is False:
+            self.critical_errors.append("Unable to Find OpenVPN plugin for NetworkManager")    
         self.nmdbus = NMDbus()
         self.lookup = Lookup()
         self.nmdbus.watch(self.on_nm_connection_event)
@@ -54,6 +60,24 @@ class MainWindow(Base, Gtk.Builder):
             self.connect_btn.set_sensitive(True)
             self.connect_btn.set_tooltip_text("")
 
+    def generic_critical_error_dialog(self, error_message):
+
+        def cb(dialog, res):
+            Gio.Application.quit(self.app)
+
+        dlg = Gtk.MessageDialog()
+        dlg.set_modal(True)
+        dlg.set_transient_for(self.window)
+        dlg.connect("response", cb)
+        dlg.set_title("Error")
+        dlg.set_transient_for(self.window)
+        btn = dlg.add_button("Exit", 1)
+        btn.get_style_context().add_class("destructive-action")
+
+        box = dlg.get_message_area()
+        for msg in error_message:
+            box.append(Gtk.Label.new(msg))
+        dlg.show()
 
     def setup(self):
         self.box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #top most box
@@ -259,6 +283,10 @@ class MainWindow(Base, Gtk.Builder):
 
         cpy_btn.connect("clicked", lambda x: Gdk.Display.get_default().get_clipboard().set(self.ip_addr.get_label()))
         self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config, self.CM)
+
+        print(self.critical_errors)
+        if len(self.critical_errors) > 0:
+            GLib.idle_add(self.generic_critical_error_dialog, self.critical_errors)
 
     def update_set_ip_flag(self):
         self.lookup.update()
