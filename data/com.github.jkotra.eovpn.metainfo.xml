@@ -44,6 +44,14 @@
 
   <releases>
 
+  <release version="1.07" date="2021-09-09">
+      <description>
+        <ul>
+          <li>Improve Authentication checking mechanism.</li>
+        </ul>
+      </description>
+  </release> 
+
   <release version="1.06" date="2021-09-08">
       <description>
         <ul>
