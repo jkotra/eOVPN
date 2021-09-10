@@ -44,6 +44,14 @@
 
   <releases>
 
+  <release version="1.08" date="2021-09-10">
+      <description>
+        <ul>
+          <li>Show Error Dialog if dependencies are not found.</li>
+        </ul>
+      </description>
+  </release> 
+
   <release version="1.07" date="2021-09-09">
       <description>
         <ul>
