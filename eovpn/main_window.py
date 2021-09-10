@@ -66,11 +66,14 @@ class MainWindow(Base, Gtk.Builder):
             Gio.Application.quit(self.app)
 
         dlg = Gtk.MessageDialog()
+        dlg.set_transient_for(self.window)
         dlg.set_modal(True)
-        dlg.set_transient_for(self.window)
+
+        dlg.set_property("message-type", Gtk.MessageType.ERROR)
+        dlg.set_property("use-markup", True)
+        dlg.set_property("text", "<span weight='bold'>Error</span>")
         dlg.connect("response", cb)
-        dlg.set_title("Error")
-        dlg.set_transient_for(self.window)
+
         btn = dlg.add_button("Exit", 1)
         btn.get_style_context().add_class("destructive-action")
 
