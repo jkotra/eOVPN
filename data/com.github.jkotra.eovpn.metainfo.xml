@@ -37,12 +37,22 @@
 
   <url type="homepage">https://github.com/jkotra/eOVPN</url>
   <url type="bugtracker">https://github.com/jkotra/eOVPN/issues</url>
+  <url type="donation">https://ko-fi.com/jkotra</url>
 
   <provides>
     <binary>eovpn</binary>
   </provides>
 
   <releases>
+
+  <release version="1.10" date="2021-09-11">
+      <description>
+        <ul>
+          <li>Translation updates.</li>
+          <li>Add 'Donate' to Menu</li>
+        </ul>
+      </description>
+  </release> 
 
   <release version="1.08" date="2021-09-10">
       <description>
