@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2021-09-05 16:06+0000\n"
-"PO-Revision-Date: 2021-09-05 16:06+0000\n"
+"POT-Creation-Date: 2021-09-11 19:00+0530\n"
+"PO-Revision-Date: 2021-09-11 19:00+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -54,16 +54,48 @@ msgctxt "shortcut window"
 msgid "Open Keyboard Shortcuts"
 msgstr ""
 
-#: eovpn/main_window.py:137
+#: eovpn/main_window.py:59
+msgid "Authentication Required!"
+msgstr ""
+
+#: eovpn/main_window.py:113
+msgid "No Configs Added!"
+msgstr ""
+
+#: eovpn/main_window.py:115
+msgid "Open Settings"
+msgstr ""
+
+#: eovpn/main_window.py:167
 msgid "IP: "
 msgstr ""
 
-#: eovpn/main_window.py:153 eovpn/main_window.py:297
+#: eovpn/main_window.py:183 eovpn/main_window.py:336
 msgid "Connect"
 msgstr ""
 
-#: eovpn/main_window.py:169 eovpn/main_window.py:282
+#: eovpn/main_window.py:199 eovpn/main_window.py:321
 msgid "Disconnect"
+msgstr ""
+
+#: eovpn/main_window.py:262
+msgid "Update"
+msgstr ""
+
+#: eovpn/main_window.py:263
+msgid "Settings"
+msgstr ""
+
+#: eovpn/main_window.py:264
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: eovpn/main_window.py:265
+msgid "Donate"
+msgstr ""
+
+#: eovpn/main_window.py:266
+msgid "About"
 msgstr ""
 
 #: eovpn/settings_window.py:41
@@ -98,14 +130,14 @@ msgstr ""
 msgid "Password"
 msgstr ""
 
-#: eovpn/settings_window.py:193
+#: eovpn/settings_window.py:209
 msgid "Notifications"
 msgstr ""
 
-#: eovpn/settings_window.py:222
+#: eovpn/settings_window.py:238
 msgid "Show Flag"
 msgstr ""
 
-#: eovpn/settings_window.py:250
+#: eovpn/settings_window.py:266
 msgid "Delete All VPN Connections!"
 msgstr ""

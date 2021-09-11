@@ -56,7 +56,7 @@ class MainWindow(Base, Gtk.Builder):
     def row_changed(self, listbox, row):
         if ovpn_is_auth_required(self.EOVPN_OVPN_CONFIG_DIR + "/" + self.get_selected_config()) and self.get_setting(self.SETTING.REQ_AUTH) is False:
             self.connect_btn.set_sensitive(False)
-            self.connect_btn.set_tooltip_text("Authentication Required!")
+            self.connect_btn.set_tooltip_text(gettext.gettext("Authentication Required!"))
         else:
             self.connect_btn.set_sensitive(True)
             self.connect_btn.set_tooltip_text("")
@@ -110,9 +110,9 @@ class MainWindow(Base, Gtk.Builder):
         #add placeholder
         v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
         v_box.set_valign(Gtk.Align.CENTER)
-        lbl = Gtk.Label.new("No Configs Added!")
+        lbl = Gtk.Label.new(gettext.gettext("No Configs Added!"))
         lbl.get_style_context().add_class("bold")
-        btn = Gtk.Button.new_with_label("Open Settings")
+        btn = Gtk.Button.new_with_label(gettext.gettext("Open Settings"))
         btn.get_style_context().add_class("suggested-action")
         btn.set_valign(Gtk.Align.START)
         btn.set_halign(Gtk.Align.CENTER)
@@ -259,11 +259,11 @@ class MainWindow(Base, Gtk.Builder):
 
 
         menu = Gio.Menu().new()
-        menu.insert(0, "Update", "app.update")
-        menu.insert(1, "Settings", "app.settings")
-        menu.insert(2, "Keyboard Shortcuts", "app.keyboard_shortcuts")
-        menu.insert(3, "Donate", "app.donate")
-        menu.insert(4, "About", "app.about")
+        menu.insert(0, gettext.gettext("Update"), "app.update")
+        menu.insert(1, gettext.gettext("Settings"), "app.settings")
+        menu.insert(2, gettext.gettext("Keyboard Shortcuts"), "app.keyboard_shortcuts")
+        menu.insert(3, gettext.gettext("Donate"), "app.donate")
+        menu.insert(4, gettext.gettext("About"), "app.about")
         popover = Gtk.PopoverMenu().new_from_model(menu)
 
         header_bar = self.get_object("header_bar")
