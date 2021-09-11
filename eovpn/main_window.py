@@ -9,6 +9,7 @@ import os
 import time
 import threading
 import gettext
+import webbrowser
 
 from .eovpn_base import Base, ThreadManager
 logger = logging.getLogger(__name__)
@@ -233,6 +234,10 @@ class MainWindow(Base, Gtk.Builder):
         action.connect("activate", open_about_dialog)
         self.app.add_action(action)
 
+        action = Gio.SimpleAction().new("donate", None)
+        action.connect("activate", lambda x, d: webbrowser.open("https://ko-fi.com/jkotra"))
+        self.app.add_action(action)
+
         action = Gio.SimpleAction().new("keyboard_shortcuts", None)
         action.connect("activate", open_ks)
         self.app.add_action(action)
@@ -257,7 +262,8 @@ class MainWindow(Base, Gtk.Builder):
         menu.insert(0, "Update", "app.update")
         menu.insert(1, "Settings", "app.settings")
         menu.insert(2, "Keyboard Shortcuts", "app.keyboard_shortcuts")
-        menu.insert(3, "About", "app.about")
+        menu.insert(3, "Donate", "app.donate")
+        menu.insert(4, "About", "app.about")
         popover = Gtk.PopoverMenu().new_from_model(menu)
 
         header_bar = self.get_object("header_bar")
