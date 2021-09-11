@@ -310,7 +310,10 @@ class Signals(Base):
 
     def req_auth(self, swich, state, auth_box):
         self.set_setting(self.SETTING.REQ_AUTH, state)
-        self.get_something("row_changed")(None, None)
+        try:
+            self.get_something("row_changed")(None, None)
+        except:
+            pass    
         if state:
             auth_box.set_sensitive(True)
         else:
