@@ -172,6 +172,7 @@ class MainWindow(Base, Gtk.Builder):
         cpy_btn = Gtk.Button.new_from_icon_name("edit-copy-symbolic")
         cpy_btn.set_valign(Gtk.Align.CENTER)
         cpy_btn.set_halign(Gtk.Align.CENTER)
+        cpy_btn.set_tooltip_text("Copy")
 
         h_box.append(self.ip_text)
         h_box.append(self.ip_addr)
