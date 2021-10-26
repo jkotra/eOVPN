@@ -412,5 +412,18 @@ class Signals(Base):
         for r in rows:
             listbox.remove(r)
 
-        validate_remote(entry.get_text())
+        try:
+            validate_remote(entry.get_text())
+        except Exception as e:
+            msg_dlg = Gtk.MessageDialog()
+            msg_dlg.set_transient_for(self.get_widget("settings_window"))
+            msg_dlg.set_property("message-type", Gtk.MessageType.ERROR)
+            msg_dlg.set_property("use-markup", True)
+            msg_dlg.set_property("text", "<span weight='bold'>Error</span>")
+            msg_dlg.add_button("Close", 1)
+            msg_dlg.get_message_area().append(Gtk.Label.new(str(e)))
+            msg_dlg.connect("response", lambda dlg,resp: dlg.hide())
+            msg_dlg.show()
+
+
         self.get_something("update_config_func")()

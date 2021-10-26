@@ -16,6 +16,10 @@ import subprocess
 
 logger = logging.getLogger(__name__)
 
+
+class NotZipException(Exception):
+    pass
+
 def download_remote_to_destination(remote, destination):
 
     ovpn = re.compile('.ovpn')
@@ -33,7 +37,11 @@ def download_remote_to_destination(remote, destination):
             return make_zip_from_b(remote_c.read())
 
     remote = os.path.expanduser(remote)
-    zip_file = download_zip(remote)
+
+    try:
+        zip_file = download_zip(remote)
+    except:
+        raise NotZipException("Configuration Source MUST be a ZIP file.")    
         
     #list of files inside zip
     files_in_zip = zip_file.namelist()
@@ -48,8 +56,6 @@ def download_remote_to_destination(remote, destination):
             logger.info(file.filename)
             zip_file.extract(file, destination)
         return True
-
-    return False  
 
 def validate_remote(remote):
     save_path = os.path.join(GLib.get_user_config_dir(), "eovpn", "CONFIGS")

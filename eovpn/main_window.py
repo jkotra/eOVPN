@@ -193,8 +193,6 @@ class MainWindow(Base, Gtk.Builder):
         # END OF RIGHT
 
         self.progress_bar = Gtk.ProgressBar.new()
-        #self.progress_bar.set_valign(Gtk.Align.END)
-        #self.box.append(self.progress_bar)
 
         if self.CM.get_connection_status():
             self.connect_btn.set_label(gettext.gettext("Disconnect"))
