@@ -5,6 +5,7 @@ import io
 import shutil
 import re
 import subprocess
+import gettext
 import urllib.request
 
 from gi.repository import GLib, Gtk, GLib
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 class NotZipException(Exception):
     pass
 
-def download_remote_to_destination(remote, destination):
+def download_remote_to_destination(remote, destination) -> str:
 
     ovpn = re.compile('.ovpn')
     crt = re.compile(r'.crt|cert|pem')
@@ -41,7 +42,7 @@ def download_remote_to_destination(remote, destination):
     try:
         zip_file = download_zip(remote)
     except:
-        raise NotZipException("Configuration Source MUST be a ZIP file.")    
+        raise NotZipException(gettext.gettext("Configuration Source MUST be a ZIP file."))    
         
     #list of files inside zip
     files_in_zip = zip_file.namelist()
@@ -55,7 +56,8 @@ def download_remote_to_destination(remote, destination):
             file.filename = os.path.basename(file.filename) #remove nested dir
             logger.info(file.filename)
             zip_file.extract(file, destination)
-        return True
+    
+    return certs
 
 def validate_remote(remote):
     save_path = os.path.join(GLib.get_user_config_dir(), "eovpn", "CONFIGS")

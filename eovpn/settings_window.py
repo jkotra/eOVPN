@@ -279,7 +279,7 @@ class SettingsWindow(Base, Gtk.Builder):
         #connect signals
         self.reset_btn.connect("clicked", self.signals.on_reset_btn_clicked, [entry, self.username_entry, self.password_entry], [self.ca_chooser_btn], [self.ask_auth_switch, self.notif_switch, self.flag_switch], self.window)
         entry.connect("changed", self.signals.process_config_entry, self.revealer)
-        self.validate_btn.connect("clicked", self.signals.on_validate_btn_click, entry)
+        self.validate_btn.connect("clicked", self.signals.on_validate_btn_click, entry, self.ca_chooser_btn)
         self.username_entry.connect("changed", self.signals.process_username)
         self.password_entry.connect("changed", self.signals.process_password)
         file_chooser_dialog.connect("response", self.signals.process_ca, self.ca_chooser_btn)
@@ -403,7 +403,8 @@ class Signals(Base):
         self.get_widget("flag").hide()
 
 
-    def on_validate_btn_click(self, button, entry):
+    def on_validate_btn_click(self, button, entry, ca_button):
+
 
         #remove all rows first
         rows = self.get_something("config_rows")
@@ -413,7 +414,21 @@ class Signals(Base):
             listbox.remove(r)
 
         try:
-            validate_remote(entry.get_text())
+            cert = validate_remote(entry.get_text())
+            if len(cert) > 0:
+                ca_path = os.path.join(self.EOVPN_OVPN_CONFIG_DIR, cert[-1])
+                if is_selinux_enforcing():
+                    home_dir = GLib.get_home_dir()
+                    se_friendly_path = os.path.join(home_dir, ".cert")
+                    if not os.path.exists(se_friendly_path):
+                        os.mkdir(se_friendly_path)
+                    shutil.copy(ca_path, se_friendly_path)
+                    self.set_setting(self.SETTING.CA, os.path.join(se_friendly_path, os.path.basename(ca_path)))
+                else:
+                    self.set_setting(self.SETTING.CA, ca_path)
+                
+                ca_button.set_label(cert[-1])
+
         except Exception as e:
             msg_dlg = Gtk.MessageDialog()
             msg_dlg.set_transient_for(self.get_widget("settings_window"))
