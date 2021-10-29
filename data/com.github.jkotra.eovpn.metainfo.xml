@@ -45,6 +45,15 @@
 
   <releases>
 
+  <release version="1.12" date="2021-10-31">
+      <description>
+        <ul>
+          <li>Automatically detect and set CA.</li>
+          <li>Bug fixes.</li>
+        </ul>
+      </description>
+  </release> 
+
   <release version="1.10" date="2021-09-11">
       <description>
         <ul>
