@@ -8,6 +8,7 @@
 #define NM_OPENVPN_KEY_CA "ca"
 #define NM_OPENVPN_FLATPAK_PLUGIN_NAME "/app/lib/NetworkManager/VPN/nm-openvpn-service.name"
 #define NM_OPENVPN_FLATPAK_PLUGIN_SO "/app/lib/NetworkManager/libnm-vpn-plugin-openvpn.so"
+#define NM_OPENVPN_HOST_PLUGIN_SO "/var/run/host/usr/lib/NetworkManager/libnm-vpn-plugin-openvpn.so"
 
 /*
 * gcc -shared -o eovpn_nm.so -fPIC eovpn_nm.c `pkg-config --libs --cflags libnm`
@@ -401,15 +402,27 @@ char* get_version(void){
 int is_openvpn_plugin_available(void){
 
     if (g_getenv("FLATPAK_ID") != NULL){
+
+        GFile *plugin = g_file_new_for_path(NM_OPENVPN_HOST_PLUGIN_SO);
+        if (g_file_query_exists(plugin, NULL) == FALSE){
+            return false;
+        }
+
+        return true;
+
+
+        /*
         NMVpnPluginInfo *plugin = nm_vpn_plugin_info_new_from_file(NM_OPENVPN_FLATPAK_PLUGIN_NAME, NULL);
         if (plugin == NULL){
             return false;
         }
         
         return true;
+        */
+
     }
 
-    // this need to be used after checking version.
+    // this needs to be used after checking version.
 
     GSList *plugins = nm_vpn_plugin_info_list_load();
     GSList *iter;

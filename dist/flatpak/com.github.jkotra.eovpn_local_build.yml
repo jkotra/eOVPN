@@ -11,7 +11,7 @@ finish-args:
   - --socket=wayland
   - --talk-name=org.freedesktop.Flatpak
   - --talk-name=org.freedesktop.Notifications
-  - --filesystem=home
+  - --filesystem=host
   - --persist=path
   - --socket=system-bus
 
