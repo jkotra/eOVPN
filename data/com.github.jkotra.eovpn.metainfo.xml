@@ -45,6 +45,14 @@
 
   <releases>
 
+  <release version="1.13" date="2021-11-20">
+      <description>
+        <ul>
+          <li>Bug fixes.</li>
+        </ul>
+      </description>
+  </release> 
+
   <release version="1.12" date="2021-10-31">
       <description>
         <ul>
