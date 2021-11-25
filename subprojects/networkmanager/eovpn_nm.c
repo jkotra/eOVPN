@@ -8,7 +8,7 @@
 #define NM_OPENVPN_KEY_CA "ca"
 #define NM_OPENVPN_FLATPAK_PLUGIN_NAME "/app/lib/NetworkManager/VPN/nm-openvpn-service.name"
 #define NM_OPENVPN_FLATPAK_PLUGIN_SO "/app/lib/NetworkManager/libnm-vpn-plugin-openvpn.so"
-#define NM_OPENVPN_HOST_PLUGIN_SO "/var/run/host/usr/lib/NetworkManager/libnm-vpn-plugin-openvpn.so"
+#define NM_OPENVPN_HOST_PLUGIN_NAME "/var/run/host/usr/lib/NetworkManager/VPN/nm-openvpn-service.name"
 
 /*
 * gcc -shared -o eovpn_nm.so -fPIC eovpn_nm.c `pkg-config --libs --cflags libnm`
@@ -403,7 +403,7 @@ int is_openvpn_plugin_available(void){
 
     if (g_getenv("FLATPAK_ID") != NULL){
 
-        GFile *plugin = g_file_new_for_path(NM_OPENVPN_HOST_PLUGIN_SO);
+        GFile *plugin = g_file_new_for_path(NM_OPENVPN_HOST_PLUGIN_NAME);
         if (g_file_query_exists(plugin, NULL) == FALSE){
             return false;
         }
