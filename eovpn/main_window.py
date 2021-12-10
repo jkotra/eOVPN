@@ -213,6 +213,7 @@ class MainWindow(Base, Gtk.Builder):
             about.set_license_type(Gtk.License.LGPL_3_0)
             about.set_version(self.APP_VERSION)
             about.set_website("https://github.com/jkotra/eOVPN")
+            about.set_system_information("Flatpak: \t {}".format("true" if os.getenv("FLATPAK_ID") is not None else "false"))
             about.set_transient_for(self.window)
             about.set_modal(True)
             about.show()
