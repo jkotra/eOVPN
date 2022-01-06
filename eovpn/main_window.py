@@ -156,6 +156,7 @@ class MainWindow(Base, Gtk.Builder):
         # Right Side
         img = Gtk.Picture.new()
         img.set_halign(Gtk.Align.CENTER)
+        img.set_valign(Gtk.Align.CENTER)
         self.store_widget("flag", img)
         if self.get_setting(self.SETTING.SHOW_FLAG) is False:
             img.hide()
@@ -202,7 +203,6 @@ class MainWindow(Base, Gtk.Builder):
         else:
             self.progress_bar.get_style_context().add_class("progress-yellow")
 
-        # popover
         def open_about_dialog(widget, data):
             about = Gtk.AboutDialog().new()
             about.set_logo_icon_name("com.github.jkotra.eovpn")

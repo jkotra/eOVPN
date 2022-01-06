@@ -50,10 +50,11 @@ class SettingsWindow(Base, Gtk.Builder):
         self.header.set_title_widget(self.stack_switcher)
 
         self.main_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
-        self.main_box.set_margin_top(12)
-        self.main_box.set_margin_bottom(4)
+        self.main_box.set_valign(Gtk.Align.CENTER)
+        self.main_box.set_margin_start(6)
+        self.main_box.set_margin_end(6)
 
-        self.pref_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
+        self.pref_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
 
         self.stack.add_titled(self.main_box, "setup", gettext.gettext("Setup"))
         self.stack.add_titled(self.pref_box, "general", gettext.gettext("General"))
@@ -61,7 +62,6 @@ class SettingsWindow(Base, Gtk.Builder):
         
         label = Gtk.Label.new(gettext.gettext("Configuration Source"))
         label.set_halign(Gtk.Align.START)
-        label.set_margin_start(4)
         label.get_style_context().add_class("bold")
         self.main_box.append(label)
 
@@ -70,74 +70,61 @@ class SettingsWindow(Base, Gtk.Builder):
             entry.set_text(text)
         else:    
             entry.set_placeholder_text("https://example.com/vpn/configs.zip")
-        entry.set_margin_start(6)
-        entry.set_margin_end(6)
         self.main_box.append(entry)
 
         self.revealer = Gtk.Revealer.new()
         self.validate_btn = Gtk.Button.new_with_label(gettext.gettext("Validate & Load"))
         self.validate_btn.get_style_context().add_class("suggested-action")
-        self.validate_btn.set_margin_start(12)
-        self.validate_btn.set_margin_end(12)
 
         self.revealer.set_child(self.validate_btn)
         self.main_box.append(self.revealer)
         self.revealer.set_reveal_child(False)
 
-        self.auth_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
-        self.auth_box.set_margin_top(12)
+        self.auth_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
 
         ask_auth_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
+        ask_auth_box.set_margin_start(6)
+        ask_auth_box.set_margin_bottom(6)
         label = Gtk.Label.new(gettext.gettext("Authentication"))
         label.set_halign(Gtk.Align.START)
-        label.set_margin_start(4)
         label.get_style_context().add_class("bold")
         ask_auth_box.append(label)
 
         self.ask_auth_switch = Gtk.Switch.new()
         self.ask_auth_switch.set_halign(Gtk.Align.END)
-        self.ask_auth_switch.set_margin_start(12)
         ask_auth_box.append(self.ask_auth_switch)
 
         self.auth_box.append(ask_auth_box)
 
         #username
-        username_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
+        username_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
         button = Gtk.Button.new_from_icon_name("avatar-default-symbolic")
         button.set_sensitive(False)
-        button.set_margin_start(4)
         username_box.append(button)
         self.username_entry = Gtk.Entry.new()
         self.username_entry.set_placeholder_text(gettext.gettext("Username / Email"))
         self.username_entry.set_hexpand(True)
-        self.username_entry.set_margin_start(6)
-        self.username_entry.set_margin_end(6)
         username_box.append(self.username_entry)
 
         #password
-        password_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
+        password_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
         button = Gtk.Button.new_from_icon_name("dialog-password-symbolic")
         button.set_sensitive(False)
-        button.set_margin_start(4)
         password_box.append(button)
         self.password_entry = Gtk.PasswordEntry.new()
         self.password_entry.set_property("placeholder-text", gettext.gettext("Password"))
         self.password_entry.set_show_peek_icon(True)
         self.password_entry.set_hexpand(True)
-        self.password_entry.set_margin_start(6)
-        self.password_entry.set_margin_end(6)
         password_box.append(self.password_entry)
 
         #CA
-        ca_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
+        ca_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
+        ca_box.set_margin_bottom(6)
         button = Gtk.Button.new_from_icon_name("application-certificate-symbolic")
         button.set_sensitive(False)
-        button.set_margin_start(4)
         ca_box.append(button)
         self.ca_chooser_btn = Gtk.Button.new_with_label("(None)")
         self.ca_chooser_btn.set_hexpand(True)
-        self.ca_chooser_btn.set_margin_start(6)
-        self.ca_chooser_btn.set_margin_end(6)
 
         #Filechooserdialog
         file_chooser_dialog = Gtk.FileChooserNative(action=Gtk.FileChooserAction.OPEN)
@@ -157,6 +144,8 @@ class SettingsWindow(Base, Gtk.Builder):
         ca_box.append(self.ca_chooser_btn)
         
         self.user_pass_ca_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
+        self.user_pass_ca_box.set_margin_start(6)
+        self.user_pass_ca_box.set_margin_end(6)
         self.user_pass_ca_box.append(username_box)
         self.user_pass_ca_box.append(password_box)
         self.user_pass_ca_box.append(ca_box)
