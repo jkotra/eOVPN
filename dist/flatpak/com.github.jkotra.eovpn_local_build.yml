@@ -1,6 +1,6 @@
 app-id: com.github.jkotra.eovpn
 runtime : org.gnome.Platform
-runtime-version : '40'
+runtime-version : '41'
 sdk : org.gnome.Sdk
 command: eovpn
 
@@ -124,7 +124,7 @@ modules:
       - -Dvapi=false
     sources:
       - type: git
-        url: 'https://gitlab.freedesktop.org/NetworkManager/NetworkManager.git'
+        url: 'https://github.com/NetworkManager/NetworkManager.git'
         tag: "1.30.2"
 
   - name: libnma
