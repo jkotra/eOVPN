@@ -6,7 +6,7 @@ import threading
 import gi
 gi.require_version('Notify', '0.7')
 gi.require_version('Secret', '1')
-from gi.repository import Gtk, Gio, GLib, GdkPixbuf, Notify, Secret
+from gi.repository import GObject, Gtk, Gio, GLib, GdkPixbuf, Notify, Secret
 
 from .utils import download_remote_to_destination, is_selinux_enforcing
 
@@ -24,11 +24,20 @@ EOVPN_SECRET_SCHEMA = Secret.Schema.new("com.github.jkotra.eovpn", Secret.Schema
 
 logger = logging.getLogger(__name__)
 
+class ConfigItem(GObject.Object):
+    def __init__(self, name, **kwargs):
+        super(ConfigItem, self).__init__(**kwargs)
+        self.name = name
+
+    def __repr__(self):
+        return str(self.name)
+
 class StorageItem:
     MAIN_WINDOW = "main-window"
     SETTINGS_WINDOW = "settings-window"
     LISTBOX = "listbox"
     LISTBOX_ROWS = "listbox-rows"
+    LISTSTORE = "liststore"
     CONFIGS_LIST = "listbox-rows-index"
     FLAG = "flag"
 
@@ -215,37 +224,40 @@ class Base:
 
     def load_only(self):
 
+        def widget_factory(item):
+            row = Gtk.ListBoxRow.new()
+            label = Gtk.Label.new(str(item))
+            label.set_halign(Gtk.Align.START)
+            row.set_child(label)
+            self.retrieve(StorageItem.LISTBOX_ROWS).append(row)
+            return row
+
         box = self.retrieve(StorageItem.LISTBOX)
-        listbox_rows = []
+        
         try:
             configs = os.listdir(self.EOVPN_OVPN_CONFIG_DIR)
             configs.sort()
         except:
-            configs = []    
+            configs = []
 
-        self.store(StorageItem.CONFIGS_LIST, configs)    
+        liststore = Gio.ListStore.new(ConfigItem)
+        box.bind_model(liststore, widget_factory)
+        
+        self.store(StorageItem.LISTSTORE, liststore)
+        self.store(StorageItem.CONFIGS_LIST, configs)  
+        self.store(StorageItem.LISTBOX_ROWS, [])  
 
         for file in configs:
             if not file.endswith("ovpn"):
                 continue
-            row = Gtk.ListBoxRow.new()
-            label = Gtk.Label.new(file)
-            label.set_halign(Gtk.Align.START)
-            row.set_child(label)
-            box.append(row)
-            listbox_rows.append(row)
-
-        self.store(StorageItem.LISTBOX_ROWS, listbox_rows)
+            liststore.append(ConfigItem(file))
 
     def remove_only(self, remove_path=False):
         if remove_path:
             self.reset_paths()
-        box = self.retrieve(StorageItem.LISTBOX)
-        for r in self.retrieve(StorageItem.LISTBOX_ROWS):
-            box.remove(r)
-
-        self.store(StorageItem.LISTBOX_ROWS, []) 
-        self.store(StorageItem.CONFIGS_LIST, [])       
+        self.retrieve(StorageItem.LISTSTORE).remove_all()
+        self.store(StorageItem.LISTBOX_ROWS, [])
+        self.store(StorageItem.CONFIGS_LIST, [])  
 
     
     
