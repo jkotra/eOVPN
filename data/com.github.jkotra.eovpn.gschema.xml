@@ -55,5 +55,8 @@
       <key type="d" name="listbox-v-adjust">
          <default>0</default>
       </key>
+      <key type="b" name="dark-theme">
+         <default>false</default>
+      </key>
    </schema>
 </schemalist>

@@ -29,6 +29,7 @@ class StorageItem:
     SETTINGS_WINDOW = "settings-window"
     LISTBOX = "listbox"
     LISTBOX_ROWS = "listbox-rows"
+    CONFIGS_LIST = "listbox-rows-index"
     FLAG = "flag"
 
 class Settings:
@@ -50,9 +51,10 @@ class Settings:
     NM_ACTIVE_UUID = "nm-active-uuid"
     SHOW_FLAG = "show-flag"
     LISTBOX_V_ADJUST = "listbox-v-adjust"
+    DARK_THEME = "dark-theme"
 
     all_settings = ["current-connected", "last-connected", "last-connected-cursor", "update-on-start", "connect-on-launch",
-    "notifications", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag", "listbox-v-adjust"]
+    "notifications", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag", "listbox-v-adjust", "dark-theme"]
 
 class Base:
 
@@ -221,6 +223,8 @@ class Base:
         except:
             configs = []    
 
+        self.store(StorageItem.CONFIGS_LIST, configs)    
+
         for file in configs:
             if not file.endswith("ovpn"):
                 continue
@@ -240,7 +244,8 @@ class Base:
         for r in self.retrieve(StorageItem.LISTBOX_ROWS):
             box.remove(r)
 
-        self.store(StorageItem.LISTBOX_ROWS, [])        
+        self.store(StorageItem.LISTBOX_ROWS, []) 
+        self.store(StorageItem.CONFIGS_LIST, [])       
 
     
     
@@ -273,15 +278,8 @@ class Base:
 
             GLib.idle_add(glib_func)
 
-        def reset_paths():
-            if os.path.exists(self.EOVPN_OVPN_CONFIG_DIR):
-                if len(os.listdir(self.EOVPN_OVPN_CONFIG_DIR)) > 1:
-                    shutil.rmtree(self.EOVPN_OVPN_CONFIG_DIR)
-            else:
-                os.makedirs(self.EOVPN_OVPN_CONFIG_DIR)
-
         
-        reset_paths()
+        self.reset_paths()
         
         thread = threading.Thread(target=dispatch)
         thread.daemon = True

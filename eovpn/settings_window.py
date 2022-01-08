@@ -251,6 +251,37 @@ class SettingsWindow(Base, Gtk.Builder):
 
         #############
 
+        ####Dark Theme####
+
+        list_box_row = Gtk.ListBoxRow.new()
+        h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
+        v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
+        v_box.set_hexpand(True)
+
+        label = Gtk.Label.new(gettext.gettext("Dark Theme"))
+        v_box.set_valign(Gtk.Align.CENTER)
+        v_box.append(label)
+
+        img = Gtk.Image.new()
+        img.set_from_icon_name("weather-clear-night-symbolic")
+
+        h_box.append(img)
+
+        h_box.append(v_box)
+
+        self.dark_theme_switch = Gtk.Switch.new()
+        if self.get_setting(self.SETTING.DARK_THEME) is True:
+            self.dark_theme_switch.set_state(True) 
+        self.dark_theme_switch.set_halign(Gtk.Align.CENTER)
+        self.dark_theme_switch.set_valign(Gtk.Align.CENTER)
+        h_box.append(self.dark_theme_switch)
+
+        list_box_row.set_child(h_box)
+        list_box_row.set_selectable(False)
+        list_box.append(list_box_row)
+
+        #############################
+
         
         #attach to pref box
         frame.set_child(list_box)
@@ -269,7 +300,7 @@ class SettingsWindow(Base, Gtk.Builder):
         
 
         #connect signals
-        self.reset_btn.connect("clicked", self.signals.on_reset_btn_clicked, [entry, self.username_entry, self.password_entry], [self.ca_chooser_btn], [self.ask_auth_switch, self.notif_switch, self.flag_switch], self.window)
+        self.reset_btn.connect("clicked", self.signals.on_reset_btn_clicked, [entry, self.username_entry, self.password_entry], [self.ca_chooser_btn], [self.ask_auth_switch, self.notif_switch, self.flag_switch, self.dark_theme_switch], self.window)
         entry.connect("changed", self.signals.process_config_entry, self.revealer)
         self.validate_btn.connect("clicked", self.signals.on_validate_btn_click, entry, self.ca_chooser_btn, self.spinner)
         self.username_entry.connect("changed", self.signals.process_username)
@@ -279,6 +310,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.ask_auth_switch.connect("state-set", self.signals.req_auth ,self.user_pass_ca_box)
         self.notif_switch.connect("state-set", self.signals.notification_set)
         self.flag_switch.connect("state-set", self.signals.show_flag_set)
+        self.dark_theme_switch.connect("state-set", self.signals.dark_theme_set)
         self.remove_all_vpn_btn.connect("clicked", lambda _: NetworkManager().delete_all_vpn_connections())
 
 
@@ -360,6 +392,12 @@ class Signals(Base):
         else:
             self.retrieve(StorageItem.FLAG).hide()
 
+    def dark_theme_set(self, switch, state):
+        gtk_settings = Gtk.Settings().get_default()
+        self.set_setting(self.SETTING.DARK_THEME, state)
+        gtk_settings.set_property("gtk-application-prefer-dark-theme", state)
+
+
     def on_reset_btn_clicked(self, button, entries, buttons, switches, window):
         self.reset_all_settings()
         
@@ -377,11 +415,12 @@ class Signals(Base):
         for s in switches:
             s.set_state(False)
 
-        self.remove_only(remove_path=True)
+        GLib.idle_add(self.remove_only, True)
 
         #default values
         switches[0].set_state(False) #Notifications
         switches[1].set_state(True) #Flag
+        switches[2].set_state(False) #Dark Theme
         self.retrieve(StorageItem.FLAG).hide()
 
 

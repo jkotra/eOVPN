@@ -20,7 +20,11 @@ class MainWindow(Base, Gtk.Builder):
         super().__init__()
         Gtk.Builder.__init__(self)
         self.app = app
-       
+        
+        if self.get_setting(self.SETTING.DARK_THEME) is True:
+            gtk_settings = Gtk.Settings().get_default()
+            gtk_settings.set_property("gtk-application-prefer-dark-theme", True)
+
         self.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "main.ui")
         self.window = self.get_object("main_window")
         self.window.set_title("eOVPN")
@@ -104,8 +108,6 @@ class MainWindow(Base, Gtk.Builder):
         self.list_box = Gtk.ListBox.new()
         self.list_box.connect("row-selected", self.row_changed)
         self.store(StorageItem.LISTBOX, self.list_box)
-        self.available_configs = []
-        self.list_box_rows = []
 
         #add placeholder
         v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
@@ -252,7 +254,7 @@ class MainWindow(Base, Gtk.Builder):
 
         if (cur := self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR)) != -1:
             try:
-                self.list_box.select_row(self.list_box_rows[cur])
+                self.list_box.select_row(self.retrieve(StorageItem.LISTBOX_ROWS)[cur])
                 adj = self.scrolled_window.get_vadjustment()
                 v = self.get_setting(self.SETTING.LISTBOX_V_ADJUST)
                 adj.set_value(v)
@@ -306,7 +308,7 @@ class MainWindow(Base, Gtk.Builder):
             # save last cursor
             adj = self.scrolled_window.get_vadjustment()
             self.set_setting(self.SETTING.LISTBOX_V_ADJUST, float(adj.get_value()))
-            self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.available_configs.index(self.get_selected_config()))
+            self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.retrieve(StorageItem.CONFIGS_LIST).index(self.get_selected_config()))
 
         else:
             GLib.idle_add(self.update_set_ip_flag)
