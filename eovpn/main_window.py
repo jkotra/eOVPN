@@ -20,7 +20,7 @@ class MainWindow(Base, Gtk.Builder):
         super().__init__()
         Gtk.Builder.__init__(self)
         self.app = app
-
+       
         self.add_from_resource(self.EOVPN_GRESOURCE_PREFIX + "/ui/" + "main.ui")
         self.window = self.get_object("main_window")
         self.window.set_title("eOVPN")
@@ -52,12 +52,15 @@ class MainWindow(Base, Gtk.Builder):
             return None
 
     def row_changed(self, listbox, row):
-        if ovpn_is_auth_required(self.EOVPN_OVPN_CONFIG_DIR + "/" + self.get_selected_config()) and self.get_setting(self.SETTING.REQ_AUTH) is False:
-            self.connect_btn.set_sensitive(False)
-            self.connect_btn.set_tooltip_text(gettext.gettext("Authentication Required!"))
-        else:
-            self.connect_btn.set_sensitive(True)
-            self.connect_btn.set_tooltip_text("")
+        if (selected := self.get_selected_config()) is not None:
+            if self.get_setting(self.SETTING.REQ_AUTH) is True:
+                if ovpn_is_auth_required(os.path.join(self.EOVPN_OVPN_CONFIG_DIR, selected)) and self.get_setting(self.SETTING.AUTH_USER) is None:
+                    self.connect_btn.set_sensitive(False)
+                    self.connect_btn.set_tooltip_text(gettext.gettext("Authentication Required!"))
+                    return
+
+        self.connect_btn.set_sensitive(True)
+        self.connect_btn.set_tooltip_text("")
 
     def generic_critical_error_dialog(self, error_message):
 
