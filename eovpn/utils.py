@@ -11,7 +11,6 @@ import urllib.request
 from gi.repository import GLib, Gtk, GLib
 import gettext
 
-from .eovpn_base import ThreadManager
 import re
 import subprocess
 
@@ -21,7 +20,7 @@ logger = logging.getLogger(__name__)
 class NotZipException(Exception):
     pass
 
-def download_remote_to_destination(remote, destination) -> str:
+def download_remote_to_destination(remote, destination):
 
     ovpn = re.compile('.ovpn')
     crt = re.compile(r'.crt|cert|pem')
@@ -34,7 +33,14 @@ def download_remote_to_destination(remote, destination) -> str:
             f = open(remote, "rb")
             return make_zip_from_b(f.read())
         else:
-            remote_c = urllib.request.urlopen(remote)  
+            hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+            'Accept-Encoding': 'none',
+            'Accept-Language': 'en-US,en;q=0.8',
+            'Connection': 'keep-alive'}
+            req = urllib.request.Request(remote, headers=hdr)
+            remote_c = urllib.request.urlopen(req)  
             return make_zip_from_b(remote_c.read())
 
     remote = os.path.expanduser(remote)
@@ -58,18 +64,6 @@ def download_remote_to_destination(remote, destination) -> str:
             zip_file.extract(file, destination)
     
     return certs
-
-def validate_remote(remote):
-    save_path = os.path.join(GLib.get_user_config_dir(), "eovpn", "CONFIGS")
-    
-    if os.path.exists(save_path):
-        if len(os.listdir(save_path)) > 1:
-            shutil.rmtree(save_path)
-    else:
-        os.makedirs(save_path)        
-
-
-    return download_remote_to_destination(remote, save_path)
 
 def ovpn_is_auth_required(ovpn_file):
     f = open(ovpn_file, "r")

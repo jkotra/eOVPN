@@ -4,14 +4,12 @@ from .connection_manager import eOVPNConnectionManager
 from .networkmanager.dbus import NMDbus
 from gi.repository import Gtk, Gio, GdkPixbuf, GObject, GLib, Gdk
 from .ip_lookup.lookup import Lookup
-from .utils import ovpn_is_auth_required, validate_remote
+from .utils import ovpn_is_auth_required
 import os
-import time
-import threading
 import gettext
 import webbrowser
 
-from .eovpn_base import Base, ThreadManager
+from .eovpn_base import Base, StorageItem
 logger = logging.getLogger(__name__)
 
 def on_connect_event(result, error):
@@ -28,7 +26,7 @@ class MainWindow(Base, Gtk.Builder):
         self.window.set_title("eOVPN")
         self.window.set_icon_name(self.APP_ID)
         self.app.add_window(self.window)
-        self.store_widget("main_window", self.window)
+        self.store(StorageItem.MAIN_WINDOW, self.window)
 
         self.selected_row = None
         self.selected_config = None
@@ -102,8 +100,7 @@ class MainWindow(Base, Gtk.Builder):
 
         self.list_box = Gtk.ListBox.new()
         self.list_box.connect("row-selected", self.row_changed)
-        self.store_something("row_changed", self.row_changed)
-        self.store_widget("config_box", self.list_box)
+        self.store(StorageItem.LISTBOX, self.list_box)
         self.available_configs = []
         self.list_box_rows = []
 
@@ -121,35 +118,9 @@ class MainWindow(Base, Gtk.Builder):
         v_box.append(btn)
         self.list_box.set_placeholder(v_box)
 
-        def update_config_rows():
-            try:
-               configs = os.listdir(os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS"))
-            except:
-               configs = []
-
-            configs.sort()
-            self.available_configs = []
-            self.list_box_rows = []
-
-            for file in configs:
-                if not file.endswith("ovpn"):
-                    continue
-                row = Gtk.ListBoxRow.new()
-                label = Gtk.Label.new(file)
-                label.set_halign(Gtk.Align.START)
-                row.set_child(label)
-                self.list_box.append(row)
-                self.list_box_rows.append(row)
-                self.available_configs.append(file)
-
-            self.store_something("config_rows", self.list_box_rows)
-
-
-        update_config_rows()
-        self.store_something("update_config_func", update_config_rows)
-
         self.scrolled_window.set_child(viewport)
         viewport.set_child(self.list_box)
+        self.load_only()
 
         self.inner_left.append(self.scrolled_window)
 
@@ -157,7 +128,7 @@ class MainWindow(Base, Gtk.Builder):
         img = Gtk.Picture.new()
         img.set_halign(Gtk.Align.CENTER)
         img.set_valign(Gtk.Align.CENTER)
-        self.store_widget("flag", img)
+        self.store(StorageItem.FLAG, img)
         if self.get_setting(self.SETTING.SHOW_FLAG) is False:
             img.hide()
         self.inner_right.append(img)
@@ -180,7 +151,7 @@ class MainWindow(Base, Gtk.Builder):
         h_box.append(cpy_btn)
 
         self.inner_right.append(h_box)
-        ThreadManager().create(self.update_set_ip_flag, ())
+        GLib.idle_add(self.update_set_ip_flag)
 
         self.connect_btn = Gtk.Button().new_with_label(gettext.gettext("Connect"))
         self.connect_btn.set_margin_top(10)
@@ -227,7 +198,7 @@ class MainWindow(Base, Gtk.Builder):
             window.show()
 
         action = Gio.SimpleAction().new("update", None)
-        action.connect("activate", lambda x, d: validate_remote(self.get_setting(self.SETTING.REMOTE)))
+        action.connect("activate", lambda x, d: self.validate_and_load(self.spinner) )
         self.app.add_action(action)
 
         action = Gio.SimpleAction().new("about", None)
@@ -273,6 +244,9 @@ class MainWindow(Base, Gtk.Builder):
         menu_button.set_popover(popover)
         header_bar.pack_end(menu_button)
 
+        self.spinner = Gtk.Spinner()
+        header_bar.pack_end(self.spinner)
+
         if (cur := self.get_setting(self.SETTING.LAST_CONNECTED_CURSOR)) != -1:
             try:
                 self.list_box.select_row(self.list_box_rows[cur])
@@ -299,7 +273,7 @@ class MainWindow(Base, Gtk.Builder):
 
     def update_set_ip_flag(self):
         self.lookup.update()
-        self.get_widget("flag").set_pixbuf(self.get_country_pixbuf(self.lookup.country_code))
+        self.retrieve(StorageItem.FLAG).set_pixbuf(self.get_country_pixbuf(self.lookup.country_code))
         self.ip_addr.set_label(self.lookup.ip)
 
     def on_nm_connection_event(self, result, error=None):
@@ -317,7 +291,7 @@ class MainWindow(Base, Gtk.Builder):
             return
 
         if result:
-            ThreadManager().create(self.update_set_ip_flag, ())
+            GLib.idle_add(self.update_set_ip_flag)
             self.connect_btn.set_label(gettext.gettext("Disconnect"))
             self.connect_btn.get_style_context().add_class("destructive-action")
             p_ctx = self.progress_bar.get_style_context()
@@ -332,7 +306,7 @@ class MainWindow(Base, Gtk.Builder):
             self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.available_configs.index(self.get_selected_config()))
 
         else:
-            ThreadManager().create(self.update_set_ip_flag, ())
+            GLib.idle_add(self.update_set_ip_flag)
             self.connect_btn.set_label(gettext.gettext("Connect"))
             self.connect_btn.get_style_context().remove_class("destructive-action")
             p_ctx = self.progress_bar.get_style_context()

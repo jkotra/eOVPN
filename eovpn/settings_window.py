@@ -12,9 +12,9 @@ import gettext
 
 from gi.repository import Gtk, Gio, GLib, Gdk, Secret
 
-from .eovpn_base import Base, ThreadManager
+from .eovpn_base import Base, StorageItem
 from .connection_manager import eOVPNConnectionManager
-from .utils import validate_remote, is_selinux_enforcing
+from .utils import is_selinux_enforcing
 
 from .networkmanager.bindings import NetworkManager
 
@@ -32,9 +32,9 @@ class SettingsWindow(Base, Gtk.Builder):
         self.window = self.get_object("settings_window")
         self.window.set_title("eOVPN Settings")
 
-        self.window.set_transient_for(self.get_widget("main_window"))
+        self.window.set_transient_for(self.retrieve(StorageItem.MAIN_WINDOW))
         self.window.set_modal(True)
-        self.store_widget("settings_window", self.window)
+        self.store(StorageItem.SETTINGS_WINDOW, self.window)
 
     def setup(self):
         
@@ -42,6 +42,9 @@ class SettingsWindow(Base, Gtk.Builder):
         self.reset_btn.get_style_context().add_class("destructive-action")
         self.header = self.get_object("settings_header_bar")
         self.header.pack_start(self.reset_btn)
+
+        self.spinner = Gtk.Spinner()
+        self.header.pack_end(self.spinner)
         
         self.stack = Gtk.Stack.new()
         self.stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT)
@@ -268,7 +271,7 @@ class SettingsWindow(Base, Gtk.Builder):
         #connect signals
         self.reset_btn.connect("clicked", self.signals.on_reset_btn_clicked, [entry, self.username_entry, self.password_entry], [self.ca_chooser_btn], [self.ask_auth_switch, self.notif_switch, self.flag_switch], self.window)
         entry.connect("changed", self.signals.process_config_entry, self.revealer)
-        self.validate_btn.connect("clicked", self.signals.on_validate_btn_click, entry, self.ca_chooser_btn)
+        self.validate_btn.connect("clicked", self.signals.on_validate_btn_click, entry, self.ca_chooser_btn, self.spinner)
         self.username_entry.connect("changed", self.signals.process_username)
         self.password_entry.connect("changed", self.signals.process_password)
         file_chooser_dialog.connect("response", self.signals.process_ca, self.ca_chooser_btn)
@@ -299,10 +302,6 @@ class Signals(Base):
 
     def req_auth(self, swich, state, auth_box):
         self.set_setting(self.SETTING.REQ_AUTH, state)
-        try:
-            self.get_something("row_changed")(None, None)
-        except:
-            pass    
         if state:
             auth_box.set_sensitive(True)
         else:
@@ -357,9 +356,9 @@ class Signals(Base):
     def show_flag_set(self, switch, state):
         self.set_setting(self.SETTING.SHOW_FLAG, state)
         if state:
-            self.get_widget("flag").show()
+            self.retrieve(StorageItem.FLAG).show()
         else:
-            self.get_widget("flag").hide()
+            self.retrieve(StorageItem.FLAG).hide()
 
     def on_reset_btn_clicked(self, button, entries, buttons, switches, window):
         self.reset_all_settings()
@@ -377,57 +376,14 @@ class Signals(Base):
 
         for s in switches:
             s.set_state(False)
-        
-        rows = self.get_something("config_rows")
-        listbox = self.get_widget("config_box")
 
-        for r in rows:
-            listbox.remove(r)
-
-        self.store_something("config_rows", [])
+        self.remove_only(remove_path=True)
 
         #default values
         switches[0].set_state(False) #Notifications
         switches[1].set_state(True) #Flag
-        self.get_widget("flag").hide()
+        self.retrieve(StorageItem.FLAG).hide()
 
 
-    def on_validate_btn_click(self, button, entry, ca_button):
-
-
-        #remove all rows first
-        rows = self.get_something("config_rows")
-        listbox = self.get_widget("config_box")
-
-        for r in rows:
-            listbox.remove(r)
-
-        try:
-            cert = validate_remote(entry.get_text())
-            if len(cert) > 0:
-                ca_path = os.path.join(self.EOVPN_OVPN_CONFIG_DIR, cert[-1])
-                if is_selinux_enforcing():
-                    home_dir = GLib.get_home_dir()
-                    se_friendly_path = os.path.join(home_dir, ".cert")
-                    if not os.path.exists(se_friendly_path):
-                        os.mkdir(se_friendly_path)
-                    shutil.copy(ca_path, se_friendly_path)
-                    self.set_setting(self.SETTING.CA, os.path.join(se_friendly_path, os.path.basename(ca_path)))
-                else:
-                    self.set_setting(self.SETTING.CA, ca_path)
-                
-                ca_button.set_label(cert[-1])
-
-        except Exception as e:
-            msg_dlg = Gtk.MessageDialog()
-            msg_dlg.set_transient_for(self.get_widget("settings_window"))
-            msg_dlg.set_property("message-type", Gtk.MessageType.ERROR)
-            msg_dlg.set_property("use-markup", True)
-            msg_dlg.set_property("text", "<span weight='bold'>Error</span>")
-            msg_dlg.add_button("Close", 1)
-            msg_dlg.get_message_area().append(Gtk.Label.new(str(e)))
-            msg_dlg.connect("response", lambda dlg,resp: dlg.hide())
-            msg_dlg.show()
-
-
-        self.get_something("update_config_func")()
+    def on_validate_btn_click(self, button, entry, ca_button, spinner):
+        self.validate_and_load(spinner, ca_button)

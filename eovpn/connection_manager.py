@@ -4,7 +4,7 @@ import gettext
 
 from gi.repository import GLib, Secret
 
-from .eovpn_base import Base, ThreadManager
+from .eovpn_base import Base
 from .networkmanager.bindings import NetworkManager
 
 

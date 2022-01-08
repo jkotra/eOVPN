@@ -9,7 +9,7 @@ from gi.repository import Gtk, GLib, Gio, Gdk
 
 logger = logging.getLogger(__name__)
 
-from .eovpn_base import Base, set_standalone
+from .eovpn_base import Base
 from .main_window import MainWindow
 
 class eovpn(Base):

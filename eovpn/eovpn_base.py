@@ -1,7 +1,5 @@
 import os
-import subprocess
-import re
-import json
+import shutil
 import logging
 import threading
 
@@ -10,10 +8,11 @@ gi.require_version('Notify', '0.7')
 gi.require_version('Secret', '1')
 from gi.repository import Gtk, Gio, GLib, GdkPixbuf, Notify, Secret
 
-eovpn_standalone = {"is_standalone": False, "path": None}
+from .utils import download_remote_to_destination, is_selinux_enforcing
+
 _builder_record = {}
-_widget_record = {}
-_obj_record = {}
+_storage_record = {}
+
 
 _settings_backup = {}
 
@@ -25,13 +24,12 @@ EOVPN_SECRET_SCHEMA = Secret.Schema.new("com.github.jkotra.eovpn", Secret.Schema
 
 logger = logging.getLogger(__name__)
 
-def set_standalone(path):
-    eovpn_standalone["is_standalone"] = True
-    eovpn_standalone["path"] = path
-
-def get_standalone():
-    return (eovpn_standalone["is_standalone"], eovpn_standalone["path"])
-
+class StorageItem:
+    MAIN_WINDOW = "main-window"
+    SETTINGS_WINDOW = "settings-window"
+    LISTBOX = "listbox"
+    LISTBOX_ROWS = "listbox-rows"
+    FLAG = "flag"
 
 class Settings:
     CURRENT_CONNECTED = "current-connected"
@@ -92,20 +90,12 @@ class Base:
             return builder
         else:
             return _builder_record[ui_resource_name]
-    
-    def get_widget(self, widget_name):
-        if widget_name in _widget_record.keys():
-            return _widget_record[widget_name]
 
-    def store_widget(self, name, widget):
-        _widget_record[name] = widget
+    def store(self, item, obj):
+        _storage_record[item] = obj
 
-    def get_something(self, obj):
-        if obj in _obj_record.keys():
-            return _obj_record[obj]
-
-    def store_something(self, name, obj):
-        _obj_record[name] = obj
+    def retrieve(self, item):
+        return _storage_record[item]
 
     def send_connected_notification(self):
         if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
@@ -212,22 +202,89 @@ class Base:
     def undo_reset_settings(self):
         for k,v in _settings_backup.items():
             self.__settings.set_value(k,v) 
-        self.__settings.sync()    
-
-class ThreadManager:
+        self.__settings.sync()
     
-    def create(self, function_to_run, arguments, is_daemon=False, join=False):
-
-        if arguments is None:
-            th = threading.Thread(target=function_to_run)
+    def reset_paths(self):
+        if os.path.exists(self.EOVPN_OVPN_CONFIG_DIR):
+            if len(os.listdir(self.EOVPN_OVPN_CONFIG_DIR)) > 1:
+                shutil.rmtree(self.EOVPN_OVPN_CONFIG_DIR)
         else:
-            th = threading.Thread(target=function_to_run, args=arguments)
-        th.daemon = is_daemon
-        th.start()
-        
-        if join:
-            self._join_thread(th)
+            os.makedirs(self.EOVPN_OVPN_CONFIG_DIR)
+
+    def load_only(self):
+
+        box = self.retrieve(StorageItem.LISTBOX)
+        listbox_rows = []
+        try:
+            configs = os.listdir(self.EOVPN_OVPN_CONFIG_DIR)
+            configs.sort()
+        except:
+            configs = []    
+
+        for file in configs:
+            if not file.endswith("ovpn"):
+                continue
+            row = Gtk.ListBoxRow.new()
+            label = Gtk.Label.new(file)
+            label.set_halign(Gtk.Align.START)
+            row.set_child(label)
+            box.append(row)
+            listbox_rows.append(row)
+
+        self.store(StorageItem.LISTBOX_ROWS, listbox_rows)
+
+    def remove_only(self, remove_path=False):
+        if remove_path:
+            self.reset_paths()
+        box = self.retrieve(StorageItem.LISTBOX)
+        for r in self.retrieve(StorageItem.LISTBOX_ROWS):
+            box.remove(r)
+
+        self.store(StorageItem.LISTBOX_ROWS, [])        
+
     
-    def _join_thread(self, thread):
-        thread.join()
-        logger.info("{} joined!".format(str(thread)))
+    
+    def validate_and_load(self, spinner=None, ca_button=None):
+
+        def glib_func():
+            self.remove_only()
+            self.load_only()
+            if spinner is not None:
+                spinner.stop()    
+            return False
+
+        def dispatch():
+            cert = download_remote_to_destination(self.get_setting(self.SETTING.REMOTE), self.EOVPN_OVPN_CONFIG_DIR)
+            if len(cert) > 0:
+                ca_path = os.path.join(self.EOVPN_OVPN_CONFIG_DIR, cert[-1])
+                if is_selinux_enforcing():
+                    home_dir = GLib.get_home_dir()
+                    se_friendly_path = os.path.join(home_dir, ".cert")
+                    if not os.path.exists(se_friendly_path):
+                        os.mkdir(se_friendly_path)
+                    shutil.copy(ca_path, se_friendly_path)
+                    self.set_setting(self.SETTING.CA, os.path.join(se_friendly_path, os.path.basename(ca_path)))
+                else:
+                    self.set_setting(self.SETTING.CA, ca_path)
+                
+                if ca_button is not None:
+                    # if it's None, assume update is not needed!
+                    ca_button.set_label(cert[-1])
+
+            GLib.idle_add(glib_func)
+
+        def reset_paths():
+            if os.path.exists(self.EOVPN_OVPN_CONFIG_DIR):
+                if len(os.listdir(self.EOVPN_OVPN_CONFIG_DIR)) > 1:
+                    shutil.rmtree(self.EOVPN_OVPN_CONFIG_DIR)
+            else:
+                os.makedirs(self.EOVPN_OVPN_CONFIG_DIR)
+
+        
+        reset_paths()
+        
+        thread = threading.Thread(target=dispatch)
+        thread.daemon = True
+        thread.start()
+        if spinner is not None:
+            spinner.start()
