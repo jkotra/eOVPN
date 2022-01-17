@@ -25,7 +25,7 @@ GVariantIter *_get_all_sessions()
 
     if (error != NULL)
     {
-        g_error(error->message);
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
         g_error_free(error);
         return NULL;
     }
@@ -40,9 +40,8 @@ int get_connection_status()
     GVariantIter *iter = _get_all_sessions();
     gchar *path;
 
-    if (iter == NULL)
-    {
-        return iter;
+    if(iter == NULL){
+        return;
     }
 
     while (g_variant_iter_next(iter, "o", &path))
@@ -60,7 +59,7 @@ int get_connection_status()
         if (error != NULL)
         {
 
-            g_error(error->message);
+            g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
             g_error_free(error);
             return false;
         }
@@ -78,10 +77,12 @@ int get_connection_status()
 
         if ((major == 2) && (minor == 7))
         {
+            g_variant_iter_free(iter);
             return true;
         }
     }
-
+    
+    g_variant_iter_free(iter);
     return false;
 }
 
@@ -93,7 +94,7 @@ void disconnect_all_sessions()
 
     if (iter == NULL)
     {
-        return iter;
+        return;
     }
 
     while (g_variant_iter_next(iter, "o", &path))
@@ -111,9 +112,9 @@ void disconnect_all_sessions()
         if (error != NULL)
         {
 
-            g_error(error->message);
+            g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
             g_error_free(error);
-            return false;
+            return;
         }
 
         GVariant *status = g_dbus_proxy_call_sync(sessions_proxy, "Get", g_variant_new("(ss)", "net.openvpn.v3.sessions", "status"), G_DBUS_CALL_FLAGS_NONE, -1, NULL, NULL);
@@ -145,6 +146,8 @@ void disconnect_all_sessions()
             g_message("%s disconnected!", p_copy);
         }
     }
+
+    g_variant_iter_free(iter);
 }
 
 int get_specific_connection_status(char *session_path)
@@ -161,7 +164,7 @@ int get_specific_connection_status(char *session_path)
     if (error != NULL)
     {
 
-        g_error(error->message);
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
         g_error_free(error);
         return false;
     }
@@ -196,7 +199,7 @@ char *get_version()
 
     if (error != NULL)
     {
-        g_error(error->message);
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
         g_error_free(error);
         return NULL;
     }
@@ -204,10 +207,10 @@ char *get_version()
     error = NULL;
     GVariant *version = g_dbus_proxy_call_sync(proxy, "Get", g_variant_new("(ss)", "net.openvpn.v3.configuration", "version"), G_DBUS_PROXY_FLAGS_NONE,
                                                -1,
-                                               NULL, NULL);
+                                               NULL, &error);
     if (error != NULL)
     {
-        g_error(error->message);
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
         g_error_free(error);
         return NULL;
     }
@@ -234,7 +237,7 @@ char *import_config(char *name, char *config_str)
 
     if (error != NULL)
     {
-        g_error(error->message);
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
         g_error_free(error);
         return NULL;
     }
@@ -252,7 +255,7 @@ char *import_config(char *name, char *config_str)
 
     if (error != NULL)
     {
-        g_error(error->message);
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
         g_error_free(error);
         return NULL;
     }
@@ -281,7 +284,7 @@ char *prepare_tunnel(char *config_object)
 
     if (error != NULL)
     {
-        g_error(error->message);
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
         g_error_free(error);
         return NULL;
     }
@@ -299,7 +302,7 @@ char *prepare_tunnel(char *config_object)
 
     if (error != NULL)
     {
-        g_error(error->message);
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
         g_error_free(error);
         return NULL;
     }
@@ -330,7 +333,7 @@ void set_dco(char *session_object, int set_to)
     if (error != NULL)
     {
 
-        g_error(error->message);
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
         g_error_free(error);
         return;
     }
@@ -355,7 +358,7 @@ void set_receive_log_events(char *session_object, int set_to)
     if (error != NULL)
     {
 
-        g_error(error->message);
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
         g_error_free(error);
         return;
     }
@@ -379,7 +382,7 @@ void send_auth(char *session_object, char *username, char *password)
 
     if (error != NULL)
     {
-        g_error(error->message);
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
         g_error_free(error);
         return;
     }
