@@ -29,8 +29,16 @@ GVariantIter *_get_all_sessions()
         g_error_free(error);
         return NULL;
     }
-
-    GVariant *available_sessions = g_dbus_proxy_call_sync(sessions_proxy, "FetchAvailableSessions", g_variant_new("()"), G_DBUS_CALL_FLAGS_NONE, -1, NULL, NULL);
+    
+    error = NULL;
+    GVariant *available_sessions = g_dbus_proxy_call_sync(sessions_proxy, "FetchAvailableSessions", g_variant_new("()"), G_DBUS_CALL_FLAGS_NONE, -1, NULL, &error);
+    if (error != NULL){
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
+        g_error_free(error);
+        return NULL;
+    }
+    gsize n_sessions = g_variant_n_children(available_sessions);
+    g_message("Active Sessions  = %ld", n_sessions);
     GVariantIter *iter = g_variant_iter_new(g_variant_get_child_value(available_sessions, 0));
     return iter;
 }
@@ -41,7 +49,7 @@ int get_connection_status()
     gchar *path;
 
     if(iter == NULL){
-        return;
+        return -1;
     }
 
     while (g_variant_iter_next(iter, "o", &path))
@@ -61,10 +69,17 @@ int get_connection_status()
 
             g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
             g_error_free(error);
-            return false;
+            return -1;
         }
+        
+        error = NULL;
+        GVariant *status = g_dbus_proxy_call_sync(sessions_proxy, "Get", g_variant_new("(ss)", "net.openvpn.v3.sessions", "status"), G_DBUS_CALL_FLAGS_NONE, -1, NULL, &error);
 
-        GVariant *status = g_dbus_proxy_call_sync(sessions_proxy, "Get", g_variant_new("(ss)", "net.openvpn.v3.sessions", "status"), G_DBUS_CALL_FLAGS_NONE, -1, NULL, NULL);
+        if (error != NULL){
+            g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
+            g_error_free(error);
+            return -1;
+        }
 
         GVariant *v;
         guint16 major;
@@ -73,7 +88,7 @@ int get_connection_status()
 
         g_variant_get(status, "(v)", &v);
         g_variant_get(v, "(uus)", &major, &minor, &status_str);
-        g_message("%u %u %s\n", major, minor, status_str);
+        g_message("%u %u %s", major, minor, status_str);
 
         if ((major == 2) && (minor == 7))
         {
@@ -127,7 +142,7 @@ void disconnect_all_sessions()
 
         g_variant_get(status, "(v)", &v);
         g_variant_get(v, "(uus)", &major, &minor, &status_str);
-        g_message("%u %u %s\n", major, minor, status_str);
+        g_message("%u %u %s", major, minor, status_str);
 
 
         if ((major == 2) && (minor == 7))
@@ -419,4 +434,44 @@ void resume_vpn()
 {
     g_assert(UniqueSession != NULL);
     g_dbus_proxy_call_sync(UniqueSession, "Resume", g_variant_new("()"), G_DBUS_PROXY_FLAGS_NONE, -1, NULL, NULL);
+}
+
+/* Ducttape code until dbus issue fixes upstream!
+   Refer: https://github.com/OpenVPN/openvpn3-linux/issues/100
+
+   _p = p stands for persistence.
+*/
+
+char* p_get_version(){
+
+    int max_tries = 6;
+
+    while(max_tries != 0){
+        char* ver = get_version();
+        if (ver != NULL){
+            return ver;
+        }
+        else{
+            max_tries--;
+        }
+    }
+
+    return NULL;
+}
+
+int p_get_connection_status(){
+
+    int max_tries = 6;
+
+    while(max_tries != 0){
+        int status = get_connection_status();
+        if (status != -1){
+            return status;
+        }
+        else{
+            max_tries--;
+        }
+    }
+
+    return -1;
 }
