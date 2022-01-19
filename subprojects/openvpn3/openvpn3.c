@@ -145,7 +145,7 @@ void disconnect_all_sessions()
         g_message("%u %u %s", major, minor, status_str);
 
 
-        if ((major == 2) && (minor == 7))
+        if (((major == 2) && (minor == 7)) || ((major == 2) && (minor == 14)))
         {
             error = NULL;
             GDBusProxy *proxy = g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
