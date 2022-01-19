@@ -37,9 +37,11 @@ GVariantIter *_get_all_sessions()
         g_error_free(error);
         return NULL;
     }
-    gsize n_sessions = g_variant_n_children(available_sessions);
+    
+    GVariant *active_sessions = g_variant_get_child_value(available_sessions, 0);
+    gsize n_sessions = g_variant_n_children(active_sessions);
     g_message("Active Sessions  = %ld", n_sessions);
-    GVariantIter *iter = g_variant_iter_new(g_variant_get_child_value(available_sessions, 0));
+    GVariantIter *iter = g_variant_iter_new(active_sessions);
     return iter;
 }
 
