@@ -333,6 +333,30 @@ char *prepare_tunnel(char *config_object)
     return (char *)session_object;
 }
 
+void init_unique_session(char *session_object){
+
+    GError *error = NULL;
+    GDBusProxy *unique_session = g_dbus_proxy_new_for_bus_sync(
+        G_BUS_TYPE_SYSTEM,
+        G_DBUS_PROXY_FLAGS_NONE,
+        NULL,
+        "net.openvpn.v3.sessions",
+        (gchar *)session_object,
+        "net.openvpn.v3.sessions",
+        NULL,
+        &error);
+
+    if (error != NULL)
+    {
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
+        g_error_free(error);
+        return;
+    }
+
+    UniqueSession = unique_session;
+    
+}
+
 void set_dco(char *session_object, int set_to)
 {
 

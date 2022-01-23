@@ -72,6 +72,10 @@ class OpenVPN3:
             return bool(status)
         return False
 
+    def init_unique_session(self):
+        self.eovpn_ovpn3.init_unique_session.argtypes = [ctypes.c_char_p]
+        self.eovpn_ovpn3.init_unique_session(self.session_path)
+
     def disconnect(self):
         self.eovpn_ovpn3.disconnect_vpn()
 

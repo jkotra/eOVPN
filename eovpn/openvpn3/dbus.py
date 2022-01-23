@@ -10,6 +10,7 @@ class OVPN3Dbus(Base):
         super().__init__()
         self.conn = None
         self.mo = None
+        self.once = True
 
         self.username = self.get_setting(self.SETTING.AUTH_USER)
         self.password = None
@@ -64,3 +65,9 @@ class OVPN3Dbus(Base):
         elif (major == 2 and minor == 15):
             update_callback(["resume"])
             pass
+        elif (major == 2 and minor == 2):
+            if self.username is None and self.once:
+                logger.warning("username is None. Proceeding with connection without auth.")
+                self.mo.init_unique_session()
+                self.mo.connect()
+                self.once = False
