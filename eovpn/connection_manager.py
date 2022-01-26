@@ -1,6 +1,4 @@
-import re
 import logging
-import time
 
 from gi.repository import GLib, Secret
 
@@ -113,7 +111,6 @@ class OpenVPN3(ConnectionManager):
         
 
     def connect(self, openvpn_config, dbus_callback=None):
-        
         if not self.watch:
             self.dbus.watch(dbus_callback)
             self.watch = True
