@@ -1,10 +1,5 @@
-import gi
-import time
 import urllib
 import json
-gi.require_version('Geoclue', '2.0') 
-from gi.repository import Geoclue
-import xml.etree.ElementTree as ET
 
 
 class Lookup:
