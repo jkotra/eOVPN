@@ -46,6 +46,10 @@
     border-bottom-color: #3E8914;
 }
 
+.progress-orange trough progress {
+    background-color: #fd9206;
+    border-bottom-color: #fd9206;
+}
 
 
 .star {
