@@ -42,6 +42,7 @@ subdir('data')
 
 
 subproject('networkmanager')
+subproject('openvpn3')
 
 install_subdir(
   'eovpn',
