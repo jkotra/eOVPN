@@ -24,7 +24,10 @@ class ConnectionManager(Base):
     def version(self) -> str:
         pass
 
-    def connect(self, openvpn_config, dbus_callback=None):
+    def connect(self, openvpn_config):
+        pass
+
+    def start_dbus_watch(self, callback):
         pass
 
     def disconnect(self):
@@ -42,14 +45,15 @@ class NetworkManager(ConnectionManager):
         self.nm_manager = NMBindings()
         
         self.dbus = NMDbus()
-        self.watch =False
+        self.watch = False
 
-    def connect(self, openvpn_config, dbus_callback=None):
-
+    def start_watch(self, callback):
         if not self.watch:
             # only subscribe once
-            self.dbus.watch(dbus_callback)
+            self.dbus.watch(callback)
             self.watch = True
+
+    def connect(self, openvpn_config,):
 
         nm_username = self.get_setting(self.SETTING.AUTH_USER)
         nm_password = None
@@ -106,18 +110,22 @@ class OpenVPN3(ConnectionManager):
         self.callback = update_callback
         self.session_path = None
         self.dbus = OVPN3Dbus()
+        self.callback = None
         self.dbus.set_binding(self.ovpn3)
         self.watch = False
         
-
-    def connect(self, openvpn_config, dbus_callback=None):
+    def start_watch(self, callback):
+        self.callback = callback
         if not self.watch:
-            self.dbus.watch(dbus_callback)
+            # only subscribe once
+            self.dbus.watch(callback)
             self.watch = True
-            print("subscribed!")
+
+    def connect(self, openvpn_config):
+
 
         if (self.ovpn3.import_config(openvpn_config, self.get_setting(self.SETTING.CA)) != False):
-            self.session_path = self.ovpn3.prepare_tunnel(dbus_callback)
+            self.session_path = self.ovpn3.prepare_tunnel(self.callback)
 
     def disconnect(self):
         if self.session_path is not None:
