@@ -308,6 +308,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.remove_all_vpn_btn.set_valign(Gtk.Align.END)
         self.remove_all_vpn_btn.set_vexpand(True)
         self.pref_box.append(self.remove_all_vpn_btn)
+        self.remove_all_vpn_btn.set_visible(True if self.get_setting(self.SETTING.MANAGER) == "networkmanager" else False)
         self.pref_box.set_vexpand(True)
         self.window.set_child(self.stack)
 
@@ -328,13 +329,17 @@ class SettingsWindow(Base, Gtk.Builder):
         box.append(label)
 
         self.combobox = Gtk.ComboBoxText()
-        self.combobox.append("networkmanager", "NetworkManager (OpenVPN 2)")
-        self.combobox.append("openvpn3", "OpenVPN 3")
+        self.combobox.append("networkmanager", gettext.gettext("NetworkManager (OpenVPN 2)"))
+        self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3"))
         if (manager := self.get_setting(self.SETTING.MANAGER)) is not None:
             self.combobox.set_property("active-id", manager)
         self.combobox.set_margin_start(6)
         self.combobox.set_margin_end(6)
         box.append(self.combobox)
+        
+        note = Gtk.Label.new(gettext.gettext("* Changes will take effect ONLY after restart."))
+        note.get_style_context().add_class("dim-label")
+        box.append(note)
 
         self.backend_box.append(box)
 
