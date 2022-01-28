@@ -45,6 +45,15 @@
 
   <releases>
 
+  <release version="1.16" date="2022-01-27">
+      <description>
+        <ul>
+        <li>OpenVPN3 support.</li>
+          <li>Bug fixes.</li>
+        </ul>
+      </description>
+  </release> 
+
   <release version="1.15" date="2022-01-08">
       <description>
         <ul>
