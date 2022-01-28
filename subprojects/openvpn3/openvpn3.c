@@ -281,7 +281,7 @@ char *import_config(char *name, char *config_str)
 
     const gchar *config_object;
     g_variant_get(result, "(o)", &config_object);
-    g_info(config_object);
+    g_info("%s", config_object);
 
     return (char *)config_object;
 }
@@ -328,7 +328,7 @@ char *prepare_tunnel(char *config_object)
 
     const gchar *session_object;
     g_variant_get(result, "(o)", &session_object);
-    g_info(session_object);
+    g_info("%s", session_object);
 
     return (char *)session_object;
 }
