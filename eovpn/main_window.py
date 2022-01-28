@@ -1,8 +1,7 @@
 import logging
 from .settings_window import SettingsWindow
-from .connection_manager import eOVPNConnectionManager
-from .networkmanager.dbus import NMDbus
-from gi.repository import Gtk, Gio, GdkPixbuf, GObject, GLib, Gdk
+from .connection_manager import NetworkManager, OpenVPN3
+from gi.repository import Gtk, Gio, GLib, Gdk
 from .ip_lookup.lookup import Lookup
 from .utils import ovpn_is_auth_required
 import os
@@ -12,8 +11,6 @@ import webbrowser
 from .eovpn_base import Base, StorageItem
 logger = logging.getLogger(__name__)
 
-def on_connect_event(result, error):
-    print(result, error)
 
 class MainWindow(Base, Gtk.Builder):
     def __init__(self, app):
@@ -36,17 +33,35 @@ class MainWindow(Base, Gtk.Builder):
         self.selected_config = None
         self.connected_cursor = None
         self.signals = Signals()
-        self.CM = eOVPNConnectionManager()
+
+        ###########################################################
+        # Initialize and setup Connection Manager (CM)
+        ###########################################################
+        
+        if self.get_setting(self.SETTING.MANAGER) == "openvpn3":
+            self.CM = OpenVPN3(True, self.on_connection_event)
+        else:
+            self.CM = NetworkManager()
+
+        self.CM.start_watch(self.on_connection_event)
+
         self.critical_errors = []
-        self.nm_version, self.is_openvpn_available = self.CM.get_version()
-        logger.debug("%s | %s", self.nm_version, self.is_openvpn_available)
-        if self.nm_version is None:
-            self.critical_errors.append("Unable to Find NetworkManager.")
-        if self.is_openvpn_available is False:
-            self.critical_errors.append("Unable to Find OpenVPN plugin for NetworkManager")    
-        self.nmdbus = NMDbus()
+
+        if self.CM.get_name().lower() == "networkmanager":
+            nm_version, is_openvpn_available = self.CM.version()
+            logger.debug("%s | %s", nm_version, is_openvpn_available)
+            if nm_version is None:
+                self.critical_errors.append("Unable to Find NetworkManager.")
+            if is_openvpn_available is False:
+                self.critical_errors.append("Unable to Find OpenVPN plugin for NetworkManager")
+        else:
+            version = self.CM.version()
+            logger.debug("OpenVPN3 Version: %s", version)
+            if version is None:
+                self.critical_errors.append("Unable to find OpenVPN3.")
+
+
         self.lookup = Lookup()
-        self.nmdbus.watch(self.on_nm_connection_event)
 
     def get_selected_config(self):
         try:
@@ -89,6 +104,10 @@ class MainWindow(Base, Gtk.Builder):
         dlg.show()
 
     def setup(self):
+
+        ###########################################################
+        # Declare boxes for each major component.
+        ###########################################################
         self.box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #top most box
         self.paned = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
 
@@ -98,6 +117,10 @@ class MainWindow(Base, Gtk.Builder):
 
         self.inner_right = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #Info
         self.paned.set_end_child(self.inner_right)
+
+        ###########################################################
+        # Left Box
+        ###########################################################
 
         viewport = Gtk.Viewport().new()
         viewport.set_vexpand(True)
@@ -129,7 +152,9 @@ class MainWindow(Base, Gtk.Builder):
 
         self.inner_left.append(self.scrolled_window)
 
-        # Right Side
+        ###########################################################
+        # Right Box
+        ###########################################################
         img = Gtk.Picture.new()
         img.set_halign(Gtk.Align.CENTER)
         img.set_valign(Gtk.Align.CENTER)
@@ -150,6 +175,7 @@ class MainWindow(Base, Gtk.Builder):
         cpy_btn.set_valign(Gtk.Align.CENTER)
         cpy_btn.set_halign(Gtk.Align.CENTER)
         cpy_btn.set_tooltip_text("Copy")
+        cpy_btn.get_style_context().add_class("flat")
 
         h_box.append(self.ip_text)
         h_box.append(self.ip_addr)
@@ -158,20 +184,42 @@ class MainWindow(Base, Gtk.Builder):
         self.inner_right.append(h_box)
         GLib.idle_add(self.update_set_ip_flag)
 
+        self.csh = None # Connect signal handler
+        self.psh = None # Pause Signal Handler
+
+        self.connect_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 6)
+        self.connect_box.set_valign(Gtk.Align.END)
+        self.connect_box.set_margin_start(10)
+        self.connect_box.set_margin_end(10)
+        self.connect_box.set_margin_bottom(10)
+        self.connect_box.set_margin_top(10)
+
         self.connect_btn = Gtk.Button().new_with_label(gettext.gettext("Connect"))
-        self.connect_btn.set_margin_top(10)
-        self.connect_btn.set_margin_bottom(10)
-        self.connect_btn.set_margin_start(10)
-        self.connect_btn.set_margin_end(10)
-        self.connect_btn.set_valign(Gtk.Align.END)
-        self.connect_btn.set_vexpand(True)
+        self.connect_btn.set_valign(Gtk.Align.START)
+        self.connect_btn.set_hexpand(True)
+        
+        self.connect_box.append(self.connect_btn)
 
-        self.inner_right.append(self.connect_btn)
-        # END OF RIGHT
+        self.pause_resume_btn = Gtk.Button().new_from_icon_name("media-playback-pause-symbolic")
+        self.pause_resume_btn.set_valign(Gtk.Align.END)
+        self.pause_resume_btn.set_visible(False)
 
+        self.csh = self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config, self.CM, self.pause_resume_btn)
+
+        #Connects to pause()
+        self.swap_pause_btn_signal_resume_to_pause()
+
+        self.connect_box.append(self.pause_resume_btn)
+
+        self.inner_right.append(self.connect_box)
+
+        ###########################################################
+        # Bottom Progress Bar
+        ###########################################################
         self.progress_bar = Gtk.ProgressBar.new()
-
-        if self.CM.get_connection_status():
+        
+        #Initial connection check on startup + Progress bar update + signal connects
+        if self.CM.status():
             self.connect_btn.set_label(gettext.gettext("Disconnect"))
             self.connect_btn.get_style_context().add_class("destructive-action")
             self.progress_bar.get_style_context().add_class("progress-full-green")
@@ -227,9 +275,9 @@ class MainWindow(Base, Gtk.Builder):
         self.app.set_accels_for_action("app.settings", ["<Primary>S"])
         self.app.set_accels_for_action("app.update", ["<Primary>U"])
         self.app.set_accels_for_action("app.about", ["<Primary>A"])
-
+        
         action = Gio.SimpleAction.new("connect", None)
-        action.connect('activate', self.signals.connect_via_ks, self.get_selected_config, self.CM)
+        self.csh = action.connect('activate', self.signals.connect_via_ks, self.get_selected_config, self.CM, self.pause_resume_btn)
         self.app.add_action(action)
         self.app.set_accels_for_action("app.connect", ["<Primary>C", "<Primary>D"])
 
@@ -270,9 +318,8 @@ class MainWindow(Base, Gtk.Builder):
         self.window.set_child(self.box)
 
         cpy_btn.connect("clicked", lambda x: Gdk.Display.get_default().get_clipboard().set(self.ip_addr.get_label()))
-        self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config, self.CM)
 
-        print(self.critical_errors)
+        logger.info(str(self.critical_errors))
         if len(self.critical_errors) > 0:
             GLib.idle_add(self.generic_critical_error_dialog, self.critical_errors)
 
@@ -281,15 +328,46 @@ class MainWindow(Base, Gtk.Builder):
         self.retrieve(StorageItem.FLAG).set_pixbuf(self.get_country_pixbuf(self.lookup.country_code))
         self.ip_addr.set_label(self.lookup.ip)
 
-    def on_nm_connection_event(self, result, error=None):
+    
+    def swap_pause_btn_signal_pause_to_resume(self):
+        self.pause_resume_btn.set_property("icon-name", "media-playback-start-symbolic")
+        if self.psh is not None:
+            self.pause_resume_btn.disconnect(self.psh)
+        self.psh = self.pause_resume_btn.connect("clicked", self.signals.resume, self.CM)
+        GLib.idle_add(self.update_set_ip_flag)
+        
+    def swap_pause_btn_signal_resume_to_pause(self):
+        self.pause_resume_btn.set_property("icon-name", "media-playback-pause-symbolic")
+        if self.psh is not None:
+            self.pause_resume_btn.disconnect(self.psh)
+        self.psh = self.pause_resume_btn.connect("clicked", self.signals.pause, self.CM)
+
+    
+    def on_connection_event(self, result, error=None):
         if error is not None:
-            print(error)
+            logger.error(error)
             self.progress_bar.set_text(error)
             self.progress_bar.set_fraction(1)
             return
 
         if type(result) is list:
-            print(self.progress_bar.get_fraction())
+            if len(result) == 1:
+                status = result[-1]
+                p_ctx = self.progress_bar.get_style_context()
+
+                if status == "pause":
+                    p_ctx.remove_class("progress-full-green")
+                    p_ctx.add_class("progress-orange")
+                    self.swap_pause_btn_signal_pause_to_resume()
+                    return
+
+                elif status == "resume":
+                    p_ctx.remove_class("progress-orange")
+                    p_ctx.add_class("progress-full-green")
+                    self.swap_pause_btn_signal_resume_to_pause()
+                    return
+
+            logger.info(self.progress_bar.get_fraction())
             prev = self.progress_bar.get_fraction()
             if prev < 0.95:
                 self.progress_bar.set_fraction(prev + 0.35)
@@ -309,6 +387,8 @@ class MainWindow(Base, Gtk.Builder):
             adj = self.scrolled_window.get_vadjustment()
             self.set_setting(self.SETTING.LISTBOX_V_ADJUST, float(adj.get_value()))
             self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.retrieve(StorageItem.CONFIGS_LIST).index(self.get_selected_config()))
+            
+            self.swap_pause_btn_signal_resume_to_pause()
 
         else:
             GLib.idle_add(self.update_set_ip_flag)
@@ -319,6 +399,8 @@ class MainWindow(Base, Gtk.Builder):
             p_ctx.add_class("progress-yellow")
             self.progress_bar.set_fraction(0)
             self.send_disconnected_notification()
+            
+            self.swap_pause_btn_signal_pause_to_resume()
 
     def show(self):
         self.setup()
@@ -331,16 +413,27 @@ class Signals(Base):
     def __init__(self):
         super().__init__()
 
-    def connect(self, button, config, manager):
-        config = config()
-        if config is None and manager.get_connection_status():
-            manager.connect(None)
+    def connect(self, button, config, manager, pause_resume_btn):
+        if manager.status():
+            pause_resume_btn.set_visible(False)
+            self.disconnect(None, manager)
             return
-        manager.connect(self.EOVPN_CONFIG_DIR + "/CONFIGS/" + config)
+        config = config()
+        manager.connect(os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS", config))
+        if manager.get_name().lower() == "openvpn3":
+            pause_resume_btn.set_visible(True)
 
-    def connect_via_ks(self, action, data, config, manager):
-        print("action received:", action)
-        self.connect(None, config, manager)
+    def connect_via_ks(self, action, _args, config, manager, pause_resume_btn):
+        #print("action received:", action, _args, config, manager, callback)
+        self.connect(None, config, manager, pause_resume_btn)
 
     def disconnect(self, button, manager):
         manager.disconnect()
+
+    def pause(self, button, manager):
+        if hasattr(manager, "pause"):
+            manager.pause()   
+
+    def resume(self, button, manager):
+        if hasattr(manager, "resume"):
+            manager.resume()

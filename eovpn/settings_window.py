@@ -1,19 +1,13 @@
-import json
+
 import logging
 import os
-from os import path, stat
-from urllib.parse import urlparse
 import shutil
-import zipfile
 import gettext
-import re
-import io
 import gettext
 
-from gi.repository import Gtk, Gio, GLib, Gdk, Secret
+from gi.repository import Gtk, Gio, GLib, Secret
 
 from .eovpn_base import Base, StorageItem
-from .connection_manager import eOVPNConnectionManager
 from .utils import is_selinux_enforcing
 
 from .networkmanager.bindings import NetworkManager
@@ -58,9 +52,11 @@ class SettingsWindow(Base, Gtk.Builder):
         self.main_box.set_margin_end(6)
 
         self.pref_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
+        self.backend_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
 
         self.stack.add_titled(self.main_box, "setup", gettext.gettext("Setup"))
         self.stack.add_titled(self.pref_box, "general", gettext.gettext("General"))
+        self.stack.add_titled(self.backend_box, "Backend", gettext.gettext("Backend"))
 
         
         label = Gtk.Label.new(gettext.gettext("Configuration Source"))
@@ -192,7 +188,9 @@ class SettingsWindow(Base, Gtk.Builder):
         frame.set_margin_bottom(20)
         list_box.get_style_context().add_class("rich-list")
         
+        ###########################################################
         # Notifications
+        ###########################################################
         list_box_row = Gtk.ListBoxRow.new()
         h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
         v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
@@ -219,8 +217,14 @@ class SettingsWindow(Base, Gtk.Builder):
         list_box_row.set_selectable(False)
         list_box.append(list_box_row)
 
+        ###########################################################
+        # END Notifications
+        ###########################################################
 
-        ###########FLAG###########
+
+        ###########################################################
+        # Flag
+        ###########################################################
 
         list_box_row = Gtk.ListBoxRow.new()
         h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
@@ -249,9 +253,13 @@ class SettingsWindow(Base, Gtk.Builder):
         list_box_row.set_selectable(False)
         list_box.append(list_box_row)
 
-        #############
+        ###########################################################
+        # END FLAG
+        ###########################################################
 
-        ####Dark Theme####
+        ###########################################################
+        # Dark Theme
+        ###########################################################
 
         list_box_row = Gtk.ListBoxRow.new()
         h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
@@ -280,12 +288,17 @@ class SettingsWindow(Base, Gtk.Builder):
         list_box_row.set_selectable(False)
         list_box.append(list_box_row)
 
-        #############################
+        ###########################################################
+        # END Dark Theme
+        ###########################################################
 
         
         #attach to pref box
         frame.set_child(list_box)
         self.pref_box.append(frame)
+
+
+
         self.remove_all_vpn_btn = Gtk.Button.new_with_label(gettext.gettext("Delete All VPN Connections!"))
         self.remove_all_vpn_btn.set_margin_start(4)
         self.remove_all_vpn_btn.set_margin_end(4)
@@ -295,8 +308,44 @@ class SettingsWindow(Base, Gtk.Builder):
         self.remove_all_vpn_btn.set_valign(Gtk.Align.END)
         self.remove_all_vpn_btn.set_vexpand(True)
         self.pref_box.append(self.remove_all_vpn_btn)
+        self.remove_all_vpn_btn.set_visible(True if self.get_setting(self.SETTING.MANAGER) == "networkmanager" else False)
         self.pref_box.set_vexpand(True)
         self.window.set_child(self.stack)
+
+
+        ###########################################################
+        # Manager (Tab - 3)
+        ###########################################################
+
+        
+        box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
+
+        label = Gtk.Label.new(gettext.gettext("Backend"))
+        label.set_halign(Gtk.Align.START)
+        label.get_style_context().add_class("bold")
+        label.set_margin_top(6)
+        label.set_margin_start(6)
+        label.set_margin_bottom(4)
+        box.append(label)
+
+        self.combobox = Gtk.ComboBoxText()
+        self.combobox.append("networkmanager", gettext.gettext("NetworkManager (OpenVPN 2)"))
+        self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3"))
+        if (manager := self.get_setting(self.SETTING.MANAGER)) is not None:
+            self.combobox.set_property("active-id", manager)
+        self.combobox.set_margin_start(6)
+        self.combobox.set_margin_end(6)
+        box.append(self.combobox)
+        
+        note = Gtk.Label.new(gettext.gettext("* Changes will take effect ONLY after restart."))
+        note.get_style_context().add_class("dim-label")
+        box.append(note)
+
+        self.backend_box.append(box)
+
+        ###########################################################
+        # END Manager
+        ###########################################################
         
 
         #connect signals
@@ -312,6 +361,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.flag_switch.connect("state-set", self.signals.show_flag_set)
         self.dark_theme_switch.connect("state-set", self.signals.dark_theme_set)
         self.remove_all_vpn_btn.connect("clicked", lambda _: NetworkManager().delete_all_vpn_connections())
+        self.combobox.connect("changed", lambda box: self.set_setting(self.SETTING.MANAGER, box.get_property("active_id")) )
 
 
     def show(self):

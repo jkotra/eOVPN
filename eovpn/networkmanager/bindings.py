@@ -13,12 +13,8 @@ class NetworkManager:
         self.__NAME__ = "NetworkManager"
         self.lib_load_fail = None
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "libeovpn_nm.so")
-        #load .so file
-        try:
-            self.eovpn_nm = CDLL(path)
-        except:
-            self.lib_load_fail = True
-            pass
+
+        self.eovpn_nm = CDLL(path)
 
         if logger.getEffectiveLevel() > 0:
             self.debug = int(True)
