@@ -11,7 +11,7 @@ deps = [
 python = import('python')
 python_instllation = python.find_installation()
 python_dir = python_instllation.get_install_dir()
-lib_install_dir = python_dir / main_project / 'openpvn3'
+lib_install_dir = python_dir / main_project / 'openvpn3'
 message(lib_install_dir)
 
 libeovpn_nm = shared_library('openvpn3',
