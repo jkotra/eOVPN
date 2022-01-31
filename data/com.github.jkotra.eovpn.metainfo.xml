@@ -45,6 +45,14 @@
 
   <releases>
 
+  <release version="1.17" date="2022-01-30">
+      <description>
+        <ul>
+        <li>UI/UX fixes.</li>
+        </ul>
+      </description>
+  </release> 
+
   <release version="1.16" date="2022-01-27">
       <description>
         <ul>
