@@ -195,13 +195,15 @@ class MainWindow(Base, Gtk.Builder):
         self.connect_box.set_margin_top(10)
 
         self.connect_btn = Gtk.Button().new_with_label(gettext.gettext("Connect"))
-        self.connect_btn.set_valign(Gtk.Align.START)
+        self.connect_btn.set_valign(Gtk.Align.FILL)
         self.connect_btn.set_hexpand(True)
+        self.connect_btn.set_vexpand(True)
         
         self.connect_box.append(self.connect_btn)
 
         self.pause_resume_btn = Gtk.Button().new_from_icon_name("media-playback-pause-symbolic")
         self.pause_resume_btn.set_valign(Gtk.Align.END)
+        self.pause_resume_btn.set_vexpand(True)
         self.pause_resume_btn.set_visible(False)
 
         self.csh = self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config, self.CM, self.pause_resume_btn)
