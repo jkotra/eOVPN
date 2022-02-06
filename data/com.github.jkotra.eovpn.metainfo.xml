@@ -45,6 +45,14 @@
 
   <releases>
 
+  <release version="1.18" date="2022-02-05">
+      <description>
+        <ul>
+        <li>Fallback to NM if OpenVPN3 is not available!</li>
+        </ul>
+      </description>
+  </release> 
+
   <release version="1.17" date="2022-01-30">
       <description>
         <ul>
