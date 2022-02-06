@@ -11,6 +11,7 @@ from .eovpn_base import Base, StorageItem
 from .utils import is_selinux_enforcing
 
 from .networkmanager.bindings import NetworkManager
+from .openvpn3.bindings import OpenVPN3
 
 logger = logging.getLogger(__name__)
 
@@ -330,14 +331,17 @@ class SettingsWindow(Base, Gtk.Builder):
 
         self.combobox = Gtk.ComboBoxText()
         self.combobox.append("networkmanager", gettext.gettext("NetworkManager (OpenVPN 2)"))
-        self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3"))
+        
+        if OpenVPN3().get_version() is not None:
+            self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3"))
+        
         if (manager := self.get_setting(self.SETTING.MANAGER)) is not None:
             self.combobox.set_property("active-id", manager)
         self.combobox.set_margin_start(6)
         self.combobox.set_margin_end(6)
         box.append(self.combobox)
         
-        note = Gtk.Label.new(gettext.gettext("* Changes will take effect ONLY after restart."))
+        note = Gtk.Label.new(gettext.gettext(gettext.gettext("* Changes will take effect ONLY after restart.")))
         note.get_style_context().add_class("dim-label")
         box.append(note)
 

@@ -38,10 +38,17 @@ class MainWindow(Base, Gtk.Builder):
         # Initialize and setup Connection Manager (CM)
         ###########################################################
         
-        if self.get_setting(self.SETTING.MANAGER) == "openvpn3":
+        preferred = self.get_setting(self.SETTING.MANAGER)
+        if preferred == "openvpn3":
             self.CM = OpenVPN3(True, self.on_connection_event)
+            if self.CM.version() is not None:
+                pass
+            else:
+                logger.error("openvpn3 version() fail! falling back to NM!")
+                self.set_setting(self.SETTING.MANAGER, "networkmanager")
+                self.CM = NetworkManager()
         else:
-            self.CM = NetworkManager()
+            self.CM = NetworkManager()        
 
         self.CM.start_watch(self.on_connection_event)
 
