@@ -4,6 +4,7 @@ import os
 import shutil
 import gettext
 import gettext
+from sqlite3 import connect
 
 from gi.repository import Gtk, Gio, GLib, Secret
 
@@ -65,12 +66,30 @@ class SettingsWindow(Base, Gtk.Builder):
         label.get_style_context().add_class("bold")
         self.main_box.append(label)
 
+        configuration_source_hbox = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
         entry = Gtk.Entry.new()
         if (text := self.get_setting(self.SETTING.REMOTE)) is not None:
             entry.set_text(text)
         else:    
             entry.set_placeholder_text("https://example.com/vpn/configs.zip")
-        self.main_box.append(entry)
+        zip_chooser_btn = Gtk.Button.new_from_icon_name("media-zip-symbolic")
+        zip_chooser_btn.set_tooltip_text(gettext.gettext("Choose ZIP File"))
+        entry.set_hexpand(True)
+        configuration_source_hbox.append(entry)
+        configuration_source_hbox.append(zip_chooser_btn)
+
+        zip_file_chooser_dialog = Gtk.FileChooserNative(action=Gtk.FileChooserAction.OPEN)
+        zip_file_chooser_dialog.set_transient_for(self.window)
+        zip_filter = Gtk.FileFilter()
+        zip_filter.set_name("ZIP")
+        zip_filter.add_mime_type("application/zip")
+        zip_file_chooser_dialog.add_filter(zip_filter)
+        default_path = Gio.File.new_for_path(GLib.get_home_dir())
+        zip_file_chooser_dialog.set_current_folder(default_path)
+
+        zip_chooser_btn.connect("clicked", lambda btn: zip_file_chooser_dialog.show())
+
+        self.main_box.append(configuration_source_hbox)
 
         self.revealer = Gtk.Revealer.new()
         self.validate_btn = Gtk.Button.new_with_label(gettext.gettext("Validate & Load"))
@@ -126,20 +145,17 @@ class SettingsWindow(Base, Gtk.Builder):
         self.ca_chooser_btn = Gtk.Button.new_with_label("(None)")
         self.ca_chooser_btn.set_hexpand(True)
 
-        #Filechooserdialog
-        file_chooser_dialog = Gtk.FileChooserNative(action=Gtk.FileChooserAction.OPEN)
-        file_chooser_dialog.set_transient_for(self.window)
+        #CA Filechooserdialog
+        ca_file_chooser_dialog = Gtk.FileChooserNative(action=Gtk.FileChooserAction.OPEN)
+        ca_file_chooser_dialog.set_transient_for(self.window)
         ca_filter = Gtk.FileFilter()
         ca_filter.set_name("CA / CRT")
         ca_filter.add_mime_type("application/pkix-cert")
-        file_chooser_dialog.add_filter(ca_filter)
+        ca_file_chooser_dialog.add_filter(ca_filter)
         default_path = Gio.File.new_for_path(self.EOVPN_OVPN_CONFIG_DIR)
-        file_chooser_dialog.set_current_folder(default_path)
+        ca_file_chooser_dialog.set_current_folder(default_path)
 
-
-        
-        def choose_ca(button):
-            file_chooser_dialog.show()
+        self.ca_chooser_btn.connect("clicked", lambda btn: ca_file_chooser_dialog.show())
 
         ca_box.append(self.ca_chooser_btn)
         
@@ -355,11 +371,11 @@ class SettingsWindow(Base, Gtk.Builder):
         #connect signals
         self.reset_btn.connect("clicked", self.signals.on_reset_btn_clicked, [entry, self.username_entry, self.password_entry], [self.ca_chooser_btn], [self.ask_auth_switch, self.notif_switch, self.flag_switch, self.dark_theme_switch], self.window)
         entry.connect("changed", self.signals.process_config_entry, self.revealer)
+        zip_file_chooser_dialog.connect("response", self.signals.process_zip, entry, self.revealer)
         self.validate_btn.connect("clicked", self.signals.on_validate_btn_click, entry, self.ca_chooser_btn, self.spinner)
         self.username_entry.connect("changed", self.signals.process_username)
         self.password_entry.connect("changed", self.signals.process_password)
-        file_chooser_dialog.connect("response", self.signals.process_ca, self.ca_chooser_btn)
-        self.ca_chooser_btn.connect("clicked", choose_ca)
+        ca_file_chooser_dialog.connect("response", self.signals.process_ca, self.ca_chooser_btn)
         self.ask_auth_switch.connect("state-set", self.signals.req_auth ,self.user_pass_ca_box)
         self.notif_switch.connect("state-set", self.signals.notification_set)
         self.flag_switch.connect("state-set", self.signals.show_flag_set)
@@ -384,7 +400,16 @@ class Signals(Base):
             revealer.set_reveal_child(True)
         else:
             self.set_setting(self.SETTING.REMOTE, None)
-            revealer.set_reveal_child(False) 
+            revealer.set_reveal_child(False)
+
+    def process_zip(self, chooser, response, entry, revealer):
+        path = chooser.get_file().get_path()
+        eb = Gtk.EntryBuffer()
+        eb.set_text(path, len(path))
+        self.set_setting(self.SETTING.REMOTE, path)
+        entry.set_buffer(eb)
+        revealer.set_reveal_child(True)
+
 
     def req_auth(self, swich, state, auth_box):
         self.set_setting(self.SETTING.REQ_AUTH, state)
