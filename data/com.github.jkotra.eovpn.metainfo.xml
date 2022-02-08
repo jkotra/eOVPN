@@ -45,6 +45,14 @@
 
   <releases>
 
+  <release version="1.19" date="2022-02-07">
+      <description>
+        <ul>
+        <li>Add button to choose ZIP file as configuration source.</li>
+        </ul>
+      </description>
+  </release> 
+
   <release version="1.18" date="2022-02-05">
       <description>
         <ul>
