@@ -1,10 +1,7 @@
 # eOVPN
 
 <div align="center">
-
-<img src="static/window_connected_with_flag.png" alt="eOVPN">
-
-
+    <img src="static/window_connected_with_flag.png" alt="eOVPN">
 </div>
 
 ---
@@ -43,7 +40,7 @@ Refer: [Python Logging Levels](https://docs.python.org/3/library/logging.html#le
 ### Flatpak (**Recommended**)
 
 
-<a href='https://flathub.org/apps/details/com.github.jkotra.eovpn'><img height='50' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+<a href='https://flathub.org/apps/details/com.github.jkotra.eovpn'><img height='50' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png' />
 
 ---
 

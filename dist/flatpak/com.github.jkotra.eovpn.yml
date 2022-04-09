@@ -1,6 +1,6 @@
 app-id: com.github.jkotra.eovpn
 runtime : org.gnome.Platform
-runtime-version : '41'
+runtime-version : '42'
 sdk : org.gnome.Sdk
 command: eovpn
 
@@ -84,7 +84,7 @@ modules:
       - '*.a'
     sources:
       - type: git
-        url: 'git://github.com/gentoo/eudev.git'
+        url: 'https://github.com/gentoo/eudev.git'
         tag: "v3.2.10"
 
 
