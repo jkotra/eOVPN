@@ -129,7 +129,7 @@ class MainWindow(Base, Gtk.Builder):
         # Left Box
         ###########################################################
 
-        viewport = Gtk.Viewport().new()
+        viewport = Gtk.Viewport.new()
         viewport.set_vexpand(True)
         viewport.set_hexpand(True)
 
@@ -237,7 +237,7 @@ class MainWindow(Base, Gtk.Builder):
             self.progress_bar.get_style_context().add_class("progress-yellow")
 
         def open_about_dialog(widget, data):
-            about = Gtk.AboutDialog().new()
+            about = Gtk.AboutDialog.new()
             about.set_logo_icon_name("com.github.jkotra.eovpn")
             about.set_program_name("eOVPN")
             about.set_authors(["Jagadeesh Kotra"])
@@ -291,17 +291,17 @@ class MainWindow(Base, Gtk.Builder):
         self.app.set_accels_for_action("app.connect", ["<Primary>C", "<Primary>D"])
 
 
-        menu = Gio.Menu().new()
+        menu = Gio.Menu.new()
         menu.insert(0, gettext.gettext("Update"), "app.update")
         menu.insert(1, gettext.gettext("Settings"), "app.settings")
         menu.insert(2, gettext.gettext("Keyboard Shortcuts"), "app.keyboard_shortcuts")
         menu.insert(3, gettext.gettext("Donate"), "app.donate")
         menu.insert(4, gettext.gettext("About"), "app.about")
-        popover = Gtk.PopoverMenu().new_from_model(menu)
+        popover = Gtk.PopoverMenu.new_from_model(menu)
 
         header_bar = self.get_object("header_bar")
 
-        menu_button = Gtk.MenuButton().new()
+        menu_button = Gtk.MenuButton.new()
         menu_button.set_icon_name("open-menu-symbolic")
         menu_button.set_popover(popover)
         header_bar.pack_end(menu_button)
