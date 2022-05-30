@@ -346,10 +346,13 @@ class SettingsWindow(Base, Gtk.Builder):
         box.append(label)
 
         self.combobox = Gtk.ComboBoxText()
-        self.combobox.append("networkmanager", gettext.gettext("NetworkManager (OpenVPN 2)"))
+        version, ovpn_supported = NetworkManager().get_version()
+        if (version != None and ovpn_supported):
+            self.combobox.append("networkmanager", gettext.gettext("{} (OpenVPN 2)".format(version)))
         
-        if OpenVPN3().get_version() is not None:
-            self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3"))
+        ovpn3_version = OpenVPN3().get_version()
+        if ovpn3_version is not None:
+            self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3 {}".format(ovpn3_version.decode("utf-8"))))
         
         if (manager := self.get_setting(self.SETTING.MANAGER)) is not None:
             self.combobox.set_property("active-id", manager)
@@ -359,6 +362,9 @@ class SettingsWindow(Base, Gtk.Builder):
         
         note = Gtk.Label.new(gettext.gettext(gettext.gettext("* Changes will take effect ONLY after restart.")))
         note.get_style_context().add_class("dim-label")
+        note.set_valign(Gtk.Align.END)
+        note.set_vexpand(True)
+        note.set_margin_bottom(6)
         box.append(note)
 
         self.backend_box.append(box)
