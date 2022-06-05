@@ -355,8 +355,8 @@ class MainWindow(Base, Gtk.Builder):
     def on_connection_event(self, result, error=None):
         if error is not None:
             logger.error(error)
-            self.progress_bar.set_text(error)
-            self.progress_bar.set_fraction(1)
+            self.send_error_notification(error)
+            self.progress_bar.set_fraction(0)
             return
 
         if type(result) is list:
@@ -399,6 +399,9 @@ class MainWindow(Base, Gtk.Builder):
             
             self.swap_pause_btn_signal_resume_to_pause()
 
+            if self.CM.get_name().lower() == "openvpn3":
+                self.pause_resume_btn.set_visible(True)
+
         else:
             GLib.idle_add(self.update_set_ip_flag)
             self.connect_btn.set_label(gettext.gettext("Connect"))
@@ -410,6 +413,7 @@ class MainWindow(Base, Gtk.Builder):
             self.send_disconnected_notification()
             
             self.swap_pause_btn_signal_pause_to_resume()
+            self.pause_resume_btn.set_visible(False)
 
     def show(self):
         self.setup()
@@ -424,13 +428,10 @@ class Signals(Base):
 
     def connect(self, button, config, manager, pause_resume_btn):
         if manager.status():
-            pause_resume_btn.set_visible(False)
             self.disconnect(None, manager)
             return
         config = config()
         manager.connect(os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS", config))
-        if manager.get_name().lower() == "openvpn3":
-            pause_resume_btn.set_visible(True)
 
     def connect_via_ks(self, action, _args, config, manager, pause_resume_btn):
         #print("action received:", action, _args, config, manager, callback)

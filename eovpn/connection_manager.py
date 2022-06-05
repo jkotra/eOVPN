@@ -104,15 +104,15 @@ class NetworkManager(ConnectionManager):
 
 class OpenVPN3(ConnectionManager):
 
-    def __init__(self, dco, update_callback):
+    def __init__(self, update_callback, dco=False):
         super().__init__("OpenVPN3")
         self.ovpn3 = OVPN3Bindings()
         self.callback = update_callback
         self.session_path = None
-        self.dbus = OVPN3Dbus()
         self.callback = None
-        self.dbus.set_binding(self.ovpn3)
         self.watch = False
+        self.dbus = OVPN3Dbus()
+        self.dbus.set_binding(self.ovpn3)
         
     def start_watch(self, callback):
         self.callback = callback
@@ -134,7 +134,7 @@ class OpenVPN3(ConnectionManager):
         else:
             self.ovpn3.disconnect_all_sessions()
         self.session_path = None       
-        GLib.timeout_add_seconds(1, self.callback, False)
+        self.callback(False)
 
     def pause(self):
         self.ovpn3.pause("User Action in eOVPN".encode("utf-8"))

@@ -9,21 +9,22 @@ class OVPN3Dbus(Base):
     def __init__(self):
         super().__init__()
         self.conn = None
-        self.mo = None
+        self.module = None
         self.once = True
 
-        self.username = self.get_setting(self.SETTING.AUTH_USER)
-        self.password = None
+    def get_auth_password(self):
 
-        if self.username is not None:
-            try:
-                self.password = Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {
-                                                       "username": self.get_setting(self.SETTING.AUTH_USER)}, None)
-            except Exception as e:
-                self.password = self.get_setting(self.SETTING.AUTH_PASS)
+        try:
+            return Secret.password_lookup_sync(self.EOVPN_SECRET_SCHEMA, {
+                                    "username": self.get_setting(self.SETTING.AUTH_USER)
+                                    },
+                                    None)
+        except Exception as e:
+            logger.error(e)
+            self.password = self.get_setting(self.SETTING.AUTH_PASS)
 
-    def set_binding(self, bo):
-        self.mo = bo
+    def set_binding(self, binding):
+        self.module = binding
 
 
     def watch(self, callback):
@@ -50,24 +51,26 @@ class OVPN3Dbus(Base):
         logger.debug("{} {} {}".format(major, minor, reason))
 
         if(major == 2 and minor == 4):
-            self.mo.send_auth(self.username, self.password)
+            if self.get_setting(self.SETTING.AUTH_USER) is None:
+                update_callback(False, reason)
+                return
+            self.module.send_auth(self.get_setting(self.SETTING.AUTH_USER), self.get_auth_password())
             logger.info("Auth Sent!")
-            self.mo.connect()
+            self.module.connect()
+        elif (major == 2 and minor == 11):
+            logger.error(reason)
+            update_callback(False, reason)
         elif (major == 2 and minor == 6):
-            #in progress 
             update_callback([])
         elif (major == 2 and minor == 7):
             update_callback(True)
-            pass
         elif (major == 2 and minor == 14):
             update_callback(["pause"])
-            pass
         elif (major == 2 and minor == 15):
             update_callback(["resume"])
-            pass
         elif (major == 2 and minor == 2):
-            if self.username is None and self.once:
+            if self.get_setting(self.SETTING.AUTH_USER) is None and self.once:
                 logger.warning("username is None. Proceeding with connection without auth.")
-                self.mo.init_unique_session()
-                self.mo.connect()
+                self.module.init_unique_session()
+                self.module.connect()
                 self.once = False

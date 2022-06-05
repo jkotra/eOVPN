@@ -132,6 +132,18 @@ class Base:
         notif.set_image_from_pixbuf(pixbuf)
         notif.show()
 
+    def send_error_notification(self, error_message):
+        if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
+            return
+        Notify.init("com.github.jkotra.eovpn")
+        notif = Notify.Notification.new("Error", error_message)
+        pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/notification_disconnected.svg",
+                                                             128,
+                                                             -1,
+                                                             True)
+        notif.set_image_from_pixbuf(pixbuf)
+        notif.show()
+
     def get_country_pixbuf(self, country_code):
 
         try:
