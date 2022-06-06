@@ -45,6 +45,15 @@
 
   <releases>
 
+  <release version="1.21" date="2022-06-5">
+      <description>
+        <ul>
+        <li>show notification on error.</li>
+        <li>bug fixes</li>
+        </ul>
+      </description>
+  </release>
+
   <release version="1.20" date="2022-05-29">
       <description>
         <ul>
