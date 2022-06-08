@@ -116,14 +116,25 @@ class MainWindow(Base, Gtk.Builder):
         # Declare boxes for each major component.
         ###########################################################
         self.box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #top most box
-        self.paned = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
 
         self.inner_left = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #ListBox
-        self.paned.set_start_child(self.inner_left)
-        self.inner_left.set_size_request(200, 200)
-
         self.inner_right = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0) #Info
+        self.paned = Gtk.Paned.new(Gtk.Orientation.HORIZONTAL)
+
+        def update_layout():
+            if (self.get_setting(self.SETTING.LAYOUT) == "card-h"):
+                self.paned.set_orientation(Gtk.Orientation.HORIZONTAL)
+                self.inner_left.set_size_request(200, -1)
+                self.window.set_default_size(800, 400)
+            else:
+                self.paned.set_orientation(Gtk.Orientation.VERTICAL)
+                self.inner_left.set_size_request(-1, 100)
+                self.window.set_default_size(400, 800)
+        
+        update_layout()
+        self.paned.set_start_child(self.inner_left)
         self.paned.set_end_child(self.inner_right)
+
 
         ###########################################################
         # Left Box
@@ -165,6 +176,7 @@ class MainWindow(Base, Gtk.Builder):
         img = Gtk.Picture.new()
         img.set_halign(Gtk.Align.CENTER)
         img.set_valign(Gtk.Align.CENTER)
+        #img.set_property("margin", 6)
         self.store(StorageItem.FLAG, img)
         if self.get_setting(self.SETTING.SHOW_FLAG) is False:
             img.hide()
@@ -259,6 +271,21 @@ class MainWindow(Base, Gtk.Builder):
             window.set_modal(True)
             window.show()
 
+        def on_layout_update(action, value):
+            logger.info(value)
+            action.set_state(value)
+            self.set_setting(self.SETTING.LAYOUT, str(value).replace("'", ""))
+            update_layout()
+
+
+        action = Gio.SimpleAction().new_stateful(
+            "radiogroup",
+            GLib.VariantType.new("s"),
+            GLib.Variant("s", self.get_setting(self.SETTING.LAYOUT))
+        )
+        action.connect("activate", on_layout_update)
+        self.app.add_action(action)
+
         action = Gio.SimpleAction().new("update", None)
         action.connect("activate", lambda x, d: self.validate_and_load(self.spinner) )
         self.app.add_action(action)
@@ -291,13 +318,25 @@ class MainWindow(Base, Gtk.Builder):
         self.app.set_accels_for_action("app.connect", ["<Primary>C", "<Primary>D"])
 
 
-        menu = Gio.Menu.new()
-        menu.insert(0, gettext.gettext("Update"), "app.update")
-        menu.insert(1, gettext.gettext("Settings"), "app.settings")
-        menu.insert(2, gettext.gettext("Keyboard Shortcuts"), "app.keyboard_shortcuts")
-        menu.insert(3, gettext.gettext("Donate"), "app.donate")
-        menu.insert(4, gettext.gettext("About"), "app.about")
+        menu = Gio.Menu()
+        layout_menu = Gio.Menu()
+        item = Gio.MenuItem.new(gettext.gettext("Vertical"), "card-v")
+        item.set_action_and_target_value("app.radiogroup", GLib.Variant.new_string("card-v"))
+        layout_menu.append_item(item)
+
+        item = Gio.MenuItem.new(gettext.gettext("Horizontal"), "card-h")
+        item.set_action_and_target_value("app.radiogroup", GLib.Variant.new_string("card-h"))
+        layout_menu.append_item(item)
+        
+
+        menu.append(gettext.gettext("Update"), "app.update")
+        menu.append(gettext.gettext("Settings"), "app.settings")
+        menu.append(gettext.gettext("Keyboard Shortcuts"), "app.keyboard_shortcuts")
+        menu.append_submenu(gettext.gettext("Layout"), layout_menu)
+        menu.append(gettext.gettext("Donate"), "app.donate")
+        menu.append(gettext.gettext("About"), "app.about")
         popover = Gtk.PopoverMenu.new_from_model(menu)
+
 
         header_bar = self.get_object("header_bar")
 

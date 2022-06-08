@@ -2,8 +2,10 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <object class="GtkApplicationWindow" id="main_window">
+    <!--
     <property name="default-width">800</property>
     <property name="default-height">400</property>
+    -->
     <child>
       <placeholder/>
     </child>
