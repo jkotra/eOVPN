@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2022-05-30 18:58+0530\n"
-"PO-Revision-Date: 2022-05-30 18:58+0530\n"
+"POT-Creation-Date: 2022-06-09 22:39+0530\n"
+"PO-Revision-Date: 2022-06-09 22:39+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -12,160 +12,132 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 3.0.1\n"
 "X-Poedit-Basepath: ..\n"
-"X-Poedit-SearchPath-0: data\n"
-"X-Poedit-SearchPath-1: eovpn\n"
+"X-Poedit-Flags-xgettext: --no-location\n"
+"X-Poedit-SearchPath-0: eovpn\n"
+"X-Poedit-SearchPath-1: data\n"
 
-#: data/com.github.jkotra.eovpn.desktop:3
-#: data/com.github.jkotra.eovpn.desktop:4
 msgid "eOVPN"
 msgstr ""
 
-#: data/com.github.jkotra.eovpn.desktop:5
 msgid "OpenVPN Configuration Manager"
 msgstr ""
 
-#: data/ui/keyboard_shortcuts.ui:13
 msgctxt "shortcut window"
 msgid "General"
 msgstr ""
 
-#: data/ui/keyboard_shortcuts.ui:17
 msgctxt "shortcut window"
 msgid "Connect"
 msgstr ""
 
-#: data/ui/keyboard_shortcuts.ui:24
 msgctxt "shortcut window"
 msgid "Disconnect"
 msgstr ""
 
-#: data/ui/keyboard_shortcuts.ui:31
 msgctxt "shortcut window"
 msgid "Open Settings"
 msgstr ""
 
-#: data/ui/keyboard_shortcuts.ui:38
 msgctxt "shortcut window"
 msgid "Open About"
 msgstr ""
 
-#: data/ui/keyboard_shortcuts.ui:45
 msgctxt "shortcut window"
 msgid "Open Keyboard Shortcuts"
 msgstr ""
 
-#: eovpn/main_window.py:85
 msgid "Authentication Required!"
 msgstr ""
 
-#: eovpn/main_window.py:145
 msgid "No Configs Added!"
 msgstr ""
 
-#: eovpn/main_window.py:147
 msgid "Open Settings"
 msgstr ""
 
-#: eovpn/main_window.py:176
 msgid "IP: "
 msgstr ""
 
-#: eovpn/main_window.py:204 eovpn/main_window.py:404
 msgid "Connect"
 msgstr ""
 
-#: eovpn/main_window.py:232 eovpn/main_window.py:387
 msgid "Disconnect"
 msgstr ""
 
-#: eovpn/main_window.py:295
+msgid "Vertical"
+msgstr ""
+
+msgid "Horizontal"
+msgstr ""
+
 msgid "Update"
 msgstr ""
 
-#: eovpn/main_window.py:296
 msgid "Settings"
 msgstr ""
 
-#: eovpn/main_window.py:297
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: eovpn/main_window.py:298
+msgid "Layout"
+msgstr ""
+
 msgid "Donate"
 msgstr ""
 
-#: eovpn/main_window.py:299
 msgid "About"
 msgstr ""
 
-#: eovpn/settings_window.py:37
 msgid "Reset"
 msgstr ""
 
-#: eovpn/settings_window.py:59
 msgid "Setup"
 msgstr ""
 
-#: eovpn/settings_window.py:60
 msgid "General"
 msgstr ""
 
-#: eovpn/settings_window.py:61 eovpn/settings_window.py:340
 msgid "Backend"
 msgstr ""
 
-#: eovpn/settings_window.py:64
 msgid "Configuration Source"
 msgstr ""
 
-#: eovpn/settings_window.py:76
 msgid "Choose ZIP File"
 msgstr ""
 
-#: eovpn/settings_window.py:95
 msgid "Validate & Load"
 msgstr ""
 
-#: eovpn/settings_window.py:107
 msgid "Authentication"
 msgstr ""
 
-#: eovpn/settings_window.py:124
 msgid "Username / Email"
 msgstr ""
 
-#: eovpn/settings_window.py:134
 msgid "Password"
 msgstr ""
 
-#: eovpn/settings_window.py:216
 msgid "Notifications"
 msgstr ""
 
-#: eovpn/settings_window.py:251
 msgid "Show Flag"
 msgstr ""
 
-#: eovpn/settings_window.py:286
 msgid "Dark Theme"
 msgstr ""
 
-#: eovpn/settings_window.py:319
 msgid "Delete All VPN Connections!"
 msgstr ""
 
-#: eovpn/settings_window.py:351
 msgid "{} (OpenVPN 2)"
 msgstr ""
 
-#: eovpn/settings_window.py:355
 msgid "OpenVPN 3 {}"
 msgstr ""
 
-#: eovpn/settings_window.py:363
 msgid "* Changes will take effect ONLY after restart."
 msgstr ""
 
-#: eovpn/utils.py:51
 msgid "Configuration Source MUST be a ZIP file."
 msgstr ""
