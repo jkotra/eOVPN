@@ -50,8 +50,7 @@ class SettingsWindow(Base, Gtk.Builder):
 
         self.main_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
         self.main_box.set_valign(Gtk.Align.CENTER)
-        self.main_box.set_margin_start(6)
-        self.main_box.set_margin_end(6)
+        self.main_box.get_style_context().add_class("m-6")
 
         self.pref_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
         self.backend_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
@@ -102,8 +101,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.auth_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
 
         ask_auth_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
-        ask_auth_box.set_margin_start(6)
-        ask_auth_box.set_margin_bottom(6)
+        ask_auth_box.get_style_context().add_class("m-4")
         label = Gtk.Label.new(gettext.gettext("Authentication"))
         label.set_halign(Gtk.Align.START)
         label.get_style_context().add_class("bold")
@@ -138,7 +136,7 @@ class SettingsWindow(Base, Gtk.Builder):
 
         #CA
         ca_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
-        ca_box.set_margin_bottom(6)
+        ca_box.get_style_context().add_class("mb-4")
         button = Gtk.Button.new_from_icon_name("application-certificate-symbolic")
         button.set_sensitive(False)
         ca_box.append(button)
@@ -160,8 +158,7 @@ class SettingsWindow(Base, Gtk.Builder):
         ca_box.append(self.ca_chooser_btn)
         
         self.user_pass_ca_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
-        self.user_pass_ca_box.set_margin_start(6)
-        self.user_pass_ca_box.set_margin_end(6)
+        self.user_pass_ca_box.get_style_context().add_class("mt-4")
         self.user_pass_ca_box.append(username_box)
         self.user_pass_ca_box.append(password_box)
         self.user_pass_ca_box.append(ca_box)
@@ -199,10 +196,7 @@ class SettingsWindow(Base, Gtk.Builder):
         #Prefs - Setup
         frame = Gtk.Frame.new()
         list_box = Gtk.ListBox.new()
-        frame.set_margin_start(20)
-        frame.set_margin_end(20)
-        frame.set_margin_top(20)
-        frame.set_margin_bottom(20)
+        frame.get_style_context().add_class("m-10")
         list_box.get_style_context().add_class("rich-list")
         
         ###########################################################
@@ -317,10 +311,7 @@ class SettingsWindow(Base, Gtk.Builder):
 
 
         self.remove_all_vpn_btn = Gtk.Button.new_with_label(gettext.gettext("Delete All VPN Connections!"))
-        self.remove_all_vpn_btn.set_margin_start(4)
-        self.remove_all_vpn_btn.set_margin_end(4)
-        self.remove_all_vpn_btn.set_margin_bottom(8)
-        self.remove_all_vpn_btn.set_margin_top(8)
+        self.remove_all_vpn_btn.get_style_context().add_class("m-6")
         self.remove_all_vpn_btn.get_style_context().add_class("destructive-action")
         self.remove_all_vpn_btn.set_valign(Gtk.Align.END)
         self.remove_all_vpn_btn.set_vexpand(True)
@@ -340,9 +331,7 @@ class SettingsWindow(Base, Gtk.Builder):
         label = Gtk.Label.new(gettext.gettext("Backend"))
         label.set_halign(Gtk.Align.START)
         label.get_style_context().add_class("bold")
-        label.set_margin_top(6)
-        label.set_margin_start(6)
-        label.set_margin_bottom(4)
+        label.get_style_context().add_class("m-4")
         box.append(label)
 
         self.combobox = Gtk.ComboBoxText()
@@ -356,15 +345,14 @@ class SettingsWindow(Base, Gtk.Builder):
         
         if (manager := self.get_setting(self.SETTING.MANAGER)) is not None:
             self.combobox.set_property("active-id", manager)
-        self.combobox.set_margin_start(6)
-        self.combobox.set_margin_end(6)
+        self.combobox.get_style_context().add_class("mlr-6")
         box.append(self.combobox)
         
         note = Gtk.Label.new(gettext.gettext(gettext.gettext("* Changes will take effect ONLY after restart.")))
         note.get_style_context().add_class("dim-label")
         note.set_valign(Gtk.Align.END)
         note.set_vexpand(True)
-        note.set_margin_bottom(6)
+        note.get_style_context().add_class("mb-4")
         box.append(note)
 
         self.backend_box.append(box)

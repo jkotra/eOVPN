@@ -52,10 +52,37 @@
 }
 
 
-.star {
-    box-shadow: none;
-    border: transparent;
-    background: transparent;
-    padding: 0px;
-    -gtk-icon-shadow: none;
+.m-10 {
+    margin: 10px;
+}
+
+.m-6 {
+    margin: 6px;
+}
+
+.m-4 {
+    margin: 4px;
+}
+
+.mt-4 {
+    margin-top: 4px;
+}
+
+.mb-4 {
+    margin-bottom: 4px;
+}
+
+.mlr-4 {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+
+.mlr-6 {
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
+.mlr-10 {
+    margin-left: 10px;
+    margin-right: 10px;
 }

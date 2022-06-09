@@ -176,7 +176,6 @@ class MainWindow(Base, Gtk.Builder):
         img = Gtk.Picture.new()
         img.set_halign(Gtk.Align.CENTER)
         img.set_valign(Gtk.Align.CENTER)
-        #img.set_property("margin", 6)
         self.store(StorageItem.FLAG, img)
         if self.get_setting(self.SETTING.SHOW_FLAG) is False:
             img.hide()
@@ -208,11 +207,7 @@ class MainWindow(Base, Gtk.Builder):
 
         self.connect_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 6)
         self.connect_box.set_valign(Gtk.Align.END)
-        self.connect_box.set_margin_start(10)
-        self.connect_box.set_margin_end(10)
-        self.connect_box.set_margin_bottom(10)
-        self.connect_box.set_margin_top(10)
-
+        self.connect_box.get_style_context().add_class("m-10")
         self.connect_btn = Gtk.Button().new_with_label(gettext.gettext("Connect"))
         self.connect_btn.set_valign(Gtk.Align.FILL)
         self.connect_btn.set_hexpand(True)
