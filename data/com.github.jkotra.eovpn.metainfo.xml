@@ -45,6 +45,14 @@
 
   <releases>
 
+  <release version="1.22.1" date="2022-06-17">
+      <description>
+        <ul>
+        <li>Support for openvpn3 v18_beta</li>
+        </ul>
+      </description>
+  </release>
+
   <release version="1.22" date="2022-06-8">
       <description>
         <ul>
