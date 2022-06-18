@@ -39,14 +39,13 @@ class OVPN3Dbus(Base):
                            Gio.DBusSignalFlags.NONE,
                            self.sub_callback,
                            callback)
-               
     
     def sub_callback(self, connection, sender_name, object_path, interface_name, signal_name, parameters, update_callback):
     
-        x = GLib.Variant("(uus)", parameters)
-        major = x.get_child_value(0).get_uint32()
-        minor = x.get_child_value(1).get_uint32()
-        reason = x.get_child_value(2).get_string()
+        status = GLib.Variant("(uus)", parameters)
+        major = status.get_child_value(0).get_uint32()
+        minor = status.get_child_value(1).get_uint32()
+        reason = status.get_child_value(2).get_string()
 
         logger.debug("{} {} {}".format(major, minor, reason))
 
@@ -64,6 +63,8 @@ class OVPN3Dbus(Base):
             update_callback([])
         elif (major == 2 and minor == 7):
             update_callback(True)
+        elif (major == 2 and minor == 16):
+            update_callback(False)
         elif (major == 2 and minor == 14):
             update_callback(["pause"])
         elif (major == 2 and minor == 15):

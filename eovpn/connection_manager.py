@@ -122,8 +122,6 @@ class OpenVPN3(ConnectionManager):
             self.watch = True
 
     def connect(self, openvpn_config):
-
-
         if (self.ovpn3.import_config(openvpn_config, self.get_setting(self.SETTING.CA)) != False):
             self.session_path = self.ovpn3.prepare_tunnel(self.callback)
 

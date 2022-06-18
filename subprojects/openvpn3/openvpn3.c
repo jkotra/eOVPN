@@ -144,7 +144,7 @@ void disconnect_all_sessions()
 
         g_variant_get(status, "(v)", &v);
         g_variant_get(v, "(uus)", &major, &minor, &status_str);
-        g_message("%u %u %s", major, minor, status_str);
+        g_message("status: %u %u %s", major, minor, status_str);
 
 
         if (((major == 2) && (minor == 7)) || ((major == 2) && (minor == 14)))
@@ -405,6 +405,25 @@ void set_receive_log_events(char *session_object, int set_to)
     }
 
     g_dbus_proxy_call_sync(sessions_proxy, "Set", params, G_DBUS_PROXY_FLAGS_NONE, -1, NULL, NULL);
+}
+
+void set_log_forward(){
+
+    GError *error = NULL;
+    GVariant *result = g_dbus_proxy_call_sync(UniqueSession,
+                                              "net.openvpn.v3.sessions.LogForward",
+                                              g_variant_new("(b)", true),
+                                              G_DBUS_PROXY_FLAGS_NONE,
+                                              -1,
+                                              NULL,
+                                              NULL);
+    
+    if (error != NULL)
+    {
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
+        g_error_free(error);
+        return;
+    }
 }
 
 void send_auth(char *session_object, char *username, char *password)

@@ -52,6 +52,7 @@ class OpenVPN3:
         if self.session_path is None:
             return False
         logger.info(self.session_path)
+        self.get_connection_status()
         return self.session_path
 
     def send_auth(self, username: str, password: str):
@@ -64,7 +65,11 @@ class OpenVPN3:
         self.eovpn_ovpn3.p_get_version.argtypes = [
             ctypes.c_char_p, ctypes.c_int]
         self.eovpn_ovpn3.set_dco(self.session_path, 1)
+        self.eovpn_ovpn3.set_log_forward()
+        logger.info("log forward enabled!")
+        self.get_connection_status()
         self.eovpn_ovpn3.connect_vpn()
+        self.get_connection_status()
 
     def get_connection_status(self):
         self.eovpn_ovpn3.p_get_connection_status.restype = ctypes.c_int
