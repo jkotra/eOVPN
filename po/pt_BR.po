@@ -1,0 +1,143 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2022-06-19 15:11-0300\n"
+"PO-Revision-Date: 2022-06-19 15:11-0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --no-location\n"
+"X-Poedit-SearchPath-0: eovpn\n"
+"X-Poedit-SearchPath-1: data\n"
+
+msgid "eOVPN"
+msgstr "eOVPN"
+
+msgid "OpenVPN Configuration Manager"
+msgstr "Gerenciador de Configuração OpenVPN"
+
+msgctxt "shortcut window"
+msgid "General"
+msgstr "Geral"
+
+msgctxt "shortcut window"
+msgid "Connect"
+msgstr "Conectar"
+
+msgctxt "shortcut window"
+msgid "Disconnect"
+msgstr "Desconectar"
+
+msgctxt "shortcut window"
+msgid "Open Settings"
+msgstr "Abrir Configurações"
+
+msgctxt "shortcut window"
+msgid "Open About"
+msgstr "Abrir Sobre"
+
+msgctxt "shortcut window"
+msgid "Open Keyboard Shortcuts"
+msgstr "Abrir Atalhos do Teclado"
+
+msgid "Authentication Required!"
+msgstr "Autenticação Requerida!"
+
+msgid "No Configs Added!"
+msgstr "Nenhuma Configuração Adicionada!"
+
+msgid "Open Settings"
+msgstr "Abrir Definições"
+
+msgid "IP: "
+msgstr "IP: "
+
+msgid "Connect"
+msgstr "Conectar"
+
+msgid "Disconnect"
+msgstr "Desconectar"
+
+msgid "Vertical"
+msgstr "Vertical"
+
+msgid "Horizontal"
+msgstr "Horizontal"
+
+msgid "Update"
+msgstr "Atualizar"
+
+msgid "Settings"
+msgstr "Definições"
+
+msgid "Keyboard Shortcuts"
+msgstr "Atalhos do Teclado"
+
+msgid "Layout"
+msgstr "Layout"
+
+msgid "Donate"
+msgstr "Doar"
+
+msgid "About"
+msgstr "Sobre"
+
+msgid "Reset"
+msgstr "Redefinir"
+
+msgid "Setup"
+msgstr "Configurar"
+
+msgid "General"
+msgstr "Geral"
+
+msgid "Backend"
+msgstr "Backend"
+
+msgid "Configuration Source"
+msgstr "Origem da configuração"
+
+msgid "Choose ZIP File"
+msgstr "Escolha o arquivo ZIP"
+
+msgid "Validate & Load"
+msgstr "Validar e Carregar"
+
+msgid "Authentication"
+msgstr "Autenticação"
+
+msgid "Username / Email"
+msgstr "Nome / Email"
+
+msgid "Password"
+msgstr "Senha"
+
+msgid "Notifications"
+msgstr "Notificações"
+
+msgid "Show Flag"
+msgstr "Mostrar Bandeira"
+
+msgid "Dark Theme"
+msgstr "Tema escuro"
+
+msgid "Delete All VPN Connections!"
+msgstr "Apagar Todas As Conexões VPN!"
+
+msgid "{} (OpenVPN 2)"
+msgstr "{} (OpenVPN 2)"
+
+msgid "OpenVPN 3 {}"
+msgstr "OpenVPN 3 {}"
+
+msgid "* Changes will take effect ONLY after restart."
+msgstr "* As alterações terão efeito SOMENTE após a reinicialização."
+
+msgid "Configuration Source MUST be a ZIP file."
+msgstr "A origem da configuração DEVE ser um arquivo ZIP."
