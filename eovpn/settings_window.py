@@ -11,8 +11,8 @@ from gi.repository import Gtk, Gio, GLib, Secret
 from .eovpn_base import Base, StorageItem
 from .utils import is_selinux_enforcing
 
-from .networkmanager.bindings import NetworkManager
-from .openvpn3.bindings import OpenVPN3
+from .networkmanager_backend.bindings import NetworkManager
+from .openvpn3_backend.bindings import OpenVPN3
 
 logger = logging.getLogger(__name__)
 

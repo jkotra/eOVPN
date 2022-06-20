@@ -3,10 +3,10 @@ import logging
 from gi.repository import GLib, Secret
 
 from .eovpn_base import Base
-from .networkmanager.bindings import NetworkManager as NMBindings
-from .networkmanager.dbus import NMDbus
-from .openvpn3.bindings import OpenVPN3 as OVPN3Bindings
-from .openvpn3.dbus import OVPN3Dbus
+from .networkmanager_backend.bindings import NetworkManager as NMBindings
+from .networkmanager_backend.dbus import NMDbus
+from .openvpn3_backend.bindings import OpenVPN3 as OVPN3Bindings
+from .openvpn3_backend.dbus import OVPN3Dbus
 
 
 logger = logging.getLogger(__name__)

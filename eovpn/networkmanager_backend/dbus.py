@@ -1,5 +1,7 @@
 import gi
-from gi.repository import GLib, Gio
+gi.require_version("NM", "1.0")
+from gi.repository import GLib, Gio, NM
+import os
 import logging
 
 logger = logging.getLogger(__name__)
@@ -55,10 +57,10 @@ class NMDbus:
             https://developer.gnome.org/NetworkManager/stable/nm-vpn-dbus-types.html
         """
 
-        if (status == 5):
+        if (status == NM.VpnConnectionState.ACTIVATED):
             logger.debug("VPN connected.")
             update_callback(True)   
-        elif ((status == 6) or (status == 7)):
+        elif ((status == NM.VpnConnectionState.DISCONNECTED) or (status == NM.VpnConnectionState.FAILED)):
            logger.debug("VPN disconnected.")
            is_connection_deletion_required = reason in [5, 6, 7, 8 , 9, 10]
            GLib.timeout_add_seconds(1, update_callback, False, (error_reasons[reason] if is_connection_deletion_required else None))

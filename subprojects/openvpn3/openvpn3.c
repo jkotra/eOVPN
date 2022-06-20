@@ -131,7 +131,7 @@ void disconnect_all_sessions()
 
             g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
             g_error_free(error);
-            return;
+            continue;
         }
 
         GVariant *status = g_dbus_proxy_call_sync(sessions_proxy, "Get", g_variant_new("(ss)", "net.openvpn.v3.sessions", "status"), G_DBUS_CALL_FLAGS_NONE, -1, NULL, NULL);
@@ -409,14 +409,16 @@ void set_receive_log_events(char *session_object, int set_to)
 
 void set_log_forward(){
 
+    g_assert(UniqueSession != NULL);
+
     GError *error = NULL;
-    GVariant *result = g_dbus_proxy_call_sync(UniqueSession,
-                                              "net.openvpn.v3.sessions.LogForward",
-                                              g_variant_new("(b)", true),
-                                              G_DBUS_PROXY_FLAGS_NONE,
-                                              -1,
-                                              NULL,
-                                              NULL);
+    g_dbus_proxy_call_sync( UniqueSession,
+                            "net.openvpn.v3.sessions.LogForward",
+                            g_variant_new("(b)", true),
+                            G_DBUS_PROXY_FLAGS_NONE,
+                            -1,
+                            NULL,
+                            &error );
     
     if (error != NULL)
     {
@@ -424,6 +426,32 @@ void set_log_forward(){
         g_error_free(error);
         return;
     }
+
+}
+
+char* is_ready_to_connect(){
+
+    g_assert(UniqueSession != NULL);
+
+    GError *error = NULL;
+    g_dbus_proxy_call_sync( UniqueSession,
+                            "net.openvpn.v3.sessions.Ready",
+                            NULL,
+                            G_DBUS_PROXY_FLAGS_NONE,
+                            -1,
+                            NULL,
+                            &error );
+    
+    if (error != NULL)
+    {
+        g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
+        char* error_msg = error->message;
+        g_error_free(error);
+        return error_msg;
+    }
+
+    return NULL;
+
 }
 
 void send_auth(char *session_object, char *username, char *password)
