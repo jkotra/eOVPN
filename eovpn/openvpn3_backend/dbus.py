@@ -54,33 +54,33 @@ class OVPN3Dbus(Base):
         
         # https://github.com/OpenVPN/openvpn3-linux/blob/master/src/dbus/constants.hpp
         status = GLib.Variant("(uus)", parameters)
-        major = status.get_child_value(0).get_uint32()
-        minor = status.get_child_value(1).get_uint32()
+        major = OVPN3Constants.StatusMajor(status.get_child_value(0).get_uint32())
+        minor = OVPN3Constants.StatusMinor(status.get_child_value(1).get_uint32())
         reason = status.get_child_value(2).get_string()
 
-        logger.debug("{} {} {}".format(major, minor, reason))
+        logger.debug("{}({}) {}({}) {}".format(major, status.get_child_value(0).get_uint32(), minor, status.get_child_value(1).get_uint32(), reason))
 
-        if(major == OVPN3Constants.StatusMajor.CONNECTION.value and minor == OVPN3Constants.StatusMinor.CFG_REQUIRE_USER.value):
+        if(major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CFG_REQUIRE_USER):
             if self.get_setting(self.SETTING.AUTH_USER) is None:
                 update_callback(False, reason)
                 return
             self.module.send_auth(self.get_setting(self.SETTING.AUTH_USER), self.get_auth_password())
             logger.info("Auth Sent!")
             self.module.connect()
-        elif (major == OVPN3Constants.StatusMajor.CONNECTION.value and minor == OVPN3Constants.StatusMinor.CONN_AUTH_FAILED.value):
+        elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_AUTH_FAILED):
             logger.error(reason)
             update_callback(False, reason)
-        elif (major == OVPN3Constants.StatusMajor.CONNECTION.value and minor == OVPN3Constants.StatusMinor.CONN_CONNECTING.value):
+        elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_CONNECTING):
             update_callback([])
-        elif (major == OVPN3Constants.StatusMajor.CONNECTION.value and minor == OVPN3Constants.StatusMinor.CONN_CONNECTED.value):
+        elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_CONNECTED):
             update_callback(True)
-        elif (major == OVPN3Constants.StatusMajor.CONNECTION.value and minor == OVPN3Constants.StatusMinor.CONN_DISCONNECTED.value):
+        elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_DISCONNECTED):
             update_callback(False)
-        elif (major == OVPN3Constants.StatusMajor.CONNECTION.value and minor == OVPN3Constants.StatusMinor.CONN_PAUSED.value):
+        elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_PAUSED):
             update_callback(["pause"])
-        elif (major == OVPN3Constants.StatusMajor.CONNECTION.value and minor == OVPN3Constants.StatusMinor.CONN_RESUMING.value):
+        elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_RESUMING):
             update_callback(["resume"])
-        elif (major == OVPN3Constants.StatusMajor.CONNECTION.value and minor == OVPN3Constants.StatusMinor.CFG_OK.value):
+        elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CFG_OK):
             if self.get_setting(self.SETTING.AUTH_USER) is None and self.once:
                 logger.warning("username is None. Proceeding with connection without auth.")
                 self.module.init_unique_session()
