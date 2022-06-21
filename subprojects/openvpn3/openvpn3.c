@@ -445,7 +445,7 @@ char* is_ready_to_connect(){
     if (error != NULL)
     {
         g_warning("%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
-        char* error_msg = error->message;
+        char* error_msg = g_strdup(error->message);
         g_error_free(error);
         return error_msg;
     }
