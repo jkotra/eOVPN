@@ -40,7 +40,7 @@ GVariantIter *_get_all_sessions()
     
     GVariant *active_sessions = g_variant_get_child_value(available_sessions, 0);
     gsize n_sessions = g_variant_n_children(active_sessions);
-    g_message("Active Sessions  = %ld", n_sessions);
+    g_message("Active Sessions = %ld", n_sessions);
     GVariantIter *iter = g_variant_iter_new(active_sessions);
     return iter;
 }
@@ -454,7 +454,7 @@ char* is_ready_to_connect(){
 
 }
 
-void send_auth(char *session_object, char *username, char *password)
+void send_auth(char *session_object, int type, int group, int id, char* value)
 {
 
     GError *error = NULL;
@@ -475,13 +475,14 @@ void send_auth(char *session_object, char *username, char *password)
         return;
     }
 
+    if (UniqueSession == NULL){
     UniqueSession = unique_session;
+    }
 
-    GVariant *params_for_username = g_variant_new("(uuus)", 1, 1, 0, username);
-    GVariant *params_for_password = g_variant_new("(uuus)", 1, 1, 1, password);
+    GVariant *params = g_variant_new("(uuus)", type, group, id, value);
 
-    g_dbus_proxy_call_sync(UniqueSession, "UserInputProvide", params_for_username, G_DBUS_PROXY_FLAGS_NONE, -1, NULL, NULL);
-    g_dbus_proxy_call_sync(UniqueSession, "UserInputProvide", params_for_password, G_DBUS_PROXY_FLAGS_NONE, -1, NULL, NULL);
+    g_dbus_proxy_call_sync(UniqueSession, "UserInputProvide", params, G_DBUS_PROXY_FLAGS_NONE, -1, NULL, NULL);
+
 }
 
 void connect_vpn()

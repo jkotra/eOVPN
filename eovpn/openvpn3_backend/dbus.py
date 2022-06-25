@@ -50,6 +50,49 @@ class OVPN3Dbus(Base):
                            self.sub_callback,
                            callback)
     
+    def get_attention(self):
+
+        typegroup = self.conn.call_sync("net.openvpn.v3.sessions",
+                                    self.module.session_path.decode("utf-8"),
+                                    "net.openvpn.v3.sessions",
+                                    "UserInputQueueGetTypeGroup",
+                                    None,
+                                    GLib.VariantType("(a(uu))"),
+                                    Gio.DBusSignalFlags.NONE,
+                                    -1,
+                                    None)
+        
+        typegroup_arr = typegroup.get_child_value(0)
+
+        for atn_x in range(0, typegroup_arr.n_children()):
+            atn_type = OVPN3Constants.ClientAttentionType(typegroup_arr.get_child_value(0).get_child_value(atn_x).get_uint32())
+            atn_grp = OVPN3Constants.ClientAttentionGroup(typegroup_arr.get_child_value(0).get_child_value(atn_x).get_uint32())
+            
+            if (atn_type == OVPN3Constants.ClientAttentionType.CREDENTIALS and atn_grp == OVPN3Constants.ClientAttentionGroup.USER_PASSWORD):
+
+                parmas = GLib.Variant('(uu)', (atn_type.value, atn_grp.value) )
+                inputs = []
+
+                req_inputs = self.conn.call_sync("net.openvpn.v3.sessions",
+                                                self.module.session_path.decode("utf-8"),
+                                                "net.openvpn.v3.sessions",
+                                                "UserInputQueueCheck",
+                                                parmas,
+                                                GLib.VariantType("(au)"),
+                                                Gio.DBusSignalFlags.NONE,
+                                                -1,
+                                                None)
+                
+                req_inputs = req_inputs.get_child_value(0)
+
+                for i in range(0, req_inputs.n_children()):
+                    _i = req_inputs.get_child_value(i).get_uint32()
+                    inputs.append((atn_type, atn_grp, _i))
+                
+                return inputs
+
+
+
     def sub_callback(self, connection, sender_name, object_path, interface_name, signal_name, parameters, update_callback):
         
         # https://github.com/OpenVPN/openvpn3-linux/blob/master/src/dbus/constants.hpp
@@ -64,8 +107,16 @@ class OVPN3Dbus(Base):
             if self.get_setting(self.SETTING.AUTH_USER) is None:
                 update_callback(False, reason)
                 return
-            self.module.send_auth(self.get_setting(self.SETTING.AUTH_USER), self.get_auth_password())
-            logger.info("Auth Sent!")
+
+            attention = self.get_attention()
+            for (t, g, i) in attention:
+                logger.info("%s %s %i", t, g, i)
+                if i == 0:
+                    self.module.send_auth((t.value, g.value, i), self.get_setting(self.SETTING.AUTH_USER))
+                elif i == 1:
+                    self.module.send_auth((t.value, g.value, i), self.get_auth_password())
+                else:
+                    logger.debug("unknown input required!")
             self.module.connect()
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_AUTH_FAILED):
             logger.error(reason)

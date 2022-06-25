@@ -55,11 +55,11 @@ class OpenVPN3:
         self.get_connection_status()
         return self.session_path
 
-    def send_auth(self, username: str, password: str):
-        self.eovpn_ovpn3.send_auth.argtypes = [
-            ctypes.c_char_p, ctypes.c_char_p]
-        self.eovpn_ovpn3.send_auth(self.session_path, username.encode(
-            'utf-8'), password.encode('utf-8'))
+    def send_auth(self, input_for: tuple, value: str):
+        #type, group, input
+        t, g, i = input_for
+        self.eovpn_ovpn3.send_auth.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
+        self.eovpn_ovpn3.send_auth(self.session_path, t, g, i, value.encode('utf-8'))
 
     def is_ready_to_connect(self):
         self.eovpn_ovpn3.is_ready_to_connect.restype = ctypes.c_char_p
