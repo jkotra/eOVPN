@@ -10,7 +10,7 @@ deps = [
 python = import('python')
 python_instllation = python.find_installation()
 python_dir = python_instllation.get_install_dir()
-lib_install_dir = python_dir / main_project / 'networkmanager'
+lib_install_dir = python_dir / main_project / 'networkmanager_backend'
 message(lib_install_dir)
 
 libeovpn_nm = shared_library('eovpn_nm',

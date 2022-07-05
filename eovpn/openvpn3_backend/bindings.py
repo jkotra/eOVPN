@@ -55,11 +55,19 @@ class OpenVPN3:
         self.get_connection_status()
         return self.session_path
 
-    def send_auth(self, username: str, password: str):
-        self.eovpn_ovpn3.send_auth.argtypes = [
-            ctypes.c_char_p, ctypes.c_char_p]
-        self.eovpn_ovpn3.send_auth(self.session_path, username.encode(
-            'utf-8'), password.encode('utf-8'))
+    def send_auth(self, input_for: tuple, value: str):
+        #type, group, input
+        t, g, i = input_for
+        self.eovpn_ovpn3.send_auth.argtypes = [ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_char_p]
+        self.eovpn_ovpn3.send_auth(self.session_path, t, g, i, value.encode('utf-8'))
+
+    def is_ready_to_connect(self):
+        self.eovpn_ovpn3.is_ready_to_connect.restype = ctypes.c_char_p
+        reason = self.eovpn_ovpn3.is_ready_to_connect()
+        if reason is not None:
+            return reason
+        else:
+            return True
 
     def connect(self):
         self.eovpn_ovpn3.p_get_version.argtypes = [
@@ -68,8 +76,12 @@ class OpenVPN3:
         self.eovpn_ovpn3.set_log_forward()
         logger.info("log forward enabled!")
         self.get_connection_status()
-        self.eovpn_ovpn3.connect_vpn()
-        self.get_connection_status()
+
+        if (reason := self.is_ready_to_connect()) == True:
+            self.eovpn_ovpn3.connect_vpn()
+            self.get_connection_status()
+        else:
+            logger.error(reason)    
 
     def get_connection_status(self):
         self.eovpn_ovpn3.p_get_connection_status.restype = ctypes.c_int
