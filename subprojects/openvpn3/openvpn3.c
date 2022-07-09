@@ -494,7 +494,7 @@ void connect_vpn()
 void disconnect_vpn()
 {
     g_assert(UniqueSession != NULL);
-    g_dbus_proxy_call_sync(UniqueSession, "Disconnect", g_variant_new("()"), G_DBUS_PROXY_FLAGS_NONE, -1, NULL, NULL);
+    g_dbus_proxy_call(UniqueSession, "Disconnect", g_variant_new("()"), G_DBUS_PROXY_FLAGS_NONE, -1, NULL, NULL, NULL);
     UniqueSession = NULL;
 }
 
