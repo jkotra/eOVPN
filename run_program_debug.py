@@ -25,7 +25,9 @@ if __name__ == "__main__":
             shutil.copyfile("build/subprojects/networkmanager/libeovpn_nm.so",
                             "eovpn/networkmanager_backend/libeovpn_nm.so")
             shutil.copyfile("build/subprojects/openvpn3/libopenvpn3.so",
-                            "eovpn/openvpn3_backend/libopenvpn3.so")   
+                            "eovpn/openvpn3_backend/libopenvpn3.so")
+            shutil.copyfile("build/eovpn/metadata.json",
+                            "eovpn/metadata.json")
         except Exception as e:
             print(e)
 

@@ -1,0 +1,9 @@
+{
+    "APP_NAME": "eOVPN",
+    "APP_ID": "com.github.jkotra.eovpn",
+    "APP_VERSION": "@VERSION@",
+    "COMMIT": "@COMMIT@",
+    "AUTHOR": "Jagadeesh Kotra",
+    "AUTHOR_MAIL": "jagadeesh@stdin.top",
+    "AUTHOR_MAIL_SECONDARY": "jagadeesh.01101011@gmail.com"
+}
