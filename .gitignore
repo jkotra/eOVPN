@@ -3,6 +3,7 @@ build
 builddir
 playground.py
 build-dir
+eovpn/metadata.json
 subprojects/openvpn3/openvpn3.h
 .flatpak-builder
 *~
