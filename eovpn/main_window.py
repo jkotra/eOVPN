@@ -40,7 +40,7 @@ class MainWindow(Base, Gtk.Builder):
         
         preferred = self.get_setting(self.SETTING.MANAGER)
         if preferred == "openvpn3":
-            self.CM = OpenVPN3(True, self.on_connection_event)
+            self.CM = OpenVPN3(self.on_connection_event, dco=True)
             if self.CM.version() is None:
                 logger.error("openvpn3 version() fail! falling back to NM!")
                 self.set_setting(self.SETTING.MANAGER, "networkmanager")
@@ -64,7 +64,6 @@ class MainWindow(Base, Gtk.Builder):
             logger.debug("OpenVPN3 Version: %s", version)
             if version is None:
                 self.critical_errors.append("Unable to find OpenVPN3.")
-
 
         self.lookup = Lookup()
 

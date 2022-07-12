@@ -14,13 +14,16 @@ class NetworkManager:
         self.lib_load_fail = None
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "libeovpn_nm.so")
 
-        self.eovpn_nm = CDLL(path)
-
         if logger.getEffectiveLevel() > 0:
             self.debug = int(True)
             logger.info("NM debug = {}".format(self.debug))
 
-        logger.getEffectiveLevel
+        try:
+            self.eovpn_nm = CDLL(path)
+        except Exception as e:
+            logger.error("%s", e)
+            self.lib_load_fail = True
+
         self.uuid = None
 
         self.add_connection_args = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int]
