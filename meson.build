@@ -54,7 +54,9 @@ subdir('po')
 subdir('data')
 
 subproject('networkmanager')
-subproject('openvpn3')
+if get_option('openvpn3')
+  subproject('openvpn3')
+endif
 
 install_subdir(
   'eovpn',

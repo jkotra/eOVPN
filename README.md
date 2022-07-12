@@ -55,6 +55,8 @@ meson build -Dprefix=/usr
 ninja install -C build
 ```
 
+* to disable support for [openvpn3](https://github.com/OpenVPN/openvpn3-linux), use `-Dopenvpn3=false`
+
 To uninstall:
 ```
 sudo ninja uninstall -C build
