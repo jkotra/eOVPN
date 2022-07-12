@@ -14,6 +14,9 @@ python_dir = python_instllation.get_install_dir()
 lib_install_dir = python_dir / main_project / 'openvpn3_backend'
 message(lib_install_dir)
 
+python_exe = find_program('python3', 'python')
+r = run_command(python_exe, 'extract_enums.py', check: true)
+
 libeovpn_nm = shared_library('openvpn3',
   'openvpn3.c',
   dependencies: deps,

@@ -2,6 +2,7 @@ import os
 import shutil
 import logging
 import threading
+import json
 
 import gi
 gi.require_version('Notify', '0.7')
@@ -69,12 +70,14 @@ class Settings:
 class Base:
 
     def __init__(self):
-        self.APP_NAME = "eOVPN"
-        self.APP_ID = "com.github.jkotra.eovpn"
-        self.APP_VERSION = "1.23"
-        self.AUTHOR = "Jagadeesh Kotra"
-        self.AUTHOR_MAIL = "jagadeesh@stdin.top"
-        self.AUTHOR_MAIL_SECONDARY = "jagadeesh.01101011@gmail.com"
+        metadata = json.loads(open(os.path.dirname(__file__) + "/" + "metadata.json", "r").read())
+        self.APP_NAME = metadata["APP_NAME"]
+        self.APP_ID = metadata["APP_ID"]
+        self.APP_VERSION = metadata["APP_VERSION"]
+        self.APP_COMMIT = metadata["COMMIT"]
+        self.AUTHOR = metadata["AUTHOR"]
+        self.AUTHOR_MAIL = metadata["AUTHOR_MAIL"]
+        self.AUTHOR_MAIL_SECONDARY = metadata["AUTHOR_MAIL_SECONDARY"]
         
         # tip to translators - add yourself to the dict.
         #

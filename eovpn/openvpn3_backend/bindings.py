@@ -14,11 +14,11 @@ class OpenVPN3:
         self.lib_load_fail = None
         path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "libopenvpn3.so")
 
-        self.eovpn_ovpn3 = CDLL(path)
-
-        if logger.getEffectiveLevel() > 0:
-            self.debug = int(True)
-            logger.info("OVPN3 debug = {}".format(self.debug))
+        try:
+            self.eovpn_ovpn3 = CDLL(path)
+        except Exception as e:
+            logger.error("%s", e)
+            self.lib_load_fail = True
 
         self.session_path = None
         self.config_path = None
@@ -107,6 +107,16 @@ class OpenVPN3:
         self.eovpn_ovpn3.resume_vpn()
 
     def get_version(self):
-        self.eovpn_ovpn3.p_get_version.restype = ctypes.c_char_p
-        ver = self.eovpn_ovpn3.p_get_version()
-        return ver
+        # DBus call to get version
+        #self.eovpn_ovpn3.p_get_version.restype = ctypes.c_char_p
+        #ver = self.eovpn_ovpn3.p_get_version()
+        #return ver
+
+        if self.lib_load_fail:
+            return None
+            
+        try:
+            from openvpn3 import constants as OVPN3Constants
+            return OVPN3Constants.VERSION
+        except ImportError:
+            return None

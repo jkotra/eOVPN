@@ -1,6 +1,6 @@
 project('eovpn',
-  version: '0.01',
-  meson_version: '>= 0.51.0'
+  version: '1.24',
+  meson_version: '>= 0.54.0'
 )
 
 i18n = import('i18n')
@@ -37,24 +37,30 @@ conf.set('PKG_DATADIR', pkg_datadir)
 conf.set('LOCALE_DIR', join_paths(get_option('prefix'), get_option('datadir'), 'locale'))
 conf.set('PYTHON_DIR', python_dir)
 
+bin_exec = configure_file(
+  input: 'eovpn.in',
+  output: 'eovpn.py',
+  configuration: conf,
+)
+
+install_data(
+  bin_exec,
+  install_dir: bindir,
+  rename: 'eovpn'
+)
+
+subdir('eovpn')
 subdir('po')
 subdir('data')
 
-
 subproject('networkmanager')
-subproject('openvpn3')
+if get_option('openvpn3')
+  subproject('openvpn3')
+endif
 
 install_subdir(
   'eovpn',
   install_dir: python_dir
-)
-
-
-configure_file(
-  input: 'eovpn.in',
-  output: 'eovpn',
-  configuration: conf,
-  install_dir: bindir
 )
 
 meson.add_install_script('meson_post_install.py')

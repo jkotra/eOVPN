@@ -149,6 +149,49 @@ modules:
         url: 'https://github.com/NetworkManager/NetworkManager-openvpn.git'
         tag: "1.8.12"
 
+  - name: jsoncpp
+    buildsystem: meson
+    sources:
+      - type: git
+        url: 'https://github.com/open-source-parsers/jsoncpp.git'
+        tag: '1.9.5'
+
+  - name: libcap-ng
+    buildsystem: autotools
+    sources:
+      - type: git
+        url: 'https://github.com/stevegrubb/libcap-ng'
+        tag: 'v0.8.3'
+
+  - name: tinyxml2
+    buildsystem: meson
+    sources:
+      - type: git
+        url: 'https://github.com/leethomason/tinyxml2'
+        tag: '9.0.0'
+
+  - name: python-dbus
+    buildsystem: simple
+    build-commands:
+      - pip3 install --prefix=/app --no-deps .
+    sources:
+      - type: archive
+        url: https://dbus.freedesktop.org/releases/dbus-python/dbus-python-1.2.18.tar.gz
+        sha256: 92bdd1e68b45596c833307a5ff4b217ee6929a1502f5341bae28fd120acf7260
+
+  - name: openvpn3
+    buildsystem: autotools
+    config-opts:
+      - --disable-unit-tests
+      - --disable-build-test-progs
+    sources:
+      - type: git
+        url: 'https://github.com/OpenVPN/openvpn3-linux'
+        tag: 'v18_beta'
+        
+      - type: patch
+        path: '0001-openvpn3-flatpak.patch'
+        
   - name: eovpn
     buildsystem: meson
     sources:

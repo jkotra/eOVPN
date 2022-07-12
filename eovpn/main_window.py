@@ -40,10 +40,8 @@ class MainWindow(Base, Gtk.Builder):
         
         preferred = self.get_setting(self.SETTING.MANAGER)
         if preferred == "openvpn3":
-            self.CM = OpenVPN3(True, self.on_connection_event)
-            if self.CM.version() is not None:
-                pass
-            else:
+            self.CM = OpenVPN3(self.on_connection_event, dco=True)
+            if self.CM.version() is None:
                 logger.error("openvpn3 version() fail! falling back to NM!")
                 self.set_setting(self.SETTING.MANAGER, "networkmanager")
                 self.CM = NetworkManager()
@@ -66,7 +64,6 @@ class MainWindow(Base, Gtk.Builder):
             logger.debug("OpenVPN3 Version: %s", version)
             if version is None:
                 self.critical_errors.append("Unable to find OpenVPN3.")
-
 
         self.lookup = Lookup()
 
@@ -245,15 +242,15 @@ class MainWindow(Base, Gtk.Builder):
 
         def open_about_dialog(widget, data):
             about = Gtk.AboutDialog.new()
-            about.set_logo_icon_name("com.github.jkotra.eovpn")
-            about.set_program_name("eOVPN")
-            about.set_authors(["Jagadeesh Kotra"])
-            about.set_artists(["Jagadeesh Kotra"])
-            about.set_copyright("Jagadeesh Kotra")
+            about.set_logo_icon_name(self.APP_ID)
+            about.set_program_name(self.APP_NAME)
+            about.set_authors([self.AUTHOR])
+            about.set_artists([self.AUTHOR])
+            about.set_copyright(self.AUTHOR)
             about.set_license_type(Gtk.License.LGPL_3_0)
             about.set_version(self.APP_VERSION)
             about.set_website("https://github.com/jkotra/eOVPN")
-            about.set_system_information("Flatpak: \t {}".format("true" if os.getenv("FLATPAK_ID") is not None else "false"))
+            about.set_system_information("Flatpak: \t {}\nCommit: \t {}".format("true" if os.getenv("FLATPAK_ID") is not None else "false", self.APP_COMMIT))
             about.set_transient_for(self.window)
             about.set_modal(True)
             about.show()

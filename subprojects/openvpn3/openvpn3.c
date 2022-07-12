@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <gio/gio.h>
 #include <glib.h>
+#include "openvpn3.h"
 
 GDBusProxy *UniqueSession = NULL;
 
@@ -92,7 +93,7 @@ int get_connection_status()
         g_variant_get(v, "(uus)", &major, &minor, &status_str);
         g_message("%u %u %s", major, minor, status_str);
 
-        if ((major == 2) && (minor == 7))
+        if ((major == MAJOR_CONNECTION) && (minor == MINOR_CONN_CONNECTED))
         {
             g_variant_iter_free(iter);
             return true;
@@ -147,7 +148,9 @@ void disconnect_all_sessions()
         g_message("status: %u %u %s", major, minor, status_str);
 
 
-        if (((major == 2) && (minor == 7)) || ((major == 2) && (minor == 14)))
+        if ((major == MAJOR_CONNECTION) && 
+            (minor == MINOR_CONN_CONNECTED || MINOR_CONN_CONNECTING || MINOR_CONN_PAUSED || MINOR_CONN_PAUSING || MINOR_CONN_RECONNECTING || MINOR_CONN_RESUMING)
+        )
         {
             error = NULL;
             GDBusProxy *proxy = g_dbus_proxy_new_for_bus_sync(G_BUS_TYPE_SYSTEM,
@@ -193,7 +196,7 @@ int get_specific_connection_status(char *session_path)
 
     g_variant_get(status, "(uus)", &major, &minor, &status_str);
 
-    if ((major == 2) && (minor == 2))
+    if ((major == MAJOR_CONNECTION) && (minor == MINOR_CONN_CONNECTED))
     {
         return true;
     }

@@ -341,7 +341,7 @@ class SettingsWindow(Base, Gtk.Builder):
         
         ovpn3_version = OpenVPN3().get_version()
         if ovpn3_version is not None:
-            self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3 {}".format(ovpn3_version.decode("utf-8"))))
+            self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3 {}".format(ovpn3_version)))
         
         if (manager := self.get_setting(self.SETTING.MANAGER)) is not None:
             self.combobox.set_property("active-id", manager)
