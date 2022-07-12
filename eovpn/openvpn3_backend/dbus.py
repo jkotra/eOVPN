@@ -1,15 +1,6 @@
 from gi.repository import Gio, GLib, Secret
 import logging
 from eovpn.eovpn_base import Base
-import os
-
-if os.getenv("FLATPAK_ID") is not None:
-    import sys
-    import pathlib
-    openvpn3_python_dir = pathlib.Path("/var/run/host/usr/lib/").glob("python*")
-    openvpn3_python_dir = next(openvpn3_python_dir) / "site-packages"
-    sys.path.append(f'{openvpn3_python_dir}/')
-
 from openvpn3 import constants as OVPN3Constants
 
 logger = logging.getLogger(__name__)

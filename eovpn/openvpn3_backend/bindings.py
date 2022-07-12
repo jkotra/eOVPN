@@ -107,6 +107,11 @@ class OpenVPN3:
         self.eovpn_ovpn3.resume_vpn()
 
     def get_version(self):
-        self.eovpn_ovpn3.p_get_version.restype = ctypes.c_char_p
-        ver = self.eovpn_ovpn3.p_get_version()
-        return ver
+        #self.eovpn_ovpn3.p_get_version.restype = ctypes.c_char_p
+        #ver = self.eovpn_ovpn3.p_get_version()
+        #return ver
+        try:
+            from openvpn3 import constants as OVPN3Constants
+            return OVPN3Constants.VERSION
+        except ImportError:
+            return None
