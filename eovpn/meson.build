@@ -11,5 +11,8 @@ configure_file(
   input: 'metadata.json.in',
   output: 'metadata.json',
   configuration: conf,
-
+  install: true,
+  install_dir: python_dir / meson.project_name()
 )
+
+message('metadata.json generated!')
