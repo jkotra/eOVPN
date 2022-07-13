@@ -31,6 +31,33 @@ class SettingsWindow(Base, Gtk.Builder):
         self.window.set_transient_for(self.retrieve(StorageItem.MAIN_WINDOW))
         self.window.set_modal(True)
         self.store(StorageItem.SETTINGS_WINDOW, self.window)
+    
+    def generate_option_row(self, name, icon_name, switch_state):
+        list_box_row = Gtk.ListBoxRow.new()
+        h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
+        v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
+        v_box.set_hexpand(True)
+
+        label = Gtk.Label.new(name)
+        v_box.set_valign(Gtk.Align.CENTER)
+        v_box.append(label)
+
+        img = Gtk.Image.new()
+        img.set_from_icon_name(icon_name)
+        h_box.append(img)
+
+        h_box.append(v_box)
+
+        switch = Gtk.Switch.new()
+        switch.set_state(switch_state) 
+        switch.set_halign(Gtk.Align.CENTER)
+        switch.set_valign(Gtk.Align.CENTER)
+        h_box.append(switch)
+
+        list_box_row.set_child(h_box)
+        list_box_row.set_selectable(False)
+
+        return list_box_row, switch
 
     def setup(self):
         
@@ -202,106 +229,24 @@ class SettingsWindow(Base, Gtk.Builder):
         ###########################################################
         # Notifications
         ###########################################################
-        list_box_row = Gtk.ListBoxRow.new()
-        h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
-        v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
-        v_box.set_hexpand(True)
 
-        label = Gtk.Label.new(gettext.gettext("Notifications"))
-        v_box.set_valign(Gtk.Align.CENTER)
-        v_box.append(label)
+        self.switches = []
+        self.switches.append(self.ask_auth_switch)
 
-        img = Gtk.Image.new()
-        img.set_from_icon_name("user-available-symbolic")
-        h_box.append(img)
+        row, switch = self.generate_option_row(gettext.gettext("Notifications"), "user-available-symbolic", self.get_setting(self.SETTING.NOTIFICATIONS))
+        switch.connect("state-set", self.signals.notification_set)
+        self.switches.append(switch)
+        list_box.append(row)
 
-        h_box.append(v_box)
+        row, switch = self.generate_option_row(gettext.gettext("Flag"), "preferences-desktop-locale-symbolic", self.get_setting(self.SETTING.SHOW_FLAG))
+        switch.connect("state-set", self.signals.show_flag_set)
+        self.switches.append(switch)
+        list_box.append(row)
 
-        self.notif_switch = Gtk.Switch.new()
-        if self.get_setting(self.SETTING.NOTIFICATIONS) is True:
-            self.notif_switch.set_state(True) 
-        self.notif_switch.set_halign(Gtk.Align.CENTER)
-        self.notif_switch.set_valign(Gtk.Align.CENTER)
-        h_box.append(self.notif_switch)
-
-        list_box_row.set_child(h_box)
-        list_box_row.set_selectable(False)
-        list_box.append(list_box_row)
-
-        ###########################################################
-        # END Notifications
-        ###########################################################
-
-
-        ###########################################################
-        # Flag
-        ###########################################################
-
-        list_box_row = Gtk.ListBoxRow.new()
-        h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
-        v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
-        v_box.set_hexpand(True)
-
-        label = Gtk.Label.new(gettext.gettext("Show Flag"))
-        v_box.set_valign(Gtk.Align.CENTER)
-        v_box.append(label)
-
-        img = Gtk.Image.new()
-        img.set_from_icon_name("preferences-desktop-locale-symbolic")
-
-        h_box.append(img)
-
-        h_box.append(v_box)
-
-        self.flag_switch = Gtk.Switch.new()
-        if self.get_setting(self.SETTING.SHOW_FLAG) is True:
-            self.flag_switch.set_state(True) 
-        self.flag_switch.set_halign(Gtk.Align.CENTER)
-        self.flag_switch.set_valign(Gtk.Align.CENTER)
-        h_box.append(self.flag_switch)
-
-        list_box_row.set_child(h_box)
-        list_box_row.set_selectable(False)
-        list_box.append(list_box_row)
-
-        ###########################################################
-        # END FLAG
-        ###########################################################
-
-        ###########################################################
-        # Dark Theme
-        ###########################################################
-
-        list_box_row = Gtk.ListBoxRow.new()
-        h_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 0)
-        v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
-        v_box.set_hexpand(True)
-
-        label = Gtk.Label.new(gettext.gettext("Dark Theme"))
-        v_box.set_valign(Gtk.Align.CENTER)
-        v_box.append(label)
-
-        img = Gtk.Image.new()
-        img.set_from_icon_name("weather-clear-night-symbolic")
-
-        h_box.append(img)
-
-        h_box.append(v_box)
-
-        self.dark_theme_switch = Gtk.Switch.new()
-        if self.get_setting(self.SETTING.DARK_THEME) is True:
-            self.dark_theme_switch.set_state(True) 
-        self.dark_theme_switch.set_halign(Gtk.Align.CENTER)
-        self.dark_theme_switch.set_valign(Gtk.Align.CENTER)
-        h_box.append(self.dark_theme_switch)
-
-        list_box_row.set_child(h_box)
-        list_box_row.set_selectable(False)
-        list_box.append(list_box_row)
-
-        ###########################################################
-        # END Dark Theme
-        ###########################################################
+        row, switch = self.generate_option_row(gettext.gettext("Dark Theme"), "weather-clear-night-symbolic", self.get_setting(self.SETTING.DARK_THEME))
+        switch.connect("state-set", self.signals.dark_theme_set)
+        self.switches.append(switch)
+        list_box.append(row)
 
         
         #attach to pref box
@@ -363,7 +308,12 @@ class SettingsWindow(Base, Gtk.Builder):
         
 
         #connect signals
-        self.reset_btn.connect("clicked", self.signals.on_reset_btn_clicked, [entry, self.username_entry, self.password_entry], [self.ca_chooser_btn], [self.ask_auth_switch, self.notif_switch, self.flag_switch, self.dark_theme_switch], self.window)
+        self.reset_btn.connect("clicked",
+                                self.signals.on_reset_btn_clicked,
+                                [entry, self.username_entry, self.password_entry],
+                                [self.ca_chooser_btn],
+                                self.switches,
+                                self.window)
         entry.connect("changed", self.signals.process_config_entry, self.revealer)
         zip_file_chooser_dialog.connect("response", self.signals.process_zip, entry, self.revealer)
         self.validate_btn.connect("clicked", self.signals.on_validate_btn_click, entry, self.ca_chooser_btn, self.spinner)
@@ -371,9 +321,6 @@ class SettingsWindow(Base, Gtk.Builder):
         self.password_entry.connect("changed", self.signals.process_password)
         ca_file_chooser_dialog.connect("response", self.signals.process_ca, self.ca_chooser_btn)
         self.ask_auth_switch.connect("state-set", self.signals.req_auth ,self.user_pass_ca_box)
-        self.notif_switch.connect("state-set", self.signals.notification_set)
-        self.flag_switch.connect("state-set", self.signals.show_flag_set)
-        self.dark_theme_switch.connect("state-set", self.signals.dark_theme_set)
         self.remove_all_vpn_btn.connect("clicked", lambda _: NetworkManager().delete_all_vpn_connections())
         self.combobox.connect("changed", lambda box: self.set_setting(self.SETTING.MANAGER, box.get_property("active_id")) )
 
@@ -489,11 +436,6 @@ class Signals(Base):
             s.set_state(False)
 
         GLib.idle_add(self.remove_only, True)
-
-        #default values
-        switches[0].set_state(False) #Notifications
-        switches[1].set_state(True) #Flag
-        switches[2].set_state(False) #Dark Theme
         self.retrieve(StorageItem.FLAG).hide()
 
 

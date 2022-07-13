@@ -279,6 +279,10 @@ class Base:
     
     def validate_and_load(self, spinner=None, ca_button=None):
 
+        if self.get_setting(self.SETTING.REMOTE) is None:
+            logger.error("remote is empty!")
+            return
+
         def glib_func():
             self.remove_only()
             self.load_only()
