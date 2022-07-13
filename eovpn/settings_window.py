@@ -220,15 +220,13 @@ class SettingsWindow(Base, Gtk.Builder):
                 self.ca_chooser_btn.set_label(os.path.basename(ca))  
 
 
-        #Prefs - Setup
+        ###########################################################
+        # Prefs - Setup
+        ###########################################################
         frame = Gtk.Frame.new()
         list_box = Gtk.ListBox.new()
         frame.get_style_context().add_class("m-10")
         list_box.get_style_context().add_class("rich-list")
-        
-        ###########################################################
-        # Notifications
-        ###########################################################
 
         self.switches = []
         self.switches.append(self.ask_auth_switch)
