@@ -1,5 +1,9 @@
-r = run_command('git', 'rev-parse', 'HEAD', check: true)
-commit_hash = r.stdout().strip()
+r = run_command('git', 'rev-parse', 'HEAD', check: false)
+commit_hash = 'local_build'
+
+if r.returncode() == 0
+  commit_hash = r.stdout().strip()
+endif
 
 message('current commit', commit_hash)
 
