@@ -2,8 +2,9 @@ import ctypes
 from ctypes import CDLL
 import os
 import logging
+from pathlib import Path
 import gi
-
+from gi.repository import GLib
 logger = logging.getLogger(__name__)
 
 class NetworkManager:
@@ -38,7 +39,19 @@ class NetworkManager:
 
         self.eovpn_nm.add_connection.argtypes = self.add_connection_args
         self.eovpn_nm.add_connection.restype = self.add_connection_return
-        self.uuid = self.eovpn_nm.add_connection(config, username, password, ca, self.debug)
+
+        # add CA to config and store ot in /tmp
+        tmp_config = Path(GLib.get_tmp_dir()) / "tmp.ovpn"
+        f = open(tmp_config, "w+")
+        data = f"{open(config).read()}\n"
+        if ca is not None:
+            data += f"\n<ca>\n{open(ca).read()}\n</ca>\n"
+        f.write(data)
+        f.close()
+
+        print(data)
+
+        self.uuid = self.eovpn_nm.add_connection(str(tmp_config).encode("utf-8"), username, password, None, self.debug)
         
         if self.uuid is not None:
             return self.uuid

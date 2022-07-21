@@ -73,29 +73,3 @@ def ovpn_is_auth_required(ovpn_file):
         return True
     else:
         return False
-
-def is_selinux_enforcing():
-    
-    #try if we can import selinux python bindings (preferred way of checking)
-    try:
-        import selinux
-        return bool(selinux.is_selinux_enabled()) and bool(selinux.security_getenforce())
-    except Exception as e:
-        logger.error(e)
-
-    if os.getenv("FLATPAK_ID") is not None:
-        commands = []
-        commands.append("flatpak-spawn")
-        commands.append("--host")
-        commands.append("sestatus")
-
-        try:
-            out = subprocess.run(commands, stdout=subprocess.PIPE)
-            out = out.stdout.decode('utf-8')
-            logger.debug(out)
-            if ("enabled" in out) and ("enforcing" in out):
-                return True
-        except:
-            return False
-
-    return False
