@@ -36,14 +36,9 @@ class NetworkManager:
         # arguments must be encode before being passed to this function!
         # ex: a.encode('utf-8')
 
-        if os.getenv("FLATPAK_ID") is not None:
-            self.eovpn_nm.add_connection_flatpak.argtypes = self.add_connection_args
-            self.eovpn_nm.add_connection_flatpak.restype = self.add_connection_return
-            self.uuid = self.eovpn_nm.add_connection_flatpak(config, username, password, ca, self.debug)
-        else:
-            self.eovpn_nm.add_connection.argtypes = self.add_connection_args
-            self.eovpn_nm.add_connection.restype = self.add_connection_return
-            self.uuid = self.eovpn_nm.add_connection(config, username, password, ca, self.debug)
+        self.eovpn_nm.add_connection.argtypes = self.add_connection_args
+        self.eovpn_nm.add_connection.restype = self.add_connection_return
+        self.uuid = self.eovpn_nm.add_connection(config, username, password, ca, self.debug)
         
         if self.uuid is not None:
             return self.uuid
