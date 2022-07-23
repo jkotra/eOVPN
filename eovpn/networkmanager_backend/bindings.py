@@ -32,7 +32,7 @@ class NetworkManager:
 
         self.VPN_ACTIVATED = 5
 
-    def add_connection(self, config: str, username:str = None, password: str = None, ca: str = None) -> str:
+    def add_connection(self, config, username = None, password = None, ca = None) -> str:
 
         # arguments must be encode before being passed to this function!
         # ex: a.encode('utf-8')
@@ -41,7 +41,7 @@ class NetworkManager:
         self.eovpn_nm.add_connection.restype = self.add_connection_return
 
         # add CA to config and store ot in /tmp
-        tmp_config = Path(GLib.get_tmp_dir()) / "tmp.ovpn"
+        tmp_config = Path(GLib.get_tmp_dir()) / os.path.basename(config).decode("utf-8")
         f = open(tmp_config, "w+")
         data = f"{open(config).read()}\n"
         if ca is not None:
