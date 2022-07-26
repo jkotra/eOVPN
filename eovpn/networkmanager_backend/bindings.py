@@ -42,14 +42,14 @@ class NetworkManager:
 
         # add CA to config and store ot in /tmp
         tmp_config = Path(GLib.get_tmp_dir()) / os.path.basename(config).decode("utf-8")
-        f = open(tmp_config, "w+")
-        data = f"{open(config).read()}\n"
-        if ca is not None:
-            data += f"\n<ca>\n{open(ca).read()}\n</ca>\n"
-        f.write(data)
-        f.close()
 
-        print(data)
+        with open(tmp_config, "w+") as f:
+            data = f"{open(config).read()}\n"
+            if ca is not None:
+                data += f"\n<ca>\n{open(ca).read()}\n</ca>\n"
+            f.write(data)
+
+        logger.debug(data)
 
         self.uuid = self.eovpn_nm.add_connection(str(tmp_config).encode("utf-8"), username, password, None, self.debug)
         
