@@ -57,7 +57,7 @@ class MainWindow(Base, Gtk.Builder):
             logger.debug("%s | %s", nm_version, is_openvpn_available)
             if nm_version is None:
                 self.critical_errors.append("Unable to Find NetworkManager.")
-            if is_openvpn_available is False:
+            if is_openvpn_available is False and os.environ.get("FLATPAK_ID") is None:
                 self.critical_errors.append("Unable to Find OpenVPN plugin for NetworkManager")
         else:
             version = self.CM.version()

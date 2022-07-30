@@ -2,8 +2,9 @@ import ctypes
 from ctypes import CDLL
 import os
 import logging
+from pathlib import Path
 import gi
-
+from gi.repository import GLib
 logger = logging.getLogger(__name__)
 
 class NetworkManager:
@@ -31,19 +32,26 @@ class NetworkManager:
 
         self.VPN_ACTIVATED = 5
 
-    def add_connection(self, config: str, username:str = None, password: str = None, ca: str = None) -> str:
+    def add_connection(self, config, username = None, password = None, ca = None) -> str:
 
         # arguments must be encode before being passed to this function!
         # ex: a.encode('utf-8')
 
-        if os.getenv("FLATPAK_ID") is not None:
-            self.eovpn_nm.add_connection_flatpak.argtypes = self.add_connection_args
-            self.eovpn_nm.add_connection_flatpak.restype = self.add_connection_return
-            self.uuid = self.eovpn_nm.add_connection_flatpak(config, username, password, ca, self.debug)
-        else:
-            self.eovpn_nm.add_connection.argtypes = self.add_connection_args
-            self.eovpn_nm.add_connection.restype = self.add_connection_return
-            self.uuid = self.eovpn_nm.add_connection(config, username, password, ca, self.debug)
+        self.eovpn_nm.add_connection.argtypes = self.add_connection_args
+        self.eovpn_nm.add_connection.restype = self.add_connection_return
+
+        # add CA to config and store ot in /tmp
+        tmp_config = Path(GLib.get_tmp_dir()) / os.path.basename(config).decode("utf-8")
+
+        with open(tmp_config, "w+") as f:
+            data = f"{open(config).read()}\n"
+            if ca is not None:
+                data += f"\n<ca>\n{open(ca).read()}\n</ca>\n"
+            f.write(data)
+
+        logger.debug(data)
+
+        self.uuid = self.eovpn_nm.add_connection(str(tmp_config).encode("utf-8"), username, password, None, self.debug)
         
         if self.uuid is not None:
             return self.uuid

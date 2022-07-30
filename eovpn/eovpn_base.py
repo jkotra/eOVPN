@@ -9,7 +9,7 @@ gi.require_version('Notify', '0.7')
 gi.require_version('Secret', '1')
 from gi.repository import GObject, Gtk, Gio, GLib, GdkPixbuf, Notify, Secret
 
-from .utils import download_remote_to_destination, is_selinux_enforcing
+from .utils import download_remote_to_destination
 
 _builder_record = {}
 _storage_record = {}
@@ -294,15 +294,7 @@ class Base:
             cert = download_remote_to_destination(self.get_setting(self.SETTING.REMOTE), self.EOVPN_OVPN_CONFIG_DIR)
             if len(cert) > 0:
                 ca_path = os.path.join(self.EOVPN_OVPN_CONFIG_DIR, cert[-1])
-                if is_selinux_enforcing():
-                    home_dir = GLib.get_home_dir()
-                    se_friendly_path = os.path.join(home_dir, ".cert")
-                    if not os.path.exists(se_friendly_path):
-                        os.mkdir(se_friendly_path)
-                    shutil.copy(ca_path, se_friendly_path)
-                    self.set_setting(self.SETTING.CA, os.path.join(se_friendly_path, os.path.basename(ca_path)))
-                else:
-                    self.set_setting(self.SETTING.CA, ca_path)
+                self.set_setting(self.SETTING.CA, ca_path)
                 
                 if ca_button is not None:
                     # if it's None, assume update is not needed!
