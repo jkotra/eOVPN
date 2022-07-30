@@ -5,27 +5,24 @@ sdk : org.gnome.Sdk
 command: eovpn
 
 finish-args:
-  - --share=ipc
   - --share=network
   - --socket=fallback-x11
   - --socket=wayland
-  - --talk-name=org.freedesktop.Flatpak
+  - --share=ipc
+  - --filesystem=home/.cert/:create
   - --talk-name=org.freedesktop.Notifications
-  - --filesystem=host
-  - --persist=path
   - --socket=system-bus
   - --device=dri
-
 
 modules:
 
   - name: intltool
     cleanup:
-       - '*'
+      - '*'
     sources:
-       - type: archive
-         url: https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz
-         sha256: 67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd
+      - type: archive
+        url: https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz
+        sha256: 67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd
 
   - name: polkit
     buildsystem: autotools
@@ -87,14 +84,12 @@ modules:
         url: 'https://github.com/gentoo/eudev.git'
         tag: "v3.2.10"
 
-
   - name: libndp
     buildsystem: autotools
     sources:
       - type: archive
         url: ' http://libndp.org/files/libndp-1.6.tar.gz'
         sha256: 0c7dfa84e013bd5e569ef2c6292a6f72cfaf14f4ff77a77425e52edc33ffac0e
-
 
   - name: NetworkManager
     buildsystem: meson
@@ -127,7 +122,7 @@ modules:
     sources:
       - type: git
         url: 'https://github.com/NetworkManager/NetworkManager.git'
-        tag: "1.30.2"
+        tag: "1.38.2"
 
   - name: libnma
     buildsystem: meson
@@ -139,7 +134,7 @@ modules:
     sources:
       - type: git
         url: 'https://gitlab.gnome.org/GNOME/libnma.git'
-        tag: "1.8.30"
+        tag: "1.8.40"
 
 
   - name: NetworkManager-openvpn
@@ -147,7 +142,7 @@ modules:
     sources:
       - type: git
         url: 'https://github.com/NetworkManager/NetworkManager-openvpn.git'
-        tag: "1.8.12"
+        tag: "1.8.18"
 
   - name: jsoncpp
     buildsystem: meson
@@ -191,7 +186,7 @@ modules:
         
       - type: patch
         path: '0001-openvpn3-flatpak.patch'
-        
+
   - name: eovpn
     buildsystem: meson
     sources:
