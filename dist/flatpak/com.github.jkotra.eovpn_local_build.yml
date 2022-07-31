@@ -11,7 +11,10 @@ finish-args:
   - --share=ipc
   - --filesystem=home/.cert/:create
   - --talk-name=org.freedesktop.Notifications
-  - --socket=system-bus
+  - --talk-name=org.freedesktop.secrets
+  - --system-talk-name=org.freedesktop.NetworkManager
+  - --system-talk-name=net.openvpn.v3.configuration
+  - --system-talk-name=net.openvpn.v3.sessions
   - --device=dri
 
 modules:
@@ -123,6 +126,9 @@ modules:
       - type: git
         url: 'https://github.com/NetworkManager/NetworkManager.git'
         tag: "1.38.2"
+
+      - type: patch
+        path: '0001-disable-ownership-check-for-plugins.patch'
 
   - name: libnma
     buildsystem: meson
