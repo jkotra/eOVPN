@@ -45,6 +45,14 @@
 
   <releases>
 
+    <release version="1.26" date="2022-08-03">
+      <description>
+        <ul>
+        <li>code fixes and improvements.</li>
+        </ul>
+      </description>
+  </release>
+
     <release version="1.25" date="2022-07-29">
       <description>
         <ul>
