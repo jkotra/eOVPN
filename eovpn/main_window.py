@@ -7,6 +7,7 @@ from .utils import ovpn_is_auth_required
 import os
 import gettext
 import webbrowser
+import threading
 
 from .eovpn_base import Base, StorageItem
 logger = logging.getLogger(__name__)
@@ -197,7 +198,6 @@ class MainWindow(Base, Gtk.Builder):
         h_box.append(cpy_btn)
 
         self.inner_right.append(h_box)
-        GLib.idle_add(self.update_set_ip_flag)
 
         self.csh = None # Connect signal handler
         self.psh = None # Pause Signal Handler
@@ -364,9 +364,11 @@ class MainWindow(Base, Gtk.Builder):
             GLib.idle_add(self.generic_critical_error_dialog, self.critical_errors)
 
     def update_set_ip_flag(self):
+        self.spinner.start()
         self.lookup.update()
         self.retrieve(StorageItem.FLAG).set_pixbuf(self.get_country_pixbuf(self.lookup.country_code))
         self.ip_addr.set_label(self.lookup.ip)
+        self.spinner.stop()
 
     
     def swap_pause_btn_signal_pause_to_resume(self):
@@ -374,7 +376,7 @@ class MainWindow(Base, Gtk.Builder):
         if self.psh is not None:
             self.pause_resume_btn.disconnect(self.psh)
         self.psh = self.pause_resume_btn.connect("clicked", self.signals.resume, self.CM)
-        GLib.idle_add(self.update_set_ip_flag)
+        self.update_ip_flag_async()
         
     def swap_pause_btn_signal_resume_to_pause(self):
         self.pause_resume_btn.set_property("icon-name", "media-playback-pause-symbolic")
@@ -414,7 +416,8 @@ class MainWindow(Base, Gtk.Builder):
             return
 
         if result:
-            GLib.idle_add(self.update_set_ip_flag)
+            #GLib.idle_add(self.update_set_ip_flag)
+            self.update_ip_flag_async()
             self.connect_btn.set_label(gettext.gettext("Disconnect"))
             self.connect_btn.get_style_context().add_class("destructive-action")
             p_ctx = self.progress_bar.get_style_context()
@@ -434,7 +437,7 @@ class MainWindow(Base, Gtk.Builder):
                 self.pause_resume_btn.set_visible(True)
 
         else:
-            GLib.idle_add(self.update_set_ip_flag)
+            self.update_ip_flag_async()
             self.connect_btn.set_label(gettext.gettext("Connect"))
             self.connect_btn.get_style_context().remove_class("destructive-action")
             p_ctx = self.progress_bar.get_style_context()
@@ -448,8 +451,13 @@ class MainWindow(Base, Gtk.Builder):
 
     def show(self):
         self.setup()
+        self.update_ip_flag_async()
         self.window.show()
 
+    def update_ip_flag_async(self):
+        th = threading.Thread(target = self.update_set_ip_flag)
+        th.daemon = True
+        th.start()
 
 
 class Signals(Base):
