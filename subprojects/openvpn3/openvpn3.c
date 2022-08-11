@@ -542,7 +542,9 @@ int p_get_connection_status(){
 
     while(max_tries != 0){
         int status = get_connection_status();
+        char* version = get_version();
         if (status != -1){
+            g_message("OpenVPN3 version = %s", version);
             return status;
         }
         else{
