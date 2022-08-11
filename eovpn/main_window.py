@@ -452,6 +452,8 @@ class MainWindow(Base, Gtk.Builder):
     def show(self):
         self.setup()
         self.update_ip_flag_async()
+        if logger.getEffectiveLevel() == 10:
+            self.window.get_style_context().add_class("devel")
         self.window.show()
 
     def update_ip_flag_async(self):
