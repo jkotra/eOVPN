@@ -1,4 +1,5 @@
 import logging
+from time import sleep
 from .settings_window import SettingsWindow
 from .connection_manager import NetworkManager, OpenVPN3
 from gi.repository import Gtk, Gio, GLib, Gdk
@@ -365,6 +366,8 @@ class MainWindow(Base, Gtk.Builder):
 
     def update_set_ip_flag(self):
         self.spinner.start()
+        if os.environ.get("FLATPAK_ID") is not None:
+            sleep(1.25)
         self.lookup.update()
         self.retrieve(StorageItem.FLAG).set_pixbuf(self.get_country_pixbuf(self.lookup.country_code))
         self.ip_addr.set_label(self.lookup.ip)
@@ -434,7 +437,8 @@ class MainWindow(Base, Gtk.Builder):
             self.swap_pause_btn_signal_resume_to_pause()
 
             if self.CM.get_name().lower() == "openvpn3":
-                self.pause_resume_btn.set_visible(True)
+                if self.CM.ovpn3.config_path != None:
+                    self.pause_resume_btn.set_visible(True)
 
         else:
             self.update_ip_flag_async()
