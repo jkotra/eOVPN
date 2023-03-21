@@ -66,6 +66,13 @@ class SettingsWindow(Base, Gtk.Builder):
         self.header.pack_start(self.reset_btn)
 
         self.spinner = Gtk.Spinner()
+
+        self.tick_mark = Gtk.Image()
+        self.tick_mark.set_from_icon_name("object-select-symbolic")
+        self.tick_mark.hide()
+        self.store("settings_tick", self.tick_mark)
+        
+        self.header.pack_end(self.tick_mark)
         self.header.pack_end(self.spinner)
         
         self.stack = Gtk.Stack.new()

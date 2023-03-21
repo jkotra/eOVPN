@@ -238,7 +238,7 @@ class Base:
         else:
             os.makedirs(self.EOVPN_OVPN_CONFIG_DIR)
 
-    def load_only(self):
+    def load_only(self) -> int | None:
 
         def widget_factory(item):
             row = Gtk.ListBoxRow.new()
@@ -267,6 +267,7 @@ class Base:
             if not file.endswith("ovpn"):
                 continue
             liststore.append(ConfigItem(file))
+        return len(configs)
 
     def remove_only(self, remove_path=False):
         if remove_path:
@@ -282,10 +283,22 @@ class Base:
         if self.get_setting(self.SETTING.REMOTE) is None:
             logger.error("remote is empty!")
             return
+        
+        def fade_tick(tick):
+            if tick.get_opacity() == 0:
+                tick.hide()
+                return False
+            tick.set_opacity(tick.get_opacity() - 0.05)
+            return True
 
         def glib_func():
             self.remove_only()
-            self.load_only()
+            n_added = self.load_only()
+            if n_added is not None:
+                tick = self.retrieve("settings_tick")
+                tick.show()
+                GLib.timeout_add(15, fade_tick, tick)
+                print("timeout set!")
             if spinner is not None:
                 spinner.stop()    
             return False
