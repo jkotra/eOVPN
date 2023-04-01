@@ -298,7 +298,6 @@ class Base:
                 tick = self.retrieve("settings_tick")
                 tick.show()
                 GLib.timeout_add(15, fade_tick, tick)
-                print("timeout set!")
             if spinner is not None:
                 spinner.stop()    
             return False
