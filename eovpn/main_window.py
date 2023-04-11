@@ -69,14 +69,22 @@ class MainWindow(Base, Gtk.Builder):
 
         self.lookup = Lookup()
 
-    def get_selected_config(self):
+    def get_selected_config(self) -> str:
         try:
-            row = self.list_box.get_selected_row().get_child().get_label()
-            return row
+            row = self.list_box.get_selected_row().get_child()
+            self.selected_row = row
+            label = row.get_child_at(0, 0).get_label()
+            edit_action = row.get_child_at(1, 0)
+            edit_action.set_visible(True)
+            return label
         except AttributeError:
             return None
 
     def row_changed(self, listbox, row):
+        try:
+            self.selected_row.get_child_at(1, 0).set_visible(False)
+        except:
+            pass
         if (selected := self.get_selected_config()) is not None:
             if self.get_setting(self.SETTING.REQ_AUTH) is True:
                 if ovpn_is_auth_required(os.path.join(self.EOVPN_OVPN_CONFIG_DIR, selected)) and self.get_setting(self.SETTING.AUTH_USER) is None:

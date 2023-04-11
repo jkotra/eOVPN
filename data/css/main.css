@@ -86,3 +86,8 @@
     margin-left: 10px;
     margin-right: 10px;
 }
+
+.btn-no-dec {
+    border-style: none;
+    background-color: transparent;
+}
