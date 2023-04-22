@@ -4,6 +4,7 @@ import logging
 import threading
 import json
 import subprocess
+import gettext
 from pathlib import Path
 
 import gi
@@ -250,6 +251,8 @@ class Base:
             label = Gtk.Label.new(str(item))
             label.set_halign(Gtk.Align.START)
             edit_action = Gtk.Button.new_from_icon_name("document-edit-symbolic")
+            edit_action.set_has_frame(False)
+            edit_action.set_tooltip(gettext("Edit"))
             edit_action.set_margin_end(4)
             edit_action.set_halign(Gtk.Align.END)
             edit_action.set_hexpand(True)
