@@ -252,7 +252,7 @@ class Base:
             label.set_halign(Gtk.Align.START)
             edit_action = Gtk.Button.new_from_icon_name("document-edit-symbolic")
             edit_action.set_has_frame(False)
-            edit_action.set_tooltip(gettext("Edit"))
+            edit_action.set_tooltip_text(gettext.gettext("Edit"))
             edit_action.set_margin_end(4)
             edit_action.set_halign(Gtk.Align.END)
             edit_action.set_hexpand(True)
