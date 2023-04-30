@@ -3,6 +3,9 @@ import shutil
 import logging
 import threading
 import json
+import subprocess
+import gettext
+from pathlib import Path
 
 import gi
 gi.require_version('Notify', '0.7')
@@ -242,9 +245,25 @@ class Base:
 
         def widget_factory(item):
             row = Gtk.ListBoxRow.new()
+            
+            # TODO: use `Gtk.Grid` 
+            label_and_actions_box = Gtk.Grid()
             label = Gtk.Label.new(str(item))
             label.set_halign(Gtk.Align.START)
-            row.set_child(label)
+            edit_action = Gtk.Button.new_from_icon_name("document-edit-symbolic")
+            edit_action.set_has_frame(False)
+            edit_action.set_tooltip_text(gettext.gettext("Edit"))
+            edit_action.set_margin_end(4)
+            edit_action.set_halign(Gtk.Align.END)
+            edit_action.set_hexpand(True)
+            edit_action.set_visible(False)
+            edit_action.get_style_context().add_class("btn-no-dec")
+            f = Path(self.EOVPN_OVPN_CONFIG_DIR).joinpath(str(item))
+            edit_action.connect("clicked", lambda w: subprocess.run(["xdg-open", str(f)]) )
+
+            label_and_actions_box.attach(label, 0, 0, 1, 1)
+            label_and_actions_box.attach(edit_action, 1, 0, 1, 1)
+            row.set_child(label_and_actions_box)
             self.retrieve(StorageItem.LISTBOX_ROWS).append(row)
             return row
 
