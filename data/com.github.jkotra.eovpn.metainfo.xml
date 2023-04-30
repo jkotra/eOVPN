@@ -45,6 +45,14 @@
 
   <releases>
 
+    <release version="1.27" date="2023-04-30">
+      <description>
+        <ul>
+        <li>UX/UI: Show `Edit` button across every config.</li>
+        </ul>
+      </description>
+  </release>
+
     <release version="1.26.1" date="2022-09-02">
       <description>
         <ul>

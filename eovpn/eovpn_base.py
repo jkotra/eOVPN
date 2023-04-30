@@ -246,7 +246,6 @@ class Base:
         def widget_factory(item):
             row = Gtk.ListBoxRow.new()
             
-            # TODO: use `Gtk.Grid` 
             label_and_actions_box = Gtk.Grid()
             label = Gtk.Label.new(str(item))
             label.set_halign(Gtk.Align.START)

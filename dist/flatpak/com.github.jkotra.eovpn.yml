@@ -1,6 +1,6 @@
 app-id: com.github.jkotra.eovpn
 runtime : org.gnome.Platform
-runtime-version : '42'
+runtime-version : '44'
 sdk : org.gnome.Sdk
 command: eovpn
 
@@ -102,14 +102,10 @@ modules:
     config-opts:
       - -Dlibaudit=no
       - -Ddbus_conf_dir=/app/etc/dbus-1/system.d
-      - -Ddbus_ifaces_dir=/app/share/dbus-1/interfaces
-      - -Ddbus_sys_dir=/app/share/dbus-1/system.d
       - -Ddnsmasq=/usr/bin/true
       - -Ddocs=false
       - -Dintrospection=true
       - -Diptables=/usr/bin/true
-      - -Djson_validation=false
-      - -Dlibnm_glib=false
       - -Dlibpsl=false
       - -Dmodem_manager=false
       - -Dnmtui=false
@@ -196,6 +192,5 @@ modules:
   - name: eovpn
     buildsystem: meson
     sources:
-      - type: git
-        url: https://github.com/jkotra/eOVPN
-        tag: "1.26.1"
+      - type: dir
+        path: "../../"

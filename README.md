@@ -69,11 +69,6 @@ sudo ninja uninstall -C build
 flatpak-builder --user --install build-dir dist/flatpak/com.github.jkotra.eovpn.yml --force-clean
 ```
 
-to build from local directory, use:
-```
-flatpak-builder --user --install build-dir dist/flatpak/com.github.jkotra.eovpn_local_build.yml --force-clean
-```
-
 to change python dependencies, refer to [flatpak documentation](https://docs.flatpak.org/en/latest/python.html#building-multiple-python-dependencies).
 
 
