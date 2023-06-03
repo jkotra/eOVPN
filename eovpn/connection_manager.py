@@ -1,12 +1,14 @@
 import logging
+from pathlib import Path
+import os
 
-from gi.repository import GLib, Secret
+from gi.repository import Secret, GLib
 
 from .eovpn_base import Base
-from .networkmanager_backend.bindings import NetworkManager as NMBindings
-from .networkmanager_backend.dbus import NMDbus
-from .openvpn3_backend.bindings import OpenVPN3 as OVPN3Bindings
-from .openvpn3_backend.dbus import OVPN3Dbus
+from .backend.networkmanager import _libeovpn_nm
+from .backend.networkmanager.dbus import NMDbus
+from .backend.openvpn3.bindings import OpenVPN3 as OVPN3Bindings
+from .backend.openvpn3.dbus import OVPN3Dbus
 
 
 logger = logging.getLogger(__name__)
@@ -42,10 +44,18 @@ class NetworkManager(ConnectionManager):
     def __init__(self):
         super().__init__("NetworkManager")
         self.uuid = None
-        self.nm_manager = NMBindings()
+        self.nm_manager = _libeovpn_nm.lib
+        self.ffi = _libeovpn_nm.ffi
+        self.debug = int(True)
         
         self.dbus = NMDbus()
         self.watch = False
+    
+    def to_string(self, data, decode: bool = False):
+        _str = _libeovpn_nm.ffi.string(data)
+        if (decode):
+            return _str.decode("utf-8")
+        return _str
 
     def start_watch(self, callback):
         if not self.watch:
@@ -53,11 +63,19 @@ class NetworkManager(ConnectionManager):
             self.dbus.watch(callback)
             self.watch = True
 
-    def connect(self, openvpn_config,):
+    def connect(self, openvpn_config):
 
         nm_username = self.get_setting(self.SETTING.AUTH_USER)
         nm_password = None
         nm_ca = self.get_setting(self.SETTING.CA)
+    
+        tmp_config = Path(GLib.get_tmp_dir()) / os.path.basename(openvpn_config)
+
+        with open(tmp_config, "w+") as f:
+            data = f"{open(openvpn_config).read()}\n"
+            if nm_ca is not None:
+                data += f"\n<ca>\n{open(nm_ca).read()}\n</ca>\n"
+            f.write(data)
 
         if nm_username is not None:
             try:
@@ -66,40 +84,47 @@ class NetworkManager(ConnectionManager):
             except Exception:
                 nm_password = self.get_setting(self.SETTING.AUTH_PASS)
 
-        uuid = self.nm_manager.add_connection(openvpn_config.encode('utf-8'),
+        uuid = self.nm_manager.add_connection(str(tmp_config).encode("utf-8"),
                                             (nm_username.encode(
                                                 'utf-8') if nm_username is not None else None),
                                             (nm_password.encode(
                                                 'utf-8') if nm_password is not None else None),
-                                            (nm_ca.encode('utf-8') if nm_ca is not None else None))
-        connection_result = self.nm_manager.activate_connection(uuid)
+                                            self.ffi.NULL,
+                                            1)
+        connection_result = self.nm_manager.activate_connection(self.to_string(uuid))
 
-        self.uuid = uuid
+        self.uuid = self.to_string(uuid)
         self.set_setting(self.SETTING.NM_ACTIVE_UUID,
-                             self.uuid.decode('utf-8'))
+                             self.uuid.decode("utf-8"))
 
     def disconnect(self):
         if self.uuid is None:
             while(self.nm_manager.get_active_vpn_connection_uuid() is not None):
                 self.nm_manager.disconnect(
-                    self.nm_manager.get_active_vpn_connection_uuid())
+                    self.to_string(self.nm_manager.get_active_vpn_connection_uuid()), self.debug)
             return
 
         is_uuid_found = self.nm_manager.is_vpn_activated(self.uuid)
 
-        if (is_uuid_found == True):
+        if (is_uuid_found):
             logger.info("current vpn UUID ({}).".format(self.uuid))
-            self.nm_manager.disconnect(self.uuid)
-            self.nm_manager.delete_connection(self.uuid)
+            self.nm_manager.disconnect(self.uuid, self.debug)
+            self.nm_manager.delete_connection(self.uuid, self.debug)
             self.uuid = None
             self.set_setting(self.SETTING.NM_ACTIVE_UUID, None)
 
     def status(self) -> bool:
-        return self.nm_manager.get_connection_status()
+        return self.nm_manager.is_vpn_running()
+    
+    def delete_all_connections(self):
+        self.nm_manager.delete_all_vpn_connections()
 
     def version(self) -> str:
         version = self.nm_manager.get_version()
-        return version
+        return self.to_string(version, True)
+    
+    def is_openvpn_plugin_available(self) -> bool:
+        return bool(self.nm_manager.is_openvpn_plugin_available())
 
 
 class OpenVPN3(ConnectionManager):

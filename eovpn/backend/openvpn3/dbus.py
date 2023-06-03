@@ -1,9 +1,14 @@
 from gi.repository import Gio, GLib, Secret
 import logging
 from eovpn.eovpn_base import Base
-from openvpn3 import constants as OVPN3Constants
 
 logger = logging.getLogger(__name__)
+
+try:
+    from openvpn3 import constants as OVPN3Constants
+except:
+    logger.warning("cannot import openvpn3")
+
 
 class OVPN3Dbus(Base):
 

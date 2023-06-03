@@ -1,6 +1,6 @@
 project('eovpn',
-  version: '1.27',
-  meson_version: '>= 0.54.0'
+  version: '1.28',
+  meson_version: '>= 0.63.0'
 )
 
 i18n = import('i18n')

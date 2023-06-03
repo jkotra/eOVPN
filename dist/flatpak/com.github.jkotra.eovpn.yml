@@ -189,6 +189,8 @@ modules:
       - type: patch
         path: '0001-openvpn3-flatpak.patch'
 
+  - python3-cffi.json
+
   - name: eovpn
     buildsystem: meson
     sources:

@@ -11,7 +11,7 @@ deps = [
 python = import('python')
 python_instllation = python.find_installation()
 python_dir = python_instllation.get_install_dir()
-lib_install_dir = python_dir / main_project / 'openvpn3_backend'
+lib_install_dir = python_dir / main_project / 'backend' / 'openvpn3'
 message(lib_install_dir)
 
 python_exe = find_program('python3', 'python')

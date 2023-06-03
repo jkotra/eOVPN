@@ -39,33 +39,10 @@ class MainWindow(Base, Gtk.Builder):
         ###########################################################
         # Initialize and setup Connection Manager (CM)
         ###########################################################
-        
         preferred = self.get_setting(self.SETTING.MANAGER)
-        if preferred == "openvpn3":
-            self.CM = OpenVPN3(self.on_connection_event, dco=True)
-            if self.CM.version() is None:
-                logger.error("openvpn3 version() fail! falling back to NM!")
-                self.set_setting(self.SETTING.MANAGER, "networkmanager")
-                self.CM = NetworkManager()
-        else:
-            self.CM = NetworkManager()        
-
-        self.CM.start_watch(self.on_connection_event)
-
-        self.critical_errors = []
-
-        if self.CM.get_name().lower() == "networkmanager":
-            nm_version, is_openvpn_available = self.CM.version()
-            logger.debug("%s | %s", nm_version, is_openvpn_available)
-            if nm_version is None:
-                self.critical_errors.append("Unable to Find NetworkManager.")
-            if is_openvpn_available is False and os.environ.get("FLATPAK_ID") is None:
-                self.critical_errors.append("Unable to Find OpenVPN plugin for NetworkManager")
-        else:
-            version = self.CM.version()
-            logger.debug("OpenVPN3 Version: %s", version)
-            if version is None:
-                self.critical_errors.append("Unable to find OpenVPN3.")
+        self.store("CM", {"name": preferred, "instance": NetworkManager() if preferred == "networkmanager" else OpenVPN3(self.on_connection_event, True)})
+        self.store("on_connection_event", self.on_connection_event)
+        self.CM = self.retrieve("CM")["instance"]
 
         self.lookup = Lookup()
 
@@ -208,8 +185,8 @@ class MainWindow(Base, Gtk.Builder):
 
         self.inner_right.append(h_box)
 
-        self.csh = None # Connect signal handler
-        self.psh = None # Pause Signal Handler
+        #TODO: define it better!
+        self.psh = None
 
         self.connect_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 6)
         self.connect_box.set_valign(Gtk.Align.END)
@@ -226,7 +203,10 @@ class MainWindow(Base, Gtk.Builder):
         self.pause_resume_btn.set_vexpand(True)
         self.pause_resume_btn.set_visible(False)
 
-        self.csh = self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config, self.CM, self.pause_resume_btn)
+        def update_manager(updated):
+            self.CM = updated
+
+        self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config, self.retrieve("CM")["instance"], update_manager)
 
         #Connects to pause()
         self.swap_pause_btn_signal_resume_to_pause()
@@ -314,7 +294,7 @@ class MainWindow(Base, Gtk.Builder):
         self.app.set_accels_for_action("app.about", ["<Primary>A"])
         
         action = Gio.SimpleAction.new("connect", None)
-        self.csh = action.connect('activate', self.signals.connect_via_ks, self.get_selected_config, self.CM, self.pause_resume_btn)
+        action.connect('activate', self.signals.connect_via_ks, self.get_selected_config, self.CM, self.pause_resume_btn)
         self.app.add_action(action)
         self.app.set_accels_for_action("app.connect", ["<Primary>C", "<Primary>D"])
 
@@ -367,10 +347,6 @@ class MainWindow(Base, Gtk.Builder):
         self.window.set_child(self.box)
 
         cpy_btn.connect("clicked", lambda x: Gdk.Display.get_default().get_clipboard().set(self.ip_addr.get_label()))
-
-        logger.info(str(self.critical_errors))
-        if len(self.critical_errors) > 0:
-            GLib.idle_add(self.generic_critical_error_dialog, self.critical_errors)
 
     def update_set_ip_flag(self):
         self.spinner.start()
@@ -479,16 +455,17 @@ class Signals(Base):
     def __init__(self):
         super().__init__()
 
-    def connect(self, button, config, manager, pause_resume_btn):
+    def connect(self, button, config, manager, update_me):
+        manager.start_watch(self.retrieve("on_connection_event"))
         if manager.status():
             self.disconnect(None, manager)
             return
         config = config()
         manager.connect(os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS", config))
+        update_me(manager) #update self.CM
 
-    def connect_via_ks(self, action, _args, config, manager, pause_resume_btn):
-        #print("action received:", action, _args, config, manager, callback)
-        self.connect(None, config, manager, pause_resume_btn)
+    def connect_via_ks(self, action, _args, config, manager):
+        self.connect(None, config, manager)
 
     def disconnect(self, button, manager):
         manager.disconnect()

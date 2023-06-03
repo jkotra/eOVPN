@@ -3,15 +3,12 @@ import logging
 import os
 import shutil
 import gettext
-import gettext
-from sqlite3 import connect
 
 from gi.repository import Gtk, Gio, GLib, Secret
 
 from .eovpn_base import Base, StorageItem
 
-from .networkmanager_backend.bindings import NetworkManager
-from .openvpn3_backend.bindings import OpenVPN3
+from .connection_manager import NetworkManager, OpenVPN3
 
 logger = logging.getLogger(__name__)
 
@@ -284,12 +281,12 @@ class SettingsWindow(Base, Gtk.Builder):
         box.append(label)
 
         self.combobox = Gtk.ComboBoxText()
-        version, ovpn_supported = NetworkManager().get_version()
-        if (version != None and ovpn_supported):
+        version = NetworkManager().version()
+        if (version):
             self.combobox.append("networkmanager", gettext.gettext("{} (OpenVPN 2)".format(version)))
         
-        ovpn3_version = OpenVPN3().get_version()
-        if ovpn3_version is not None:
+        ovpn3_version = OpenVPN3(None).version()
+        if (ovpn3_version):
             self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3 {}".format(ovpn3_version)))
         
         if (manager := self.get_setting(self.SETTING.MANAGER)) is not None:
@@ -326,7 +323,8 @@ class SettingsWindow(Base, Gtk.Builder):
         ca_file_chooser_dialog.connect("response", self.signals.process_ca, self.ca_chooser_btn)
         self.ask_auth_switch.connect("state-set", self.signals.req_auth ,self.user_pass_ca_box)
         self.remove_all_vpn_btn.connect("clicked", lambda _: NetworkManager().delete_all_vpn_connections())
-        self.combobox.connect("changed", lambda box: self.set_setting(self.SETTING.MANAGER, box.get_property("active_id")) )
+        
+        #self.combobox.connect("changed", lambda box: self.set_setting(self.SETTING.MANAGER, box.get_property("active_id")) )
 
 
     def show(self):
@@ -434,6 +432,10 @@ class Signals(Base):
         GLib.idle_add(self.remove_only, True)
         self.retrieve(StorageItem.FLAG).hide()
 
+    def on_backend_selected(self, box):
+        id = box.get_property("active_id")
+        self.set_setting(self.SETTING.MANAGER, id)
+        self.store("CM", {"name": id, "instance": NetworkManager() if id == "networkmanager" else OpenVPN3(self.retrieve("on_connection_event"), True)})
 
     def on_validate_btn_click(self, button, entry, ca_button, spinner):
         self.validate_and_load(spinner, ca_button)

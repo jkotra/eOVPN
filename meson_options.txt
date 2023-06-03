@@ -1,1 +1,1 @@
-option('openvpn3', type : 'boolean', value : true)
+option('openvpn3', type : 'boolean', value : false)

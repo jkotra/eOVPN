@@ -1,7 +1,6 @@
 import gi
 gi.require_version("NM", "1.0")
 from gi.repository import GLib, Gio, NM
-import os
 import logging
 
 logger = logging.getLogger(__name__)
