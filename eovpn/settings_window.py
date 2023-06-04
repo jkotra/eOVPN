@@ -281,7 +281,7 @@ class SettingsWindow(Base, Gtk.Builder):
         box.append(label)
 
         self.combobox = Gtk.ComboBoxText()
-        version = NetworkManager().version()
+        version = NetworkManager(None).version()
         if (version):
             self.combobox.append("networkmanager", gettext.gettext("{} (OpenVPN 2)".format(version)))
         
@@ -324,7 +324,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.ask_auth_switch.connect("state-set", self.signals.req_auth ,self.user_pass_ca_box)
         self.remove_all_vpn_btn.connect("clicked", lambda _: NetworkManager().delete_all_vpn_connections())
         
-        #self.combobox.connect("changed", lambda box: self.set_setting(self.SETTING.MANAGER, box.get_property("active_id")) )
+        self.combobox.connect("changed", self.signals.on_backend_selected)
 
 
     def show(self):
@@ -435,7 +435,8 @@ class Signals(Base):
     def on_backend_selected(self, box):
         id = box.get_property("active_id")
         self.set_setting(self.SETTING.MANAGER, id)
-        self.store("CM", {"name": id, "instance": NetworkManager() if id == "networkmanager" else OpenVPN3(self.retrieve("on_connection_event"), True)})
+        callback = self.retrieve("on_connection_event")
+        self.store("CM", {"name": id, "instance": NetworkManager(callback) if id == "networkmanager" else OpenVPN3(callback, True)})
 
     def on_validate_btn_click(self, button, entry, ca_button, spinner):
         self.validate_and_load(spinner, ca_button)

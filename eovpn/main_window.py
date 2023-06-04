@@ -40,7 +40,10 @@ class MainWindow(Base, Gtk.Builder):
         # Initialize and setup Connection Manager (CM)
         ###########################################################
         preferred = self.get_setting(self.SETTING.MANAGER)
-        self.store("CM", {"name": preferred, "instance": NetworkManager() if preferred == "networkmanager" else OpenVPN3(self.on_connection_event, True)})
+        self.store("CM", {"name": preferred,
+                        "instance": NetworkManager(self.on_connection_event, True)
+                        if preferred == "networkmanager"
+                        else OpenVPN3(self.on_connection_event, True)})
         self.store("on_connection_event", self.on_connection_event)
         self.CM = self.retrieve("CM")["instance"]
 
@@ -203,10 +206,7 @@ class MainWindow(Base, Gtk.Builder):
         self.pause_resume_btn.set_vexpand(True)
         self.pause_resume_btn.set_visible(False)
 
-        def update_manager(updated):
-            self.CM = updated
-
-        self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config, self.retrieve("CM")["instance"], update_manager)
+        self.connect_btn.connect("clicked", self.signals.connect, self.get_selected_config)
 
         #Connects to pause()
         self.swap_pause_btn_signal_resume_to_pause()
@@ -294,7 +294,7 @@ class MainWindow(Base, Gtk.Builder):
         self.app.set_accels_for_action("app.about", ["<Primary>A"])
         
         action = Gio.SimpleAction.new("connect", None)
-        action.connect('activate', self.signals.connect_via_ks, self.get_selected_config, self.CM, self.pause_resume_btn)
+        action.connect('activate', self.signals.connect_via_ks, self.get_selected_config)
         self.app.add_action(action)
         self.app.set_accels_for_action("app.connect", ["<Primary>C", "<Primary>D"])
 
@@ -416,12 +416,12 @@ class MainWindow(Base, Gtk.Builder):
             # save last cursor
             adj = self.scrolled_window.get_vadjustment()
             self.set_setting(self.SETTING.LISTBOX_V_ADJUST, float(adj.get_value()))
-            self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.retrieve(StorageItem.CONFIGS_LIST).index(self.get_selected_config()))
+            self.set_setting(self.SETTING.LAST_CONNECTED_CURSOR, self.retrieve(StorageItem.CONFIGS_LIST).index(self.get_selected_config()) - 1)
             
             self.swap_pause_btn_signal_resume_to_pause()
 
             if self.CM.get_name().lower() == "openvpn3":
-                if self.CM.ovpn3.config_path != None:
+                if self.CM.config_path != None:
                     self.pause_resume_btn.set_visible(True)
 
         else:
@@ -455,17 +455,18 @@ class Signals(Base):
     def __init__(self):
         super().__init__()
 
-    def connect(self, button, config, manager, update_me):
-        manager.start_watch(self.retrieve("on_connection_event"))
+    def connect(self, button, config):
+        manager = self.retrieve("CM")["instance"]
+        manager.start_watch()
         if manager.status():
             self.disconnect(None, manager)
             return
         config = config()
         manager.connect(os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS", config))
-        update_me(manager) #update self.CM
 
-    def connect_via_ks(self, action, _args, config, manager):
-        self.connect(None, config, manager)
+    def connect_via_ks(self, action, _args, config):
+        #FIXME: shortcuts
+        self.connect(None, config)
 
     def disconnect(self, button, manager):
         manager.disconnect()

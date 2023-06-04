@@ -1,6 +1,6 @@
 project('eovpn',
   version: '1.28',
-  meson_version: '>= 0.63.0'
+  meson_version: '>= 0.60.0'
 )
 
 i18n = import('i18n')
@@ -23,12 +23,6 @@ message(python_dir)
 
 locale_dir = join_paths(prefix, get_option('localedir'))
 icondir = join_paths(datadir, 'icons/hicolor')
-
-# Dependencies
-dependency('gobject-introspection-1.0', version: '>= 1.35.0')
-dependency('gtk+-3.0', version: '>= 3.22')
-dependency('glib-2.0')
-
 
 conf = configuration_data()
 conf.set('PACKAGE_URL', 'https://github.com/jkotra/eovpn')

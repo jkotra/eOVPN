@@ -2,6 +2,7 @@ from gi.repository import Gio, GLib, Secret
 import logging
 from eovpn.eovpn_base import Base
 
+
 logger = logging.getLogger(__name__)
 
 try:
@@ -32,7 +33,6 @@ class OVPN3Dbus(Base):
     def set_binding(self, binding):
         self.module = binding
 
-
     def watch(self, callback):
         self.conn = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
 
@@ -47,9 +47,9 @@ class OVPN3Dbus(Base):
                            callback)
     
     def get_attention(self):
-
+        print(self.module.get_session_path())
         typegroup = self.conn.call_sync("net.openvpn.v3.sessions",
-                                    self.module.session_path.decode("utf-8"),
+                                    self.module.get_session_path().decode("utf-8"),
                                     "net.openvpn.v3.sessions",
                                     "UserInputQueueGetTypeGroup",
                                     None,
@@ -70,7 +70,7 @@ class OVPN3Dbus(Base):
                 inputs = []
 
                 req_inputs = self.conn.call_sync("net.openvpn.v3.sessions",
-                                                self.module.session_path.decode("utf-8"),
+                                                self.module.get_session_path().decode("utf-8"),
                                                 "net.openvpn.v3.sessions",
                                                 "UserInputQueueCheck",
                                                 parmas,
@@ -108,12 +108,14 @@ class OVPN3Dbus(Base):
             for (t, g, i) in attention:
                 logger.info("%s %s %i", t, g, i)
                 if i == 0:
-                    self.module.send_auth((t.value, g.value, i), self.get_setting(self.SETTING.AUTH_USER))
+                    self.module.ovpn3.send_auth(self.module.get_session_path(), t.value, g.value, i, self.get_setting(self.SETTING.AUTH_USER).encode("utf-8"))
                 elif i == 1:
-                    self.module.send_auth((t.value, g.value, i), self.get_auth_password())
+                    self.module.ovpn3.send_auth(self.module.get_session_path(), t.value, g.value, i, self.get_auth_password().encode("utf-8"))
                 else:
                     logger.debug("unknown input required!")
-            self.module.connect()
+            self.module.ovpn3.set_dco(self.module.get_session_path(), 1)
+            self.module.ovpn3.connect_vpn()
+            self.module.status()
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_AUTH_FAILED):
             logger.error(reason)
             update_callback(False, reason)
@@ -130,6 +132,6 @@ class OVPN3Dbus(Base):
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CFG_OK):
             if self.get_setting(self.SETTING.AUTH_USER) is None and self.once:
                 logger.warning("username is None. Proceeding with connection without auth.")
-                self.module.init_unique_session()
-                self.module.connect()
+                self.module.ovpn3.init_unique_session()
+                self.module.ovpn3.connect_vpn()
                 self.once = False

@@ -7,11 +7,15 @@ from gi.repository import Secret, GLib
 from .eovpn_base import Base
 from .backend.networkmanager import _libeovpn_nm
 from .backend.networkmanager.dbus import NMDbus
-from .backend.openvpn3.bindings import OpenVPN3 as OVPN3Bindings
-from .backend.openvpn3.dbus import OVPN3Dbus
-
 
 logger = logging.getLogger(__name__)
+
+try:
+    from .backend.openvpn3 import _libopenvpn3
+except:
+    logger.error("cannot import openvpn3")
+from .backend.openvpn3.dbus import OVPN3Dbus
+
 
 
 class ConnectionManager(Base):
@@ -41,26 +45,31 @@ class ConnectionManager(Base):
 
 class NetworkManager(ConnectionManager):
 
-    def __init__(self):
+    def __init__(self, callback, DNS=False):
         super().__init__("NetworkManager")
         self.uuid = None
         self.nm_manager = _libeovpn_nm.lib
         self.ffi = _libeovpn_nm.ffi
         self.debug = int(True)
+        self.callback = callback
         
         self.dbus = NMDbus()
         self.watch = False
+
+        if not DNS: #DO NOT SUBSCRIBE / WATCH
+            self.start_watch()
+    
     
     def to_string(self, data, decode: bool = False):
-        _str = _libeovpn_nm.ffi.string(data)
+        _str = self.ffi.string(data)
         if (decode):
             return _str.decode("utf-8")
         return _str
 
-    def start_watch(self, callback):
+    def start_watch(self):
         if not self.watch:
             # only subscribe once
-            self.dbus.watch(callback)
+            self.dbus.watch(self.callback)
             self.watch = True
 
     def connect(self, openvpn_config):
@@ -129,44 +138,82 @@ class NetworkManager(ConnectionManager):
 
 class OpenVPN3(ConnectionManager):
 
-    def __init__(self, update_callback, dco=False):
+    def __init__(self, update_callback, DNS=False):
         super().__init__("OpenVPN3")
-        self.ovpn3 = OVPN3Bindings()
+
+        self.ovpn3 = _libopenvpn3.lib
+        self.ffi = _libeovpn_nm.ffi
+
         self.callback = update_callback
+        self.check_status_timeout = 30
+        self.config_path = None
         self.session_path = None
-        self.callback = None
         self.watch = False
+
         self.dbus = OVPN3Dbus()
-        self.dbus.set_binding(self.ovpn3)
+        if not DNS:
+            self.start_watch()
+
         
-    def start_watch(self, callback):
-        self.callback = callback
+    def start_watch(self):
         if not self.watch:
-            # only subscribe once
-            self.dbus.watch(callback)
+            self.dbus.set_binding(self)
+            self.dbus.watch(self.callback)
             self.watch = True
 
+    def get_session_path(self):
+        return self.session_path
+    
+    def check_status(self):
+        status = self.status()
+        self.check_status_timeout -= 1
+        if status or (self.check_status == 0):
+            return False
+        return True
+    
+    def to_string(self, data, decode: bool = False):
+        _str = self.ffi.string(data)
+        if (decode):
+            return _str.decode("utf-8")
+        return _str
+
     def connect(self, openvpn_config):
-        if (self.ovpn3.import_config(openvpn_config, self.get_setting(self.SETTING.CA)) != False):
-            self.session_path = self.ovpn3.prepare_tunnel(self.callback)
+        config_content = open(openvpn_config, "r").read()
+        ca = self.get_setting(self.SETTING.CA)
+        if ca is not None:
+            ca_content = open(ca, "r").read()
+            config_content += "\n<ca>\n{}\n</ca>\n".format(ca_content)
+        config_content = config_content.encode('utf-8')
+
+        config_path = self.ovpn3.import_config(os.path.basename(openvpn_config).encode('utf-8'), config_content)
+        logger.info("config path: %s", self.to_string(config_path))
+        self.config_path = self.to_string(config_path)
+        self.status()
+
+        session_path = self.ovpn3.prepare_tunnel(self.config_path)
+        logger.info("session path: %s", self.to_string(session_path))
+        self.session_path = self.to_string(session_path)
+        GLib.timeout_add_seconds(1, self.check_status)
 
     def disconnect(self):
         if self.session_path is not None:
             logger.info("Disconnecting from " + self.session_path.decode('utf-8'))
-            self.ovpn3.disconnect()
+            self.ovpn3.disconnect_vpn()
         else:
             self.ovpn3.disconnect_all_sessions()
         self.session_path = None       
         self.callback(False)
 
     def pause(self):
-        self.ovpn3.pause("User Action in eOVPN".encode("utf-8"))
+        self.ovpn3.pause_vpn("User Action in eOVPN".encode("utf-8"))
+        self.status()
 
     def resume(self):
-        self.ovpn3.resume()    
+        self.ovpn3.resume_vpn()
+        GLib.timeout_add_seconds(1, self.check_status)    
 
     def version(self) -> str:
-        return self.ovpn3.get_version()
+        return self.to_string(self.ovpn3.p_get_version(), True)
 
     def status(self) -> bool:
-        return self.ovpn3.get_connection_status()
+        return self.ovpn3.p_get_connection_status()
