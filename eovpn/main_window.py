@@ -41,9 +41,9 @@ class MainWindow(Base, Gtk.Builder):
         ###########################################################
         preferred = self.get_setting(self.SETTING.MANAGER)
         self.store("CM", {"name": preferred,
-                        "instance": NetworkManager(self.on_connection_event, True)
+                        "instance": NetworkManager(self.on_connection_event, False)
                         if preferred == "networkmanager"
-                        else OpenVPN3(self.on_connection_event, True)})
+                        else OpenVPN3(self.on_connection_event, False)})
         self.store("on_connection_event", self.on_connection_event)
         self.CM = self.retrieve("CM")["instance"]
 
@@ -403,12 +403,12 @@ class MainWindow(Base, Gtk.Builder):
             return
 
         if result:
-            #GLib.idle_add(self.update_set_ip_flag)
             self.update_ip_flag_async()
             self.connect_btn.set_label(gettext.gettext("Disconnect"))
             self.connect_btn.get_style_context().add_class("destructive-action")
             p_ctx = self.progress_bar.get_style_context()
             p_ctx.remove_class("progress-yellow")
+            p_ctx.remove_class("progress-orange")
             p_ctx.add_class("progress-full-green")
             self.progress_bar.set_fraction(1.0)
             self.set_setting(self.SETTING.LAST_CONNECTED, self.get_selected_config())

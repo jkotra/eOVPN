@@ -45,7 +45,7 @@ class ConnectionManager(Base):
 
 class NetworkManager(ConnectionManager):
 
-    def __init__(self, callback, DNS=False):
+    def __init__(self, callback, subscribe=True):
         super().__init__("NetworkManager")
         self.uuid = None
         self.nm_manager = _libeovpn_nm.lib
@@ -56,7 +56,7 @@ class NetworkManager(ConnectionManager):
         self.dbus = NMDbus()
         self.watch = False
 
-        if not DNS: #DO NOT SUBSCRIBE / WATCH
+        if subscribe: #DO NOT SUBSCRIBE / WATCH
             self.start_watch()
     
     
@@ -121,6 +121,7 @@ class NetworkManager(ConnectionManager):
             self.nm_manager.delete_connection(self.uuid, self.debug)
             self.uuid = None
             self.set_setting(self.SETTING.NM_ACTIVE_UUID, None)
+        self.dbus.remove_watch()
 
     def status(self) -> bool:
         return self.nm_manager.is_vpn_running()
@@ -138,7 +139,7 @@ class NetworkManager(ConnectionManager):
 
 class OpenVPN3(ConnectionManager):
 
-    def __init__(self, update_callback, DNS=False):
+    def __init__(self, update_callback, subscribe=True):
         super().__init__("OpenVPN3")
 
         self.ovpn3 = _libopenvpn3.lib
@@ -151,7 +152,7 @@ class OpenVPN3(ConnectionManager):
         self.watch = False
 
         self.dbus = OVPN3Dbus()
-        if not DNS:
+        if subscribe:
             self.start_watch()
 
         

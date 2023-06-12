@@ -281,11 +281,11 @@ class SettingsWindow(Base, Gtk.Builder):
         box.append(label)
 
         self.combobox = Gtk.ComboBoxText()
-        version = NetworkManager(None).version()
+        version = NetworkManager(None, False).version()
         if (version):
             self.combobox.append("networkmanager", gettext.gettext("{} (OpenVPN 2)".format(version)))
         
-        ovpn3_version = OpenVPN3(None).version()
+        ovpn3_version = OpenVPN3(None, False).version()
         if (ovpn3_version):
             self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3 {}".format(ovpn3_version)))
         
@@ -293,13 +293,6 @@ class SettingsWindow(Base, Gtk.Builder):
             self.combobox.set_property("active-id", manager)
         self.combobox.get_style_context().add_class("mlr-6")
         box.append(self.combobox)
-        
-        note = Gtk.Label.new(gettext.gettext(gettext.gettext("* Changes will take effect ONLY after restart.")))
-        note.get_style_context().add_class("dim-label")
-        note.set_valign(Gtk.Align.END)
-        note.set_vexpand(True)
-        note.get_style_context().add_class("mb-4")
-        box.append(note)
 
         self.backend_box.append(box)
 
@@ -436,7 +429,7 @@ class Signals(Base):
         id = box.get_property("active_id")
         self.set_setting(self.SETTING.MANAGER, id)
         callback = self.retrieve("on_connection_event")
-        self.store("CM", {"name": id, "instance": NetworkManager(callback) if id == "networkmanager" else OpenVPN3(callback, True)})
+        self.store("CM", {"name": id, "instance": NetworkManager(callback, subscribe=False) if id == "networkmanager" else OpenVPN3(callback, subscribe=False)})
 
     def on_validate_btn_click(self, button, entry, ca_button, spinner):
         self.validate_and_load(spinner, ca_button)

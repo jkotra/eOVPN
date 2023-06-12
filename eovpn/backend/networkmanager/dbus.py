@@ -24,6 +24,7 @@ class NMDbus:
 
     def __init__(self):
         self.conn = None
+        self.conn_id = None
 
     def watch(self, callback):
 
@@ -31,7 +32,7 @@ class NMDbus:
         logger.debug(self.conn)
 
         #(sender, interface_name, member, object_path, arg0, flags, callback, *user_data)
-        self.conn.signal_subscribe( "org.freedesktop.NetworkManager",
+        self.conn_id = self.conn.signal_subscribe( "org.freedesktop.NetworkManager",
                            "org.freedesktop.NetworkManager.VPN.Connection",
                            "VpnStateChanged",
                            None,
@@ -39,6 +40,9 @@ class NMDbus:
                            Gio.DBusSignalFlags.NONE,
                            self.sub_callback,
                            callback)
+    
+    def remove_watch(self):
+        self.conn.signal_unsubscribe(self.conn_id)
     
     def sub_callback(self, connection, sender_name, object_path, interface_name, signal_name, parameters, update_callback):
         logger.debug("{} {}".format(signal_name, parameters))
