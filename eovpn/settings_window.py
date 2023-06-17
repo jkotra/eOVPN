@@ -318,7 +318,7 @@ class SettingsWindow(Base, Gtk.Builder):
         self.password_entry.connect("changed", self.signals.process_password)
         ca_file_chooser_dialog.connect("response", self.signals.process_ca, self.ca_chooser_btn)
         self.ask_auth_switch.connect("state-set", self.signals.req_auth ,self.user_pass_ca_box)
-        self.remove_all_vpn_btn.connect("clicked", lambda _: NetworkManager().delete_all_vpn_connections())
+        self.remove_all_vpn_btn.connect("clicked", lambda _: NetworkManager(None).delete_all_connections())
         
         self.combobox.connect("changed", self.signals.on_backend_selected)
 
