@@ -45,7 +45,7 @@ class MainWindow(Base, Gtk.Builder):
                         if preferred == "networkmanager"
                         else OpenVPN3(self.on_connection_event, False)})
         self.store("on_connection_event", self.on_connection_event)
-        self.CM = self.retrieve("CM")["instance"]
+        self.CM = lambda: self.retrieve("CM")["instance"]
 
         self.lookup = Lookup()
 
@@ -221,7 +221,7 @@ class MainWindow(Base, Gtk.Builder):
         self.progress_bar = Gtk.ProgressBar.new()
         
         #Initial connection check on startup + Progress bar update + signal connects
-        if self.CM.status():
+        if self.CM().status():
             self.connect_btn.set_label(gettext.gettext("Disconnect"))
             self.connect_btn.get_style_context().add_class("destructive-action")
             self.progress_bar.get_style_context().add_class("progress-full-green")
@@ -362,14 +362,14 @@ class MainWindow(Base, Gtk.Builder):
         self.pause_resume_btn.set_property("icon-name", "media-playback-start-symbolic")
         if self.psh is not None:
             self.pause_resume_btn.disconnect(self.psh)
-        self.psh = self.pause_resume_btn.connect("clicked", self.signals.resume, self.CM)
+        self.psh = self.pause_resume_btn.connect("clicked", self.signals.resume, self.CM())
         self.update_ip_flag_async()
         
     def swap_pause_btn_signal_resume_to_pause(self):
         self.pause_resume_btn.set_property("icon-name", "media-playback-pause-symbolic")
         if self.psh is not None:
             self.pause_resume_btn.disconnect(self.psh)
-        self.psh = self.pause_resume_btn.connect("clicked", self.signals.pause, self.CM)
+        self.psh = self.pause_resume_btn.connect("clicked", self.signals.pause, self.CM())
 
     
     def on_connection_event(self, result, error=None):
@@ -420,8 +420,8 @@ class MainWindow(Base, Gtk.Builder):
             
             self.swap_pause_btn_signal_resume_to_pause()
 
-            if self.CM.get_name().lower() == "openvpn3":
-                if self.CM.config_path != None:
+            if self.CM().get_name().lower() == "openvpn3":
+                if self.CM().config_path != None:
                     self.pause_resume_btn.set_visible(True)
 
         else:
