@@ -31,6 +31,8 @@
 
 either use `--debug [LEVEL]` as a command-line argument or set `EOVPN_DEBUG=[LEVEL]` as an environment variable.
 
+for C libraries, use `G_MESSAGES_DEBUG=eovpn` as environment variable.
+
 Refer: [Python Logging Levels](https://docs.python.org/3/library/logging.html#levels)
 
 ---

@@ -1,3 +1,5 @@
+#define G_LOG_DOMAIN "eovpn"
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <gio/gio.h>
@@ -54,7 +56,7 @@ _get_all_sessions ()
     GVariant *active_sessions =
         g_variant_get_child_value (available_sessions, 0);
     gsize n_sessions = g_variant_n_children (active_sessions);
-    g_message ("Active Sessions = %ld", n_sessions);
+    g_debug ("Active Sessions = %ld", n_sessions);
     GVariantIter *iter = g_variant_iter_new (active_sessions);
     return iter;
 }
@@ -117,7 +119,7 @@ get_connection_status ()
 
             g_variant_get (status, "(v)", &v);
             g_variant_get (v, "(uus)", &major, &minor, &status_str);
-            g_message ("%u %u %s", major, minor, status_str);
+            g_debug ("%u %u %s", major, minor, status_str);
 
             if ((major == MAJOR_CONNECTION) && (minor == MINOR_CONN_CONNECTED))
                 {
@@ -181,7 +183,7 @@ disconnect_all_sessions ()
 
             g_variant_get (status, "(v)", &v);
             g_variant_get (v, "(uus)", &major, &minor, &status_str);
-            g_message ("status: %u %u %s", major, minor, status_str);
+            g_debug ("status: %u %u %s", major, minor, status_str);
 
             if ((major == MAJOR_CONNECTION) &&
                 (minor == MINOR_CONN_CONNECTED || MINOR_CONN_CONNECTING ||
@@ -206,7 +208,7 @@ disconnect_all_sessions ()
                                             -1,
                                             NULL,
                                             NULL);
-                    g_message ("%s disconnected!", p_copy);
+                    g_debug ("%s disconnected!", p_copy);
                 }
         }
 
@@ -667,7 +669,7 @@ p_get_connection_status ()
             char *version = get_version ();
             if (status != -1)
                 {
-                    g_message ("OpenVPN3 version = %s", version);
+                    g_debug ("OpenVPN3 version = %s", version);
                     return status;
                 }
             else

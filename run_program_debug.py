@@ -16,6 +16,7 @@ APP_NAME = "com.github.jkotra.eovpn"
 sys.path.insert(1, os.getcwd())
 sys.path.insert(1, os.getcwd() + "/eovpn/")
 os.environ["GSETTINGS_SCHEMA_DIR"] = "data/"
+os.environ["G_MESSAGES_DEBUG"] = "eovpn"
 
 def reset():
     subprocess.run(["rm", "-rf", "build"])

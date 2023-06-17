@@ -25,7 +25,7 @@ add_cb (NMClient *client, GAsyncResult *result, GMainLoop *loop)
         }
     else
         {
-            g_message ("[NM] Connection Added!");
+            g_debug ("[NM] Connection Added!");
         }
 
     g_main_loop_quit (loop);
@@ -126,7 +126,7 @@ activate_cb (NMClient *client, GAsyncResult *result, GMainLoop *loop)
         }
     else
         {
-            g_message ("[NM] Connection Connected!");
+            g_debug ("[NM] Connection Connected!");
         }
 
     g_main_loop_quit (loop);
@@ -178,7 +178,7 @@ disconnect_cb (NMClient *client, GAsyncResult *result, GMainLoop *loop)
         }
     else
         {
-            g_message ("[NM] Connection Disconnected!");
+            g_debug ("[NM] Connection Disconnected!");
         }
     g_main_loop_quit (loop);
 }
@@ -229,7 +229,7 @@ delete_cb (NMRemoteConnection *conn, GAsyncResult *result, GMainLoop *loop)
         }
     else
         {
-            g_message ("[NM] Connection Deleted!");
+            g_debug ("[NM] Connection Deleted!");
         }
     g_main_loop_quit (loop);
 }

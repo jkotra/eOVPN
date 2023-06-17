@@ -195,6 +195,8 @@ class OpenVPN3(ConnectionManager):
             self.ovpn3.disconnect_all_sessions()
 
         self.session_path = None
+        if not self.status():
+            self.callback(False)
 
     def pause(self):
         self.ovpn3.pause_vpn("User Action in eOVPN".encode("utf-8"))
