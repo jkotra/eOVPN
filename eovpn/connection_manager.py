@@ -146,7 +146,6 @@ class OpenVPN3(ConnectionManager):
         self.ffi = _libeovpn_nm.ffi
 
         self.callback = update_callback
-        self.check_status_timeout = 30
         self.config_path = None
         self.session_path = None
         self.watch = False
@@ -165,13 +164,6 @@ class OpenVPN3(ConnectionManager):
     def get_session_path(self):
         return self.session_path
     
-    def check_status(self):
-        status = self.status()
-        self.check_status_timeout -= 1
-        if status or (self.check_status == 0):
-            return False
-        return True
-    
     def to_string(self, data, decode: bool = False):
         _str = self.ffi.string(data)
         if (decode):
@@ -189,12 +181,11 @@ class OpenVPN3(ConnectionManager):
         config_path = self.ovpn3.import_config(os.path.basename(openvpn_config).encode('utf-8'), config_content)
         logger.info("config path: %s", self.to_string(config_path))
         self.config_path = self.to_string(config_path)
-        self.status()
 
         session_path = self.ovpn3.prepare_tunnel(self.config_path)
         logger.info("session path: %s", self.to_string(session_path))
         self.session_path = self.to_string(session_path)
-        GLib.timeout_add_seconds(1, self.check_status)
+        self.status()
 
     def disconnect(self):
         if self.session_path is not None:
@@ -202,16 +193,14 @@ class OpenVPN3(ConnectionManager):
             self.ovpn3.disconnect_vpn()
         else:
             self.ovpn3.disconnect_all_sessions()
-        self.session_path = None       
-        self.callback(False)
+
+        self.session_path = None
 
     def pause(self):
         self.ovpn3.pause_vpn("User Action in eOVPN".encode("utf-8"))
-        self.status()
 
     def resume(self):
         self.ovpn3.resume_vpn()
-        GLib.timeout_add_seconds(1, self.check_status)    
 
     def version(self) -> str:
         return self.to_string(self.ovpn3.p_get_version(), True)

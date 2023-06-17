@@ -285,10 +285,13 @@ class SettingsWindow(Base, Gtk.Builder):
         if (version):
             self.combobox.append("networkmanager", gettext.gettext("{} (OpenVPN 2)".format(version)))
         
-        ovpn3_version = OpenVPN3(None, False).version()
-        if (ovpn3_version):
-            self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3 {}".format(ovpn3_version)))
-        
+        try:
+            ovpn3_version = OpenVPN3(None, False).version()
+            if (ovpn3_version):
+                self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3 {}".format(ovpn3_version)))
+        except NameError:
+            logger.error("unable to use openvpn3 module!")
+
         if (manager := self.get_setting(self.SETTING.MANAGER)) is not None:
             self.combobox.set_property("active-id", manager)
         self.combobox.get_style_context().add_class("mlr-6")

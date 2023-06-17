@@ -114,8 +114,8 @@ class OVPN3Dbus(Base):
                 else:
                     logger.debug("unknown input required!")
             self.module.ovpn3.set_dco(self.module.get_session_path(), 1)
+            self.module.ovpn3.set_log_forward()
             self.module.ovpn3.connect_vpn()
-            self.module.status()
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_AUTH_FAILED):
             logger.error(reason)
             update_callback(False, reason)
