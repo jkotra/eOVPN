@@ -41,9 +41,9 @@ class MainWindow(Base, Gtk.Builder):
         ###########################################################
         preferred = self.get_setting(self.SETTING.MANAGER)
         self.store("CM", {"name": preferred,
-                        "instance": NetworkManager(self.on_connection_event, False)
+                        "instance": NetworkManager(self.on_connection_event)
                         if preferred == "networkmanager"
-                        else OpenVPN3(self.on_connection_event, False)})
+                        else OpenVPN3(self.on_connection_event)})
         self.store("on_connection_event", self.on_connection_event)
         self.CM = lambda: self.retrieve("CM")["instance"]
 

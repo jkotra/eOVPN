@@ -26,6 +26,9 @@ class ConnectionManager(Base):
 
     def get_name(self):
         return self.__NAME__
+    
+    def start_watch(self):
+        pass
 
     def version(self) -> str:
         pass
@@ -45,7 +48,7 @@ class ConnectionManager(Base):
 
 class NetworkManager(ConnectionManager):
 
-    def __init__(self, callback, subscribe=True):
+    def __init__(self, callback):
         super().__init__("NetworkManager")
         self.uuid = None
         self.nm_manager = _libeovpn_nm.lib
@@ -55,10 +58,6 @@ class NetworkManager(ConnectionManager):
         
         self.dbus = NMDbus()
         self.watch = False
-
-        if subscribe: #DO NOT SUBSCRIBE / WATCH
-            self.start_watch()
-    
     
     def to_string(self, data, decode: bool = False):
         _str = self.ffi.string(data)
@@ -121,7 +120,6 @@ class NetworkManager(ConnectionManager):
             self.nm_manager.delete_connection(self.uuid, self.debug)
             self.uuid = None
             self.set_setting(self.SETTING.NM_ACTIVE_UUID, None)
-        self.dbus.remove_watch()
 
     def status(self) -> bool:
         return self.nm_manager.is_vpn_running()
@@ -139,7 +137,7 @@ class NetworkManager(ConnectionManager):
 
 class OpenVPN3(ConnectionManager):
 
-    def __init__(self, update_callback, subscribe=True):
+    def __init__(self, update_callback):
         super().__init__("OpenVPN3")
 
         self.ovpn3 = _libopenvpn3.lib
@@ -151,9 +149,6 @@ class OpenVPN3(ConnectionManager):
         self.watch = False
 
         self.dbus = OVPN3Dbus()
-        if subscribe:
-            self.start_watch()
-
         
     def start_watch(self):
         if not self.watch:

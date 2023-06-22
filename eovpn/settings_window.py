@@ -281,12 +281,12 @@ class SettingsWindow(Base, Gtk.Builder):
         box.append(label)
 
         self.combobox = Gtk.ComboBoxText()
-        version = NetworkManager(None, False).version()
+        version = NetworkManager(None).version()
         if (version):
             self.combobox.append("networkmanager", gettext.gettext("{} (OpenVPN 2)".format(version)))
         
         try:
-            ovpn3_version = OpenVPN3(None, False).version()
+            ovpn3_version = OpenVPN3(None).version()
             if (ovpn3_version):
                 self.combobox.append("openvpn3", gettext.gettext("OpenVPN 3 {}".format(ovpn3_version)))
         except NameError:
@@ -432,7 +432,7 @@ class Signals(Base):
         id = box.get_property("active_id")
         self.set_setting(self.SETTING.MANAGER, id)
         callback = self.retrieve("on_connection_event")
-        self.store("CM", {"name": id, "instance": NetworkManager(callback, subscribe=False) if id == "networkmanager" else OpenVPN3(callback, subscribe=False)})
+        self.store("CM", {"name": id, "instance": NetworkManager(callback) if id == "networkmanager" else OpenVPN3(callback)})
 
     def on_validate_btn_click(self, button, entry, ca_button, spinner):
         self.validate_and_load(spinner, ca_button)
