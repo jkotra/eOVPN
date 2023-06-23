@@ -124,7 +124,7 @@ class OVPN3Dbus(Base):
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_CONNECTED):
             update_callback(True)
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_DISCONNECTED):
-            update_callback(False)
+            self.module.disconnect()
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_PAUSED):
             update_callback(["pause"])
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_RESUMING):

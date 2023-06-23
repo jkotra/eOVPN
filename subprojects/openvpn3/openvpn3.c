@@ -121,7 +121,9 @@ get_connection_status ()
             g_variant_get (v, "(uus)", &major, &minor, &status_str);
             g_debug ("%u %u %s", major, minor, status_str);
 
-            if ((major == MAJOR_CONNECTION) && (minor == MINOR_CONN_CONNECTED))
+            if ((major == MAJOR_CONNECTION) &&
+                ((minor == MINOR_CONN_CONNECTED) ||
+                 (minor == MINOR_CONN_PAUSED)))
                 {
                     g_variant_iter_free (iter);
                     return true;
