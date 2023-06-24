@@ -26,7 +26,7 @@ libopenvpn3 = shared_library('openvpn3',
 
 ffi = custom_target(
     input: libopenvpn3,
-    output: '_openvpn3.so',
+    output: '_libopenvpn3.so',
     command: [python_exe, meson.source_root() / 'cffi_compile.py' ,
     '--library', libopenvpn3,
     '--header', meson.current_source_dir() / 'openvpn3.h',

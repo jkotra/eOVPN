@@ -184,7 +184,7 @@ modules:
     sources:
       - type: git
         url: 'https://github.com/OpenVPN/openvpn3-linux'
-        tag: 'v18_beta'
+        tag: 'v20'
         
       - type: patch
         path: '0001-openvpn3-flatpak.patch'
@@ -193,6 +193,8 @@ modules:
 
   - name: eovpn
     buildsystem: meson
+    config-opts:
+      - "-Dopenvpn3=true"
     sources:
       - type: dir
         path: "../../"
