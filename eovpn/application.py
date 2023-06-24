@@ -47,7 +47,7 @@ def launch_eovpn():
     args, _ = parser.parse_known_args(sys.argv[1:])
 
 
-    # as glib dont support our custom command, remove these from sys.argv.
+    # as glib dont support custom commands, remove these from sys.argv.
     # the above declared `add_main_option` is essentially a dummy placeholder.
     if "-c" in sys.argv: sys.argv.remove("-c")
     if "--config" in sys.argv: sys.argv.remove("--config")

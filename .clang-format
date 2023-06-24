@@ -1,0 +1,8 @@
+BasedOnStyle: GNU
+BreakBeforeBinaryOperators: None
+BinPackParameters: false
+BinPackArguments: false
+SpaceAfterCStyleCast: true
+SortIncludes: false
+IndentWidth: 4
+ColumnLimit: 80

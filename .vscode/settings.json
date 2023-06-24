@@ -1,11 +1,6 @@
 {
-    "files.watcherExclude": {
-        "**/.git/objects/**": true,
-        "**/.git/subtree-cache/**": true,
-        "**/node_modules/*/**": true,
-        "**/.hg/store/**": true,
-        ".flatpak": true,
-        ".flatpak/**": true,
-        "_build/**": true
+    "[c]": {
+    "editor.defaultFormatter": "xaver.clang-format",
+    "editor.formatOnSave": true
     }
 }
