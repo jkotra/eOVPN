@@ -45,7 +45,16 @@
 
   <releases>
 
-    <release version="1.27" date="2023-04-30">
+  <release version="1.28" date="2023-06-23">
+      <description>
+        <ul>
+        <li>Stabililty improvements and code fixes.</li>
+        <li>UX: Instantly switch between backends without restart.</li>
+        </ul>
+      </description>
+  </release>
+
+  <release version="1.27" date="2023-04-30">
       <description>
         <ul>
         <li>UX/UI: Show `Edit` button across every config.</li>
@@ -53,7 +62,7 @@
       </description>
   </release>
 
-    <release version="1.26.1" date="2022-09-02">
+  <release version="1.26.1" date="2022-09-02">
       <description>
         <ul>
         <li>bugfixes.</li>
@@ -61,7 +70,7 @@
       </description>
   </release>
 
-    <release version="1.26" date="2022-08-03">
+  <release version="1.26" date="2022-08-03">
       <description>
         <ul>
         <li>code fixes and improvements.</li>
@@ -69,7 +78,7 @@
       </description>
   </release>
 
-    <release version="1.25" date="2022-07-29">
+  <release version="1.25" date="2022-07-29">
       <description>
         <ul>
         <li>code fixes and improvements.</li>
