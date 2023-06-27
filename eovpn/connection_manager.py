@@ -141,7 +141,7 @@ class OpenVPN3(ConnectionManager):
         super().__init__("OpenVPN3")
 
         self.ovpn3 = _libopenvpn3.lib
-        self.ffi = _libeovpn_nm.ffi
+        self.ffi = _libopenvpn3.ffi
 
         self.callback = update_callback
         self.config_path = None
@@ -200,7 +200,10 @@ class OpenVPN3(ConnectionManager):
         self.ovpn3.resume_vpn()
 
     def version(self) -> str:
-        return self.to_string(self.ovpn3.p_get_version(), True)
+        v = self.ovpn3.p_get_version()
+        if v:
+            return self.to_string(self.ovpn3.p_get_version(), True)
+        return None
 
     def status(self) -> bool:
         return self.ovpn3.p_get_connection_status()
