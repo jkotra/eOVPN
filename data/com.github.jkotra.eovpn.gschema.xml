@@ -61,5 +61,8 @@
       <key type="b" name="dark-theme">
          <default>false</default>
       </key>
+      <key type="b" name="openvpn3-dco">
+         <default>true</default>
+      </key>
    </schema>
 </schemalist>

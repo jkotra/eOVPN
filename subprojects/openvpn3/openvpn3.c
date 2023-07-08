@@ -431,12 +431,12 @@ init_unique_session (char *session_object)
 }
 
 void
-set_dco (char *session_object, int set_to)
+set_dco (char *session_object, int state)
 {
 
     GError *error = NULL;
     GVariant *params = g_variant_new (
-        "(ssv)", "net.openvpn.v3.sessions", "dco", g_variant_new ("b", set_to));
+        "(ssv)", "net.openvpn.v3.sessions", "dco", g_variant_new ("b", state));
 
     GDBusProxy *sessions_proxy =
         g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,

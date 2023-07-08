@@ -113,7 +113,7 @@ class OVPN3Dbus(Base):
                     self.module.ovpn3.send_auth(self.module.get_session_path(), t.value, g.value, i, self.get_auth_password().encode("utf-8"))
                 else:
                     logger.debug("unknown input required!")
-            self.module.ovpn3.set_dco(self.module.get_session_path(), 1)
+            self.module.ovpn3.set_dco(self.module.get_session_path(), self.get_setting(self.SETTING.OPENVPN3_DCO))
             self.module.ovpn3.set_log_forward()
             self.module.ovpn3.connect_vpn()
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_AUTH_FAILED):

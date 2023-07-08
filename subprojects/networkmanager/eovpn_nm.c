@@ -32,8 +32,7 @@ add_cb (NMClient *client, GAsyncResult *result, GMainLoop *loop)
 }
 
 char *
-add_connection (
-    char *config_name, char *username, char *password, char *ca, int debug)
+add_connection (char *config_name, char *username, char *password, char *ca)
 {
 
     GMainLoop *loop = g_main_loop_new (NULL, false);
@@ -46,10 +45,8 @@ add_connection (
         {
             plugin = plugins->data;
             const char *name = nm_vpn_plugin_info_get_name (plugin);
-            if (debug)
-                {
-                    g_print ("%s\n", name);
-                }
+
+            g_debug ("%s\n", name);
 
             if (strcmp ("openvpn", name) == 0)
                 {
@@ -100,10 +97,7 @@ add_connection (
     g_assert (conn != NULL);
     nm_connection_normalize (conn, NULL, NULL, NULL);
 
-    if (debug)
-        {
-            nm_connection_dump (conn);
-        }
+    // nm_connection_dump (conn);
 
     NMClient *client = nm_client_new (NULL, NULL);
 
@@ -184,7 +178,7 @@ disconnect_cb (NMClient *client, GAsyncResult *result, GMainLoop *loop)
 }
 
 int
-disconnect (char *uuid, int debug)
+disconnect (char *uuid)
 {
 
     GMainLoop *loop = g_main_loop_new (NULL, FALSE);
@@ -198,10 +192,7 @@ disconnect (char *uuid, int debug)
             const char *current_uuid =
                 nm_active_connection_get_uuid (arr->pdata[i]);
 
-            if (debug)
-                {
-                    g_print ("connection uuid: %s\n", uuid);
-                }
+            g_debug ("connection uuid: %s\n", uuid);
 
             if (strcmp (uuid, current_uuid) == 0)
                 {
@@ -235,7 +226,7 @@ delete_cb (NMRemoteConnection *conn, GAsyncResult *result, GMainLoop *loop)
 }
 
 int
-delete_connection (char *uuid, int debug)
+delete_connection (char *uuid)
 {
 
     GMainLoop *loop = g_main_loop_new (NULL, FALSE);
@@ -250,11 +241,8 @@ delete_connection (char *uuid, int debug)
                 nm_connection_get_uuid (NM_CONNECTION (arr->pdata[i]));
             if (strcmp (uuid, current_uuid) == 0)
                 {
-                    if (debug)
-                        {
-                            g_print (
-                                "[%s] uuid match: %s\n", __FUNCTION__, uuid);
-                        }
+                    g_debug ("[%s] uuid match: %s\n", __FUNCTION__, uuid);
+
                     target = NM_REMOTE_CONNECTION (arr->pdata[i]);
                     break;
                 }
@@ -316,7 +304,7 @@ delete_all_vpn_connections (void)
     for (size_t i = 0; i < vpn_uuid_count; i++)
         {
             g_print ("Deleting %s\n...", vpn_uuid[i]);
-            delete_connection (vpn_uuid[i], 0);
+            delete_connection (vpn_uuid[i]);
         }
 
     return true;

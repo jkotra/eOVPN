@@ -53,7 +53,6 @@ class NetworkManager(ConnectionManager):
         self.uuid = None
         self.nm_manager = _libeovpn_nm.lib
         self.ffi = _libeovpn_nm.ffi
-        self.debug = int(True)
         self.callback = callback
         
         self.dbus = NMDbus()
@@ -97,8 +96,7 @@ class NetworkManager(ConnectionManager):
                                                 'utf-8') if nm_username is not None else None),
                                             (nm_password.encode(
                                                 'utf-8') if nm_password is not None else None),
-                                            self.ffi.NULL,
-                                            1)
+                                            self.ffi.NULL,)
         connection_result = self.nm_manager.activate_connection(self.to_string(uuid))
 
         self.uuid = self.to_string(uuid)
@@ -109,15 +107,15 @@ class NetworkManager(ConnectionManager):
         if self.uuid is None:
             while(self.nm_manager.get_active_vpn_connection_uuid() is not None):
                 self.nm_manager.disconnect(
-                    self.to_string(self.nm_manager.get_active_vpn_connection_uuid()), self.debug)
+                    self.to_string(self.nm_manager.get_active_vpn_connection_uuid()))
             return
 
         is_uuid_found = self.nm_manager.is_vpn_activated(self.uuid)
 
         if (is_uuid_found):
             logger.info("current vpn UUID ({}).".format(self.uuid))
-            self.nm_manager.disconnect(self.uuid, self.debug)
-            self.nm_manager.delete_connection(self.uuid, self.debug)
+            self.nm_manager.disconnect(self.uuid)
+            self.nm_manager.delete_connection(self.uuid)
             self.uuid = None
             self.set_setting(self.SETTING.NM_ACTIVE_UUID, None)
 
