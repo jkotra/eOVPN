@@ -90,7 +90,7 @@ class MainWindow(Base, Gtk.Builder):
         dlg.connect("response", cb)
 
         btn = dlg.add_button("Exit", 1)
-        btn.get_style_context().add_class("destructive-action")
+        btn.add_css_class("destructive-action")
 
         box = dlg.get_message_area()
         for msg in error_message:
@@ -141,9 +141,9 @@ class MainWindow(Base, Gtk.Builder):
         v_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
         v_box.set_valign(Gtk.Align.CENTER)
         lbl = Gtk.Label.new(gettext.gettext("No Configs Added!"))
-        lbl.get_style_context().add_class("bold")
+        lbl.add_css_class("bold")
         btn = Gtk.Button.new_with_label(gettext.gettext("Open Settings"))
-        btn.get_style_context().add_class("suggested-action")
+        btn.add_css_class("suggested-action")
         btn.set_valign(Gtk.Align.START)
         btn.set_halign(Gtk.Align.CENTER)
         btn.connect("clicked", lambda x: SettingsWindow().show())
@@ -174,13 +174,13 @@ class MainWindow(Base, Gtk.Builder):
         self.ip_text = Gtk.Label.new(gettext.gettext("IP: "))
         self.ip_addr = Gtk.Label.new("0.0.0.0")
         self.ip_addr.set_valign(Gtk.Align.CENTER)
-        self.ip_addr.get_style_context().add_class("ip_text")
+        self.ip_addr.add_css_class("ip_text")
         self.ip_addr.set_vexpand(True)
         cpy_btn = Gtk.Button.new_from_icon_name("edit-copy-symbolic")
         cpy_btn.set_valign(Gtk.Align.CENTER)
         cpy_btn.set_halign(Gtk.Align.CENTER)
         cpy_btn.set_tooltip_text("Copy")
-        cpy_btn.get_style_context().add_class("flat")
+        cpy_btn.add_css_class("flat")
 
         h_box.append(self.ip_text)
         h_box.append(self.ip_addr)
@@ -193,7 +193,7 @@ class MainWindow(Base, Gtk.Builder):
 
         self.connect_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 6)
         self.connect_box.set_valign(Gtk.Align.END)
-        self.connect_box.get_style_context().add_class("m-10")
+        self.connect_box.add_css_class("m-10")
         self.connect_btn = Gtk.Button().new_with_label(gettext.gettext("Connect"))
         self.connect_btn.set_valign(Gtk.Align.FILL)
         self.connect_btn.set_hexpand(True)
@@ -223,11 +223,11 @@ class MainWindow(Base, Gtk.Builder):
         #Initial connection check on startup + Progress bar update + signal connects
         if self.CM().status():
             self.connect_btn.set_label(gettext.gettext("Disconnect"))
-            self.connect_btn.get_style_context().add_class("destructive-action")
-            self.progress_bar.get_style_context().add_class("progress-full-green")
+            self.connect_btn.add_css_class("destructive-action")
+            self.progress_bar.add_css_class("progress-full-green")
             self.progress_bar.set_fraction(1.0)
         else:
-            self.progress_bar.get_style_context().add_class("progress-yellow")
+            self.progress_bar.add_css_class("progress-yellow")
 
         def open_about_dialog(widget, data):
             about = Gtk.AboutDialog.new()
@@ -382,17 +382,16 @@ class MainWindow(Base, Gtk.Builder):
         if type(result) is list:
             if len(result) == 1:
                 status = result[-1]
-                p_ctx = self.progress_bar.get_style_context()
 
                 if status == "pause":
-                    p_ctx.remove_class("progress-full-green")
-                    p_ctx.add_class("progress-orange")
+                    self.progress_bar.remove_css_class("progress-full-green")
+                    self.progress_bar.add_css_class("progress-orange")
                     self.swap_pause_btn_signal_pause_to_resume()
                     return
 
                 elif status == "resume":
-                    p_ctx.remove_class("progress-orange")
-                    p_ctx.add_class("progress-full-green")
+                    self.progress_bar.remove_css_class("progress-orange")
+                    self.progress_bar.add_css_class("progress-full-green")
                     self.swap_pause_btn_signal_resume_to_pause()
                     return
 
@@ -405,11 +404,12 @@ class MainWindow(Base, Gtk.Builder):
         if result:
             self.update_ip_flag_async()
             self.connect_btn.set_label(gettext.gettext("Disconnect"))
-            self.connect_btn.get_style_context().add_class("destructive-action")
-            p_ctx = self.progress_bar.get_style_context()
-            p_ctx.remove_class("progress-yellow")
-            p_ctx.remove_class("progress-orange")
-            p_ctx.add_class("progress-full-green")
+            self.connect_btn.add_css_class("destructive-action")
+
+            self.progress_bar.remove_css_class("progress-yellow")
+            self.progress_bar.remove_css_class("progress-orange")
+            self.progress_bar.add_css_class("progress-full-green")
+
             self.progress_bar.set_fraction(1.0)
             self.set_setting(self.SETTING.LAST_CONNECTED, self.get_selected_config())
             self.send_connected_notification()
@@ -427,10 +427,9 @@ class MainWindow(Base, Gtk.Builder):
         else:
             self.update_ip_flag_async()
             self.connect_btn.set_label(gettext.gettext("Connect"))
-            self.connect_btn.get_style_context().remove_class("destructive-action")
-            p_ctx = self.progress_bar.get_style_context()
-            p_ctx.remove_class("progress-full-green")
-            p_ctx.add_class("progress-yellow")
+            self.connect_btn.remove_css_class("destructive-action")
+            self.progress_bar.remove_css_class("progress-full-green")
+            self.progress_bar.add_css_class("progress-yellow")
             self.progress_bar.set_fraction(0)
             self.send_disconnected_notification()
             
@@ -441,7 +440,7 @@ class MainWindow(Base, Gtk.Builder):
         self.setup()
         self.update_ip_flag_async()
         if logger.getEffectiveLevel() == 10:
-            self.window.get_style_context().add_class("devel")
+            self.window.add_css_class("devel")
         self.window.show()
 
     def update_ip_flag_async(self):

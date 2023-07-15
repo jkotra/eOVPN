@@ -58,7 +58,7 @@ class SettingsWindow(Base, Gtk.Builder):
     def setup(self):
         
         self.reset_btn = Gtk.Button.new_with_label(gettext.gettext("Reset"))
-        self.reset_btn.get_style_context().add_class("destructive-action")
+        self.reset_btn.add_css_class("destructive-action")
         self.header = self.get_object("settings_header_bar")
         self.header.pack_start(self.reset_btn)
 
@@ -80,7 +80,7 @@ class SettingsWindow(Base, Gtk.Builder):
 
         self.main_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
         self.main_box.set_valign(Gtk.Align.CENTER)
-        self.main_box.get_style_context().add_class("m-6")
+        self.main_box.add_css_class("m-6")
 
         self.pref_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
         self.backend_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
@@ -92,7 +92,7 @@ class SettingsWindow(Base, Gtk.Builder):
         
         label = Gtk.Label.new(gettext.gettext("Configuration Source"))
         label.set_halign(Gtk.Align.START)
-        label.get_style_context().add_class("bold")
+        label.add_css_class("bold")
         self.main_box.append(label)
 
         configuration_source_hbox = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
@@ -122,7 +122,7 @@ class SettingsWindow(Base, Gtk.Builder):
 
         self.revealer = Gtk.Revealer.new()
         self.validate_btn = Gtk.Button.new_with_label(gettext.gettext("Validate & Load"))
-        self.validate_btn.get_style_context().add_class("suggested-action")
+        self.validate_btn.add_css_class("suggested-action")
 
         self.revealer.set_child(self.validate_btn)
         self.main_box.append(self.revealer)
@@ -131,10 +131,10 @@ class SettingsWindow(Base, Gtk.Builder):
         self.auth_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
 
         ask_auth_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
-        ask_auth_box.get_style_context().add_class("m-4")
+        ask_auth_box.add_css_class("m-4")
         label = Gtk.Label.new(gettext.gettext("Authentication"))
         label.set_halign(Gtk.Align.START)
-        label.get_style_context().add_class("bold")
+        label.add_css_class("bold")
         ask_auth_box.append(label)
 
         self.ask_auth_switch = Gtk.Switch.new()
@@ -166,7 +166,7 @@ class SettingsWindow(Base, Gtk.Builder):
 
         #CA
         ca_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
-        ca_box.get_style_context().add_class("mb-4")
+        ca_box.add_css_class("mb-4")
         button = Gtk.Button.new_from_icon_name("application-certificate-symbolic")
         button.set_sensitive(False)
         ca_box.append(button)
@@ -188,7 +188,7 @@ class SettingsWindow(Base, Gtk.Builder):
         ca_box.append(self.ca_chooser_btn)
         
         self.user_pass_ca_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
-        self.user_pass_ca_box.get_style_context().add_class("mt-4")
+        self.user_pass_ca_box.add_css_class("mt-4")
         self.user_pass_ca_box.append(username_box)
         self.user_pass_ca_box.append(password_box)
         self.user_pass_ca_box.append(ca_box)
@@ -228,8 +228,8 @@ class SettingsWindow(Base, Gtk.Builder):
         ###########################################################
         frame = Gtk.Frame.new()
         list_box = Gtk.ListBox.new()
-        frame.get_style_context().add_class("m-10")
-        list_box.get_style_context().add_class("rich-list")
+        frame.add_css_class("m-10")
+        list_box.add_css_class("rich-list")
 
         self.switches = []
         self.switches.append(self.ask_auth_switch)
@@ -257,8 +257,8 @@ class SettingsWindow(Base, Gtk.Builder):
 
 
         self.remove_all_vpn_btn = Gtk.Button.new_with_label(gettext.gettext("Delete All VPN Connections!"))
-        self.remove_all_vpn_btn.get_style_context().add_class("m-6")
-        self.remove_all_vpn_btn.get_style_context().add_class("destructive-action")
+        self.remove_all_vpn_btn.add_css_class("m-6")
+        self.remove_all_vpn_btn.add_css_class("destructive-action")
         self.remove_all_vpn_btn.set_valign(Gtk.Align.END)
         self.remove_all_vpn_btn.set_vexpand(True)
         self.pref_box.append(self.remove_all_vpn_btn)
@@ -276,8 +276,8 @@ class SettingsWindow(Base, Gtk.Builder):
 
         label = Gtk.Label.new(gettext.gettext("Backend"))
         label.set_halign(Gtk.Align.START)
-        label.get_style_context().add_class("bold")
-        label.get_style_context().add_class("m-4")
+        label.add_css_class("bold")
+        label.add_css_class("m-4")
         box.append(label)
 
         self.combobox = Gtk.ComboBoxText()
@@ -294,7 +294,7 @@ class SettingsWindow(Base, Gtk.Builder):
 
         if (manager := self.get_setting(self.SETTING.MANAGER)) is not None:
             self.combobox.set_property("active-id", manager)
-        self.combobox.get_style_context().add_class("mlr-6")
+        self.combobox.add_css_class("mlr-6")
         box.append(self.combobox)
 
         self.backend_box.append(box)

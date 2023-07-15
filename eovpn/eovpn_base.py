@@ -257,7 +257,7 @@ class Base:
             edit_action.set_halign(Gtk.Align.END)
             edit_action.set_hexpand(True)
             edit_action.set_visible(False)
-            edit_action.get_style_context().add_class("btn-no-dec")
+            edit_action.add_css_class("btn-no-dec")
             f = Path(self.EOVPN_OVPN_CONFIG_DIR).joinpath(str(item))
             edit_action.connect("clicked", lambda w: subprocess.run(["xdg-open", str(f)]) )
 
