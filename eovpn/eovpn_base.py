@@ -324,7 +324,7 @@ class Base:
         def dispatch():
             cert = download_remote_to_destination(self.get_setting(self.SETTING.REMOTE), self.EOVPN_OVPN_CONFIG_DIR)
             if len(cert) > 0:
-                ca_path = os.path.join(self.EOVPN_OVPN_CONFIG_DIR, cert[-1])
+                ca_path = os.path.join(self.EOVPN_OVPN_CONFIG_DIR, os.path.basename(cert[-1]))
                 self.set_setting(self.SETTING.CA, ca_path)
                 
                 if ca_button is not None:
