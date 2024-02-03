@@ -370,8 +370,9 @@ class Signals(Base):
             try:
                 is_pwd_stored = Secret.password_store_finish(result)
                 logger.debug(is_pwd_stored)
-            except Exception:
+            except Exception as e:
                 #save as plain text
+                logger.error("error while saving password: %s", e)
                 self.set_setting(self.SETTING.AUTH_PASS, entry.get_text())
                 logger.warning("Password saved as plain text!") 
 
