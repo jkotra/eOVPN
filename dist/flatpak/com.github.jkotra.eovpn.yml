@@ -1,6 +1,6 @@
 app-id: com.github.jkotra.eovpn
 runtime : org.gnome.Platform
-runtime-version : '44'
+runtime-version : '46'
 sdk : org.gnome.Sdk
 command: eovpn
 
@@ -84,15 +84,15 @@ modules:
       - '*.a'
     sources:
       - type: git
-        url: 'https://github.com/gentoo/eudev.git'
+        url: 'https://github.com/eudev-project/eudev'
         tag: "v3.2.10"
 
   - name: libndp
     buildsystem: autotools
     sources:
       - type: archive
-        url: ' http://libndp.org/files/libndp-1.6.tar.gz'
-        sha256: 0c7dfa84e013bd5e569ef2c6292a6f72cfaf14f4ff77a77425e52edc33ffac0e
+        url: 'http://libndp.org/files/libndp-1.8.tar.gz'
+        sha256: 88ffb66ee2eb527f146f5c02f5ccbc38ba97d2b0d57eb46bfba488821ab0c02b
 
   - name: NetworkManager
     buildsystem: meson
