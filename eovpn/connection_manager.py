@@ -58,7 +58,7 @@ class NetworkManager(ConnectionManager):
         self.dbus = NMDbus()
         self.watch = False
     
-    def to_string(self, data, decode: bool = False):
+    def to_cffi_string(self, data, decode: bool = False):
         _str = self.ffi.string(data)
         if (decode):
             return _str.decode("utf-8")
@@ -97,9 +97,9 @@ class NetworkManager(ConnectionManager):
                                             (nm_password.encode(
                                                 'utf-8') if nm_password is not None else None),
                                             self.ffi.NULL,)
-        connection_result = self.nm_manager.activate_connection(self.to_string(uuid))
+        connection_result = self.nm_manager.activate_connection(self.to_cffi_string(uuid))
 
-        self.uuid = self.to_string(uuid)
+        self.uuid = self.to_cffi_string(uuid)
         self.set_setting(self.SETTING.NM_ACTIVE_UUID,
                              self.uuid.decode("utf-8"))
 
@@ -107,7 +107,7 @@ class NetworkManager(ConnectionManager):
         if self.uuid is None:
             while(self.nm_manager.get_active_vpn_connection_uuid() is not None):
                 self.nm_manager.disconnect(
-                    self.to_string(self.nm_manager.get_active_vpn_connection_uuid()))
+                    self.to_cffi_string(self.nm_manager.get_active_vpn_connection_uuid()))
             return
 
         is_uuid_found = self.nm_manager.is_vpn_activated(self.uuid)
@@ -127,7 +127,7 @@ class NetworkManager(ConnectionManager):
 
     def version(self) -> str:
         version = self.nm_manager.get_version()
-        return self.to_string(version, True)
+        return self.to_cffi_string(version, True)
     
     def is_openvpn_plugin_available(self) -> bool:
         return bool(self.nm_manager.is_openvpn_plugin_available())
@@ -147,6 +147,12 @@ class OpenVPN3(ConnectionManager):
         self.watch = False
 
         self.dbus = OVPN3Dbus()
+
+    def to_cffi_string(self, data, decode: bool = False):
+        _str = self.ffi.string(data)
+        if (decode):
+            return _str.decode("utf-8")
+        return _str
         
     def start_watch(self):
         if not self.watch:
@@ -156,12 +162,6 @@ class OpenVPN3(ConnectionManager):
 
     def get_session_path(self):
         return self.session_path
-    
-    def to_string(self, data, decode: bool = False):
-        _str = self.ffi.string(data)
-        if (decode):
-            return _str.decode("utf-8")
-        return _str
 
     def connect(self, openvpn_config):
         config_content = open(openvpn_config, "r").read()
@@ -172,12 +172,12 @@ class OpenVPN3(ConnectionManager):
         config_content = config_content.encode('utf-8')
 
         config_path = self.ovpn3.import_config(os.path.basename(openvpn_config).encode('utf-8'), config_content)
-        logger.info("config path: %s", self.to_string(config_path))
-        self.config_path = self.to_string(config_path)
+        logger.info("config path: %s", self.to_cffi_string(config_path))
+        self.config_path = self.to_cffi_string(config_path)
 
         session_path = self.ovpn3.prepare_tunnel(self.config_path)
-        logger.info("session path: %s", self.to_string(session_path))
-        self.session_path = self.to_string(session_path)
+        logger.info("session path: %s", self.to_cffi_string(session_path))
+        self.session_path = self.to_cffi_string(session_path)
         self.status()
 
     def disconnect(self):
@@ -188,8 +188,6 @@ class OpenVPN3(ConnectionManager):
             self.ovpn3.disconnect_all_sessions()
 
         self.session_path = None
-        if not self.status():
-            self.callback(False)
 
     def pause(self):
         self.ovpn3.pause_vpn("User Action in eOVPN".encode("utf-8"))
@@ -200,7 +198,7 @@ class OpenVPN3(ConnectionManager):
     def version(self) -> str:
         v = self.ovpn3.p_get_version()
         if v:
-            return self.to_string(self.ovpn3.p_get_version(), True)
+            return self.to_cffi_string(self.ovpn3.p_get_version(), True)
         return None
 
     def status(self) -> bool:

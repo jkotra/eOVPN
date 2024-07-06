@@ -2,7 +2,6 @@ from gi.repository import Gio, GLib, Secret
 import logging
 from eovpn.eovpn_base import Base
 
-
 logger = logging.getLogger(__name__)
 
 try:
@@ -15,9 +14,9 @@ class OVPN3Dbus(Base):
 
     def __init__(self):
         super().__init__()
-        self.conn = None
+        self.dbus_connection = None
         self.module = None
-        self.once = True
+        self.status_change_sub_id = True
 
     def get_auth_password(self):
 
@@ -34,21 +33,48 @@ class OVPN3Dbus(Base):
         self.module = binding
 
     def watch(self, callback):
-        self.conn = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
+        self.dbus_connection = Gio.bus_get_sync(Gio.BusType.SYSTEM, None)
 
-        #(sender, interface_name, member, object_path, arg0, flags, callback, *user_data)
-        self.conn.signal_subscribe("net.openvpn.v3.sessions",
+        # receive signals for auth!
+        self.dbus_connection.signal_subscribe("net.openvpn.v3.sessions",
                            None,
-                           "StatusChange",
+                           "AttentionRequired",
                            None,
                            None,
                            Gio.DBusSignalFlags.NONE,
-                           self.sub_callback,
+                           self.sub_attention_signal,
                            callback)
     
+    def set_log_forward(self):
+        self.dbus_connection.call_sync("net.openvpn.v3.sessions",
+                                                self.module.get_session_path().decode("utf-8"),
+                                                "net.openvpn.v3.sessions",
+                                                "LogForward",
+                                                GLib.Variant('(b)',(True,)),
+                                                None,
+                                                Gio.DBusSignalFlags.NONE,
+                                                -1,
+                                                None)
+
+    def watch_for_status(self, session_path: str, callback: callable):
+        self.set_log_forward()
+        sub = self.dbus_connection.signal_subscribe("net.openvpn.v3.log",
+                           "net.openvpn.v3.backends",
+                           "StatusChange",
+                           session_path,
+                           None,
+                           Gio.DBusSignalFlags.NONE,
+                           self.sub_status_signal,
+                           callback)
+        logger.info("subscribed to StatusChange: %d", sub)
+        self.status_change_sub_id = sub
+
+    def unsubscribe(self, sub_id: int):
+        logger.info("unsubscribing from signal: %d", sub_id)
+        self.dbus_connection.signal_unsubscribe(sub_id)
+    
     def get_attention(self):
-        print(self.module.get_session_path())
-        typegroup = self.conn.call_sync("net.openvpn.v3.sessions",
+        typegroup = self.dbus_connection.call_sync("net.openvpn.v3.sessions",
                                     self.module.get_session_path().decode("utf-8"),
                                     "net.openvpn.v3.sessions",
                                     "UserInputQueueGetTypeGroup",
@@ -66,14 +92,14 @@ class OVPN3Dbus(Base):
             
             if (atn_type == OVPN3Constants.ClientAttentionType.CREDENTIALS and atn_grp == OVPN3Constants.ClientAttentionGroup.USER_PASSWORD):
 
-                parmas = GLib.Variant('(uu)', (atn_type.value, atn_grp.value) )
+                params = GLib.Variant('(uu)', (atn_type.value, atn_grp.value) )
                 inputs = []
 
-                req_inputs = self.conn.call_sync("net.openvpn.v3.sessions",
+                req_inputs = self.dbus_connection.call_sync("net.openvpn.v3.sessions",
                                                 self.module.get_session_path().decode("utf-8"),
                                                 "net.openvpn.v3.sessions",
                                                 "UserInputQueueCheck",
-                                                parmas,
+                                                params,
                                                 GLib.VariantType("(au)"),
                                                 Gio.DBusSignalFlags.NONE,
                                                 -1,
@@ -87,36 +113,36 @@ class OVPN3Dbus(Base):
                 
                 return inputs
 
-
-
-    def sub_callback(self, connection, sender_name, object_path, interface_name, signal_name, parameters, update_callback):
-        
-        # https://github.com/OpenVPN/openvpn3-linux/blob/master/src/dbus/constants.hpp
+    def sub_attention_signal(self, connection, sender_name, object_path, interface_name, signal_name, parameters, on_connection_cb: callable):
         status = GLib.Variant("(uus)", parameters)
         major = OVPN3Constants.StatusMajor(status.get_child_value(0).get_uint32())
         minor = OVPN3Constants.StatusMinor(status.get_child_value(1).get_uint32())
         reason = status.get_child_value(2).get_string()
 
         logger.debug("{}({}) {}({}) {}".format(major, status.get_child_value(0).get_uint32(), minor, status.get_child_value(1).get_uint32(), reason))
+        
+        attention = self.get_attention()
+        for (t, g, i) in attention:
+            logger.info("%s %s %i", t, g, i)
+            if i == 0:
+                self.module.ovpn3.send_auth(self.module.get_session_path(), t.value, g.value, i, self.get_setting(self.SETTING.AUTH_USER).encode("utf-8"))
+            elif i == 1:
+                self.module.ovpn3.send_auth(self.module.get_session_path(), t.value, g.value, i, self.get_auth_password().encode("utf-8"))
+            else:
+                logger.error("unknown input required!")
+        self.module.ovpn3.set_dco(self.module.get_session_path(), self.get_setting(self.SETTING.OPENVPN3_DCO))
+        self.watch_for_status(self.module.get_session_path().decode("utf-8"), on_connection_cb)
+        self.module.ovpn3.connect_vpn()
+        logger.info("connecting to vpn...")
+    
+    def sub_status_signal(self, connection, sender_name, object_path, interface_name, signal_name, parameters, update_callback):
+        status = GLib.Variant("(uus)", parameters)
+        major = OVPN3Constants.StatusMajor(status.get_child_value(0).get_uint32())
+        minor = OVPN3Constants.StatusMinor(status.get_child_value(1).get_uint32())
+        reason = status.get_child_value(2).get_string()
+        logger.debug("{}({}) {}({}) {}".format(major, status.get_child_value(0).get_uint32(), minor, status.get_child_value(1).get_uint32(), reason))
 
-        if(major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CFG_REQUIRE_USER):
-            if self.get_setting(self.SETTING.AUTH_USER) is None:
-                update_callback(False, reason)
-                return
-
-            attention = self.get_attention()
-            for (t, g, i) in attention:
-                logger.info("%s %s %i", t, g, i)
-                if i == 0:
-                    self.module.ovpn3.send_auth(self.module.get_session_path(), t.value, g.value, i, self.get_setting(self.SETTING.AUTH_USER).encode("utf-8"))
-                elif i == 1:
-                    self.module.ovpn3.send_auth(self.module.get_session_path(), t.value, g.value, i, self.get_auth_password().encode("utf-8"))
-                else:
-                    logger.debug("unknown input required!")
-            self.module.ovpn3.set_dco(self.module.get_session_path(), self.get_setting(self.SETTING.OPENVPN3_DCO))
-            self.module.ovpn3.set_log_forward()
-            self.module.ovpn3.connect_vpn()
-        elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_AUTH_FAILED):
+        if (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_AUTH_FAILED):
             logger.error(reason)
             update_callback(False, reason)
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_CONNECTING):
@@ -124,14 +150,9 @@ class OVPN3Dbus(Base):
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_CONNECTED):
             update_callback(True)
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_DISCONNECTED):
-            self.module.disconnect()
+            self.unsubscribe(self.status_change_sub_id)
+            update_callback(False)
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_PAUSED):
             update_callback(["pause"])
         elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CONN_RESUMING):
             update_callback(["resume"])
-        elif (major == OVPN3Constants.StatusMajor.CONNECTION and minor == OVPN3Constants.StatusMinor.CFG_OK):
-            if self.get_setting(self.SETTING.AUTH_USER) is None and self.once:
-                logger.warning("username is None. Proceeding with connection without auth.")
-                self.module.ovpn3.init_unique_session()
-                self.module.ovpn3.connect_vpn()
-                self.once = False
