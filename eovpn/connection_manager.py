@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 import os
+from abc import ABC, abstractmethod
 
 from gi.repository import Secret, GLib
 
@@ -18,30 +19,32 @@ from .backend.openvpn3.dbus import OVPN3Dbus
 
 
 
-class ConnectionManager(Base):
-
+class ConnectionManager(ABC, Base):
     def __init__(self, name):
         super().__init__()
         self.__NAME__ = name
 
+    @abstractmethod
     def get_name(self):
         return self.__NAME__
     
+    @abstractmethod
     def start_watch(self):
         pass
 
+    @abstractmethod
     def version(self) -> str:
         pass
 
+    @abstractmethod
     def connect(self, openvpn_config):
         pass
 
-    def start_dbus_watch(self, callback):
-        pass
-
+    @abstractmethod
     def disconnect(self):
         pass
-
+    
+    @abstractmethod
     def status(self) -> bool:
         pass
 
@@ -57,8 +60,13 @@ class NetworkManager(ConnectionManager):
         
         self.dbus = NMDbus()
         self.watch = False
+
+    def get_name(self):
+        return "networkmanager"
     
     def to_cffi_string(self, data, decode: bool = False):
+        if data == self.ffi.NULL:
+            return None
         _str = self.ffi.string(data)
         if (decode):
             return _str.decode("utf-8")
@@ -142,13 +150,19 @@ class OpenVPN3(ConnectionManager):
         self.ffi = _libopenvpn3.ffi
 
         self.callback = update_callback
+
         self.config_path = None
         self.session_path = None
-        self.watch = False
 
+        self.watch = False
         self.dbus = OVPN3Dbus()
 
+    def get_name(self):
+        return "openvpn3"
+
     def to_cffi_string(self, data, decode: bool = False):
+        if data == self.ffi.NULL:
+            return None
         _str = self.ffi.string(data)
         if (decode):
             return _str.decode("utf-8")
@@ -157,11 +171,22 @@ class OpenVPN3(ConnectionManager):
     def start_watch(self):
         if not self.watch:
             self.dbus.set_binding(self)
-            self.dbus.watch(self.callback)
+
+            # subscribe for all events. NOTE: not required as we subscribe to signal for session before connection.
+            # self.dbus.subscribe_for_events(self.callback)
+            
+            self.dbus.subscribe_for_attention()
+
             self.watch = True
 
     def get_session_path(self):
         return self.session_path
+    
+    def is_ready(self):
+        status = self.to_cffi_string(self.ovpn3.is_ready_to_connect())
+        if status is None:
+            return True
+        return False
 
     def connect(self, openvpn_config):
         config_content = open(openvpn_config, "r").read()
@@ -182,11 +207,11 @@ class OpenVPN3(ConnectionManager):
 
     def disconnect(self):
         if self.session_path is not None:
-            logger.info("Disconnecting from " + self.session_path.decode('utf-8'))
+            logger.info("Disconnecting from %s", self.session_path.decode('utf-8'))
             self.ovpn3.disconnect_vpn()
         else:
             self.ovpn3.disconnect_all_sessions()
-
+            self.callback(False)
         self.session_path = None
 
     def pause(self):

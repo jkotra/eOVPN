@@ -2,6 +2,8 @@ import logging
 from time import sleep
 from .settings_window import SettingsWindow
 from .connection_manager import NetworkManager, OpenVPN3
+import gi
+gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, Gio, GLib, Gdk
 from .ip_lookup.lookup import Lookup
 from .utils import ovpn_is_auth_required

@@ -109,7 +109,7 @@ get_connection_status ()
                     g_warning (
                         "%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
                     g_error_free (error);
-                    return -1;
+                    continue;
                 }
 
             GVariant *v;
@@ -175,7 +175,15 @@ disconnect_all_sessions ()
                 G_DBUS_CALL_FLAGS_NONE,
                 -1,
                 NULL,
-                NULL);
+                &error);
+
+            if (error != NULL)
+                {
+                    g_warning (
+                        "%s:%d -> %s", __FUNCTION__, __LINE__, error->message);
+                    g_error_free (error);
+                    continue;
+                }
 
             GVariant *v;
             guint16 major;
@@ -680,5 +688,5 @@ p_get_connection_status ()
                 }
         }
 
-    return -1;
+    return false;
 }
