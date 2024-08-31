@@ -91,3 +91,10 @@
     border-style: none;
     background-color: transparent;
 }
+
+.otp-entry {
+    margin: 0.8rem;
+    min-height: 2rem;
+    font-size: 1.3rem;
+    font-weight: bold;
+}

@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "eOVPN",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "program": "${cwd}/run_program_debug.py",
 

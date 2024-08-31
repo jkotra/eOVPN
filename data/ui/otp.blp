@@ -1,0 +1,86 @@
+using Gtk 4.0;
+
+Window OTpMainWindow {
+  Box MainBox {
+    orientation: vertical;
+    valign: center;
+    halign: center;
+    margin-top: 36;
+    margin-start: 12;
+    margin-end: 12;
+
+    Label {
+      label: _("Please enter your 2FA / TOTP.");
+      margin-bottom: 12;
+    }
+
+    Box OTPBox {
+      orientation: horizontal;
+      vexpand: true;
+
+      Image {
+        icon-name: "security-high-symbolic";
+        margin-end: 12;
+        icon-size: large;
+      }
+
+      Separator {
+        margin-end: 8;
+      }
+
+      Entry O1 {
+        styles [
+          "otp-entry"
+        ]
+
+        xalign: 0.5;
+      }
+
+      Entry O2 {
+        styles [
+          "otp-entry"
+        ]
+
+        xalign: 0.5;
+      }
+
+      Entry O3 {
+        styles [
+          "otp-entry"
+        ]
+
+        xalign: 0.5;
+      }
+
+      Entry O4 {
+        styles [
+          "otp-entry"
+        ]
+
+        xalign: 0.5;
+      }
+
+      Entry O5 {
+        styles [
+          "otp-entry"
+        ]
+
+        xalign: 0.5;
+      }
+
+      Entry O6 {
+        styles [
+          "otp-entry"
+        ]
+
+        xalign: 0.5;
+      }
+    }
+
+    Button submit {
+      margin-top: 24;
+      margin-bottom: 16;
+      label: 'Submit';
+    }
+  }
+}

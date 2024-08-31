@@ -5,6 +5,7 @@
     <file>ui/main.ui</file>
     <file>ui/settings.ui</file>
     <file>ui/keyboard_shortcuts.ui</file>
+    <file>ui/otp.ui</file>
   
   <file>icons/nm.svg</file>
   <file>icons/nm_black.svg</file>
