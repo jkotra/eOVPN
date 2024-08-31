@@ -15,10 +15,10 @@ finish-args:
   - --system-talk-name=org.freedesktop.NetworkManager
   - --system-talk-name=net.openvpn.v3.configuration
   - --system-talk-name=net.openvpn.v3.sessions
+  - --system-talk-name=net.openvpn.v3.log
   - --device=dri
 
 modules:
-
   - name: intltool
     cleanup:
       - '*'
@@ -176,18 +176,39 @@ modules:
         url: https://dbus.freedesktop.org/releases/dbus-python/dbus-python-1.2.18.tar.gz
         sha256: 92bdd1e68b45596c833307a5ff4b217ee6929a1502f5341bae28fd120acf7260
 
-  - name: openvpn3
-    buildsystem: autotools
-    config-opts:
-      - --disable-unit-tests
-      - --disable-build-test-progs
+  - name: gdus++
+    buildsystem: meson
     sources:
       - type: git
-        url: 'https://github.com/OpenVPN/openvpn3-linux'
-        tag: 'v20'
-        
+        url: https://codeberg.org/OpenVPN/gdbuspp/
+        tag: 'v1'
+  
+  - name: libnl
+    buildsystem: autotools
+    sources:
+      - type: git
+        url: https://github.com/thom311/libnl/
+        tag: libnl3_10_0
+  
+  - name: protobuf
+    buildsystem: cmake
+    sources:
+      - type: git
+        url: https://github.com/protocolbuffers/protobuf
+        tag: v28.0
+
+  - name: openvpn3
+    buildsystem: meson
+    config-opts:
+      - -Dunit_tests=disabled
+      - -Dtest_programs=disabled
+    sources:
+      - type: git
+        url: 'https://codeberg.org/OpenVPN/openvpn3-linux.git'
+        tag: 'v22_dev'
+      
       - type: patch
-        path: '0001-openvpn3-flatpak.patch'
+        path: 0001-openvpn3-v22_dev-flatpak.patch
 
   - python3-cffi.json
 
