@@ -9,8 +9,9 @@
 
   <description>
     <p>
-    eOVPN is a application to connect, manage and update(from a remote .zip) OpenVPN configurations.
-    </p>   
+      eOVPN is a application to connect, manage and update(from a remote .zip) OpenVPN
+      configurations.
+    </p>
   </description>
 
   <kudos>
@@ -23,15 +24,16 @@
 
   <screenshots>
 
-        <screenshot type="default">
-            <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/window.png</image>
-        </screenshot>
-        <screenshot>
-            <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/window_connected.png</image>
-        </screenshot>
-        <screenshot>
-            <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/window_connected_with_flag.png</image>
-        </screenshot>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/window.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/window_connected.png</image>
+    </screenshot>
+    <screenshot>
+      <image>
+        https://raw.githubusercontent.com/jkotra/eOVPN/master/static/window_connected_with_flag.png</image>
+    </screenshot>
 
   </screenshots>
 
@@ -45,215 +47,225 @@
 
   <releases>
 
-  <release version="1.28" date="2023-06-23">
+    <release version="1.30" date="2024-09-01">
       <description>
         <ul>
-        <li>Stabililty improvements and code fixes.</li>
-        <li>UX: Instantly switch between backends without restart.</li>
+          <li>refactor openvpn3 d-bus logic.</li>
+          <li>suuport for 2FA/OTP with openvpn3.</li>
+          <li>bugfixes and code improvements.</li>
         </ul>
       </description>
-  </release>
+    </release>
 
-  <release version="1.27" date="2023-04-30">
+    <release version="1.28" date="2023-06-23">
       <description>
         <ul>
-        <li>UX/UI: Show `Edit` button across every config.</li>
+          <li>Stabililty improvements and code fixes.</li>
+          <li>UX: Instantly switch between backends without restart.</li>
         </ul>
       </description>
-  </release>
+    </release>
 
-  <release version="1.26.1" date="2022-09-02">
+    <release version="1.27" date="2023-04-30">
       <description>
         <ul>
-        <li>bugfixes.</li>
+          <li>UX/UI: Show `Edit` button across every config.</li>
         </ul>
       </description>
-  </release>
+    </release>
 
-  <release version="1.26" date="2022-08-03">
+    <release version="1.26.1" date="2022-09-02">
       <description>
         <ul>
-        <li>code fixes and improvements.</li>
+          <li>bugfixes.</li>
         </ul>
       </description>
-  </release>
+    </release>
 
-  <release version="1.25" date="2022-07-29">
+    <release version="1.26" date="2022-08-03">
       <description>
         <ul>
-        <li>code fixes and improvements.</li>
+          <li>code fixes and improvements.</li>
         </ul>
       </description>
-  </release>
+    </release>
 
-  <release version="1.24" date="2022-07-11">
+    <release version="1.25" date="2022-07-29">
       <description>
         <ul>
-        <li>code fixes and improvements</li>
+          <li>code fixes and improvements.</li>
         </ul>
       </description>
-  </release>
+    </release>
 
-  <release version="1.23" date="2022-07-04">
+    <release version="1.24" date="2022-07-11">
       <description>
         <ul>
-        <li>code fixes and improvements</li>
+          <li>code fixes and improvements</li>
         </ul>
       </description>
-  </release>
+    </release>
 
-  <release version="1.22.1" date="2022-06-17">
+    <release version="1.23" date="2022-07-04">
       <description>
         <ul>
-        <li>Support for openvpn3 v18_beta</li>
+          <li>code fixes and improvements</li>
         </ul>
       </description>
-  </release>
+    </release>
 
-  <release version="1.22" date="2022-06-8">
+    <release version="1.22.1" date="2022-06-17">
       <description>
         <ul>
-        <li>Feature: choose Layout of app from menu - Vertical and Horizontal</li>
-        <li>code quality improvements.</li>
+          <li>Support for openvpn3 v18_beta</li>
         </ul>
       </description>
-  </release>
+    </release>
 
-  <release version="1.21" date="2022-06-5">
+    <release version="1.22" date="2022-06-8">
       <description>
         <ul>
-        <li>show notification on error.</li>
-        <li>bug fixes</li>
+          <li>Feature: choose Layout of app from menu - Vertical and Horizontal</li>
+          <li>code quality improvements.</li>
         </ul>
       </description>
-  </release>
+    </release>
 
-  <release version="1.20" date="2022-05-29">
+    <release version="1.21" date="2022-06-5">
       <description>
         <ul>
-        <li>Fix bug with Popover menu.</li>
-        <li>show version in settings->backend combobox</li>
+          <li>show notification on error.</li>
+          <li>bug fixes</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.19" date="2022-02-07">
+    <release version="1.20" date="2022-05-29">
       <description>
         <ul>
-        <li>Add button to choose ZIP file as configuration source.</li>
+          <li>Fix bug with Popover menu.</li>
+          <li>show version in settings->backend combobox</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.18" date="2022-02-05">
+    <release version="1.19" date="2022-02-07">
       <description>
         <ul>
-        <li>Fallback to NM if OpenVPN3 is not available!</li>
+          <li>Add button to choose ZIP file as configuration source.</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.17" date="2022-01-30">
+    <release version="1.18" date="2022-02-05">
       <description>
         <ul>
-        <li>UI/UX fixes.</li>
+          <li>Fallback to NM if OpenVPN3 is not available!</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.16" date="2022-01-27">
+    <release version="1.17" date="2022-01-30">
       <description>
         <ul>
-        <li>OpenVPN3 support.</li>
+          <li>UI/UX fixes.</li>
+        </ul>
+      </description>
+    </release>
+
+    <release version="1.16" date="2022-01-27">
+      <description>
+        <ul>
+          <li>OpenVPN3 support.</li>
           <li>Bug fixes.</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.15" date="2022-01-08">
+    <release version="1.15" date="2022-01-08">
       <description>
         <ul>
-        <li>Dark mode switch</li>
+          <li>Dark mode switch</li>
           <li>Bug fixes.</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.14" date="2021-11-25">
-      <description>
-        <ul>
-          <li>Bug fixes.</li>
-        </ul>
-      </description>
-  </release> 
-
-  <release version="1.13" date="2021-11-20">
+    <release version="1.14" date="2021-11-25">
       <description>
         <ul>
           <li>Bug fixes.</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.12" date="2021-10-31">
+    <release version="1.13" date="2021-11-20">
+      <description>
+        <ul>
+          <li>Bug fixes.</li>
+        </ul>
+      </description>
+    </release>
+
+    <release version="1.12" date="2021-10-31">
       <description>
         <ul>
           <li>Automatically detect and set CA.</li>
           <li>Bug fixes.</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.10" date="2021-09-11">
+    <release version="1.10" date="2021-09-11">
       <description>
         <ul>
           <li>Translation updates.</li>
           <li>Add 'Donate' to Menu</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.08" date="2021-09-10">
+    <release version="1.08" date="2021-09-10">
       <description>
         <ul>
           <li>Show Error Dialog if dependencies are not found.</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.07" date="2021-09-09">
+    <release version="1.07" date="2021-09-09">
       <description>
         <ul>
           <li>Improve Authentication checking mechanism.</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.06" date="2021-09-08">
+    <release version="1.06" date="2021-09-08">
       <description>
         <ul>
           <li>fix critical bug during connection.</li>
           <li>log additional debug information regarding NM version and OpenVPN plugin.</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.05" date="2021-09-08">
+    <release version="1.05" date="2021-09-08">
       <description>
         <ul>
           <li>CA FileChooser will now open to Config folder by default.</li>
           <li>Bug fixes.</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
-  <release version="1.01" date="2021-09-05">
+    <release version="1.01" date="2021-09-05">
       <description>
         <ul>
           <li>Bug fixes.</li>
         </ul>
       </description>
-  </release> 
+    </release>
 
     <release version="1.0" date="2021-09-04">
       <description>
@@ -263,7 +275,7 @@
           <li>Bug fixes and other enhancements</li>
         </ul>
       </description>
-    </release> 
+    </release>
 
     <release version="0.41" date="2021-07-28">
       <description>
@@ -271,7 +283,7 @@
           <li>Add button to menu to report an Issue.</li>
         </ul>
       </description>
-    </release> 
+    </release>
 
     <release version="0.40" date="2021-06-13">
       <description>
@@ -281,7 +293,7 @@
           <li>Improve menu UI</li>
         </ul>
       </description>
-    </release> 
+    </release>
 
     <release version="0.30" date="2021-05-20">
       <description>
@@ -289,7 +301,7 @@
           <li>UI enhancements.</li>
         </ul>
       </description>
-    </release> 
+    </release>
 
     <release version="0.27" date="2021-05-01">
       <description>
@@ -298,7 +310,7 @@
           <li>press Enter to connect and disconnect.</li>
         </ul>
       </description>
-    </release>  
+    </release>
 
     <release version="0.25" date="2021-04-18">
       <description>
@@ -307,8 +319,8 @@
           <li>Password is now stored in keyring (NM only)</li>
         </ul>
       </description>
-    </release>  
-    
+    </release>
+
     <release version="0.24" date="2021-04-07">
       <description>
         <ul>
@@ -316,7 +328,7 @@
           <li>Bug fixes</li>
         </ul>
       </description>
-    </release>  
+    </release>
 
     <release version="0.23" date="2021-04-06">
       <description>
@@ -326,7 +338,7 @@
           <li>Bug fixes</li>
         </ul>
       </description>
-    </release>  
+    </release>
 
 
     <release version="0.22" date="2021-04-05">
@@ -337,7 +349,7 @@
           <li>Bug fixes</li>
         </ul>
       </description>
-    </release>  
+    </release>
 
     <release version="0.20.5" date="2021-03-31">
       <description>
@@ -345,7 +357,7 @@
           <li>NetworkManager support for flatpak system install.</li>
         </ul>
       </description>
-    </release>  
+    </release>
 
     <release version="0.20.1" date="2021-03-30">
       <description>
@@ -354,7 +366,7 @@
           <li>Bug fixes and design improvements.</li>
         </ul>
       </description>
-    </release>    
+    </release>
 
     <release version="0.17.5" date="2021-03-07">
       <description>
@@ -362,7 +374,7 @@
           <li>Update Translations.</li>
         </ul>
       </description>
-    </release>        
+    </release>
 
     <release version="0.17.2" date="2021-03-01">
       <description>
@@ -371,7 +383,7 @@
           <li>UI: Add GtkAspectFrame to General tab (Settings) ListView</li>
         </ul>
       </description>
-    </release>      
+    </release>
 
     <release version="0.16" date="2021-02-27">
       <description>
@@ -379,7 +391,7 @@
           <li>Bug Fix: Reset GtkPaned position on reset.</li>
         </ul>
       </description>
-    </release>          
+    </release>
 
     <release version="0.15" date="2021-02-27">
       <description>
@@ -388,7 +400,7 @@
           <li>UI: fix several padding issues</li>
         </ul>
       </description>
-    </release>         
+    </release>
 
     <release version="0.12" date="2021-02-25">
       <description>
@@ -398,7 +410,7 @@
           <li>Feature: Remember and restore GtkPaned position.</li>
         </ul>
       </description>
-    </release>       
+    </release>
 
     <release version="0.10" date="2021-02-23">
       <description>
@@ -408,7 +420,7 @@
           <li>Bugs: Several bug fixes and improvements.</li>
         </ul>
       </description>
-    </release>      
+    </release>
 
     <release version="0.07.1" date="2021-02-21">
       <description>
@@ -416,7 +428,7 @@
           <li>Bug fix: pass sys.argv to Gtk.Application</li>
         </ul>
       </description>
-    </release>      
+    </release>
 
     <release version="0.07" date="2021-02-20">
       <description>
@@ -427,7 +439,7 @@
           <li>small tweaks to improve UI</li>
         </ul>
       </description>
-    </release>       
+    </release>
 
     <release version="0.05.6" date="2021-02-17">
       <description>
@@ -437,25 +449,25 @@
           <li>Improve translations.</li>
           <li>Various typo fixes.</li>
           <li>Undo button on reset.</li>
-        </ul>  
+        </ul>
       </description>
-    </release>        
+    </release>
 
     <release version="0.03" date="2021-02-16">
       <description>
         <ul>
           <li>Support for translations.</li>
-        </ul>  
+        </ul>
       </description>
-    </release>        
+    </release>
 
     <release version="0.02.1" date="2021-02-15">
       <description>
         <ul>
           <li>Fix bug with update if remote is empty</li>
-        </ul>  
+        </ul>
       </description>
-    </release>    
+    </release>
 
     <release version="0.02" date="2021-02-14">
       <description>

@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 
 try:
     from .backend.openvpn3 import _libopenvpn3
-except:
-    logger.error("cannot import openvpn3")
-from .backend.openvpn3.dbus import OVPN3Dbus
+    from .backend.openvpn3.dbus import OVPN3Dbus
+except Exception as e:
+    logger.warning("openvpn error: %s", e)
 
 
 

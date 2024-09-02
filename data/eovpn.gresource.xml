@@ -1,278 +1,278 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/com/github/jkotra/eovpn/">
-  
+
     <file>ui/main.ui</file>
     <file>ui/settings.ui</file>
     <file>ui/keyboard_shortcuts.ui</file>
     <file>ui/otp.ui</file>
-  
-  <file>icons/nm.svg</file>
-  <file>icons/nm_black.svg</file>
-  <file>icons/openvpn.svg</file>
 
-  <file>icons/com.github.jkotra.eovpn.svg</file>
-  <file>icons/notification_connected.svg</file>
-  <file>icons/notification_disconnected.svg</file>
-  <file>icons/openvpn_black.svg</file>
-  <file>css/main.css</file>
+    <file>icons/nm.svg</file>
+    <file>icons/nm_black.svg</file>
+    <file>icons/openvpn.svg</file>
 
-<file>country_flags/svg/uno.svg</file>
-<file>country_flags/svg/aw.svg</file>
-<file>country_flags/svg/sr.svg</file>
-<file>country_flags/svg/bb.svg</file>
-<file>country_flags/svg/ni.svg</file>
-<file>country_flags/svg/gb.svg</file>
-<file>country_flags/svg/tl.svg</file>
-<file>country_flags/svg/ng.svg</file>
-<file>country_flags/svg/bl.svg</file>
-<file>country_flags/svg/im.svg</file>
-<file>country_flags/svg/de.svg</file>
-<file>country_flags/svg/gd.svg</file>
-<file>country_flags/svg/cf.svg</file>
-<file>country_flags/svg/al.svg</file>
-<file>country_flags/svg/to.svg</file>
-<file>country_flags/svg/sa.svg</file>
-<file>country_flags/svg/ge.svg</file>
-<file>country_flags/svg/ck.svg</file>
-<file>country_flags/svg/tt.svg</file>
-<file>country_flags/svg/az.svg</file>
-<file>country_flags/svg/qa.svg</file>
-<file>country_flags/svg/rw.svg</file>
-<file>country_flags/svg/cz.svg</file>
-<file>country_flags/svg/lr.svg</file>
-<file>country_flags/svg/tf.svg</file>
-<file>country_flags/svg/uy.svg</file>
-<file>country_flags/svg/as.svg</file>
-<file>country_flags/svg/in.svg</file>
-<file>country_flags/svg/ps.svg</file>
-<file>country_flags/svg/mn.svg</file>
-<file>country_flags/svg/mx.svg</file>
-<file>country_flags/svg/lu.svg</file>
-<file>country_flags/svg/pa.svg</file>
-<file>country_flags/svg/us.svg</file>
-<file>country_flags/svg/pf.svg</file>
-<file>country_flags/svg/nc.svg</file>
-<file>country_flags/svg/sm.svg</file>
-<file>country_flags/svg/sh.svg</file>
-<file>country_flags/svg/li.svg</file>
-<file>country_flags/svg/mh.svg</file>
-<file>country_flags/svg/hr.svg</file>
-<file>country_flags/svg/aq.svg</file>
-<file>country_flags/svg/me.svg</file>
-<file>country_flags/svg/iq.svg</file>
-<file>country_flags/svg/sx.svg</file>
-<file>country_flags/svg/cn.svg</file>
-<file>country_flags/svg/fi.svg</file>
-<file>country_flags/svg/by.svg</file>
-<file>country_flags/svg/fj.svg</file>
-<file>country_flags/svg/kp.svg</file>
-<file>country_flags/svg/so.svg</file>
-<file>country_flags/svg/td.svg</file>
-<file>country_flags/svg/co.svg</file>
-<file>country_flags/svg/mq.svg</file>
-<file>country_flags/svg/mz.svg</file>
-<file>country_flags/svg/ph.svg</file>
-<file>country_flags/svg/hn.svg</file>
-<file>country_flags/svg/sy.svg</file>
-<file>country_flags/svg/fm.svg</file>
-<file>country_flags/svg/ma.svg</file>
-<file>country_flags/svg/gs.svg</file>
-<file>country_flags/svg/ao.svg</file>
-<file>country_flags/svg/rs.svg</file>
-<file>country_flags/svg/jm.svg</file>
-<file>country_flags/svg/no.svg</file>
-<file>country_flags/svg/zw.svg</file>
-<file>country_flags/svg/ke.svg</file>
-<file>country_flags/svg/ci.svg</file>
-<file>country_flags/svg/gb-wls.svg</file>
-<file>country_flags/svg/br.svg</file>
-<file>country_flags/svg/je.svg</file>
-<file>country_flags/svg/cu.svg</file>
-<file>country_flags/svg/ir.svg</file>
-<file>country_flags/svg/gb-nir.svg</file>
-<file>country_flags/svg/sn.svg</file>
-<file>country_flags/svg/nr.svg</file>
-<file>country_flags/svg/pt.svg</file>
-<file>country_flags/svg/tv.svg</file>
-<file>country_flags/svg/se.svg</file>
-<file>country_flags/svg/ba.svg</file>
-<file>country_flags/svg/dk.svg</file>
-<file>country_flags/svg/gl.svg</file>
-<file>country_flags/svg/be.svg</file>
-<file>country_flags/svg/sc.svg</file>
-<file>country_flags/svg/za.svg</file>
-<file>country_flags/svg/vg.svg</file>
-<file>country_flags/svg/wf.svg</file>
-<file>country_flags/svg/gy.svg</file>
-<file>country_flags/svg/cl.svg</file>
-<file>country_flags/svg/tw.svg</file>
-<file>country_flags/svg/gq.svg</file>
-<file>country_flags/svg/pw.svg</file>
-<file>country_flags/svg/bd.svg</file>
-<file>country_flags/svg/st.svg</file>
-<file>country_flags/svg/vi.svg</file>
-<file>country_flags/svg/ro.svg</file>
-<file>country_flags/svg/dm.svg</file>
-<file>country_flags/svg/es.svg</file>
-<file>country_flags/svg/gf.svg</file>
-<file>country_flags/svg/dj.svg</file>
-<file>country_flags/svg/bz.svg</file>
-<file>country_flags/svg/gg.svg</file>
-<file>country_flags/svg/il.svg</file>
-<file>country_flags/svg/hu.svg</file>
-<file>country_flags/svg/kw.svg</file>
-<file>country_flags/svg/cr.svg</file>
-<file>country_flags/svg/vu.svg</file>
-<file>country_flags/svg/is.svg</file>
-<file>country_flags/svg/er.svg</file>
-<file>country_flags/svg/tz.svg</file>
-<file>country_flags/svg/kn.svg</file>
-<file>country_flags/svg/bs.svg</file>
-<file>country_flags/svg/pk.svg</file>
-<file>country_flags/svg/bt.svg</file>
-<file>country_flags/svg/bv.svg</file>
-<file>country_flags/svg/sk.svg</file>
-<file>country_flags/svg/pg.svg</file>
-<file>country_flags/svg/ar.svg</file>
-<file>country_flags/svg/eu.svg</file>
-<file>country_flags/svg/sg.svg</file>
-<file>country_flags/svg/gi.svg</file>
-<file>country_flags/svg/mf.svg</file>
-<file>country_flags/svg/gb-sct.svg</file>
-<file>country_flags/svg/mk.svg</file>
-<file>country_flags/svg/mu.svg</file>
-<file>country_flags/svg/tk.svg</file>
-<file>country_flags/svg/bf.svg</file>
-<file>country_flags/svg/gh.svg</file>
-<file>country_flags/svg/sj.svg</file>
-<file>country_flags/svg/mt.svg</file>
-<file>country_flags/svg/np.svg</file>
-<file>country_flags/svg/ne.svg</file>
-<file>country_flags/svg/py.svg</file>
-<file>country_flags/svg/bo.svg</file>
-<file>country_flags/svg/lt.svg</file>
-<file>country_flags/svg/na.svg</file>
-<file>country_flags/svg/tn.svg</file>
-<file>country_flags/svg/mm.svg</file>
-<file>country_flags/svg/sb.svg</file>
-<file>country_flags/svg/my.svg</file>
-<file>country_flags/svg/ve.svg</file>
-<file>country_flags/svg/kg.svg</file>
-<file>country_flags/svg/fr.svg</file>
-<file>country_flags/svg/fo.svg</file>
-<file>country_flags/svg/pm.svg</file>
-<file>country_flags/svg/af.svg</file>
-<file>country_flags/svg/lv.svg</file>
-<file>country_flags/svg/ky.svg</file>
-<file>country_flags/svg/au.svg</file>
-<file>country_flags/svg/kh.svg</file>
-<file>country_flags/svg/mc.svg</file>
-<file>country_flags/svg/bn.svg</file>
-<file>country_flags/svg/ms.svg</file>
-<file>country_flags/svg/ch.svg</file>
-<file>country_flags/svg/ag.svg</file>
-<file>country_flags/svg/ec.svg</file>
-<file>country_flags/svg/xk.svg</file>
-<file>country_flags/svg/bq.svg</file>
-<file>country_flags/svg/ug.svg</file>
-<file>country_flags/svg/gp.svg</file>
-<file>country_flags/svg/tr.svg</file>
-<file>country_flags/svg/ai.svg</file>
-<file>country_flags/svg/cc.svg</file>
-<file>country_flags/svg/bi.svg</file>
-<file>country_flags/svg/md.svg</file>
-<file>country_flags/svg/ee.svg</file>
-<file>country_flags/svg/lb.svg</file>
-<file>country_flags/svg/kz.svg</file>
-<file>country_flags/svg/ls.svg</file>
-<file>country_flags/svg/cv.svg</file>
-<file>country_flags/svg/tj.svg</file>
-<file>country_flags/svg/gt.svg</file>
-<file>country_flags/svg/ru.svg</file>
-<file>country_flags/svg/cd.svg</file>
-<file>country_flags/svg/tg.svg</file>
-<file>country_flags/svg/va.svg</file>
-<file>country_flags/svg/io.svg</file>
-<file>country_flags/svg/ws.svg</file>
-<file>country_flags/svg/mw.svg</file>
-<file>country_flags/svg/nu.svg</file>
-<file>country_flags/svg/sl.svg</file>
-<file>country_flags/svg/ua.svg</file>
-<file>country_flags/svg/ie.svg</file>
-<file>country_flags/svg/et.svg</file>
-<file>country_flags/svg/pe.svg</file>
-<file>country_flags/svg/at.svg</file>
-<file>country_flags/svg/cx.svg</file>
-<file>country_flags/svg/it.svg</file>
-<file>country_flags/svg/uz.svg</file>
-<file>country_flags/svg/ca.svg</file>
-<file>country_flags/svg/gu.svg</file>
-<file>country_flags/svg/cm.svg</file>
-<file>country_flags/svg/tm.svg</file>
-<file>country_flags/svg/yt.svg</file>
-<file>country_flags/svg/km.svg</file>
-<file>country_flags/svg/zm.svg</file>
-<file>country_flags/svg/mg.svg</file>
-<file>country_flags/svg/lk.svg</file>
-<file>country_flags/svg/pl.svg</file>
-<file>country_flags/svg/tc.svg</file>
-<file>country_flags/svg/nl.svg</file>
-<file>country_flags/svg/om.svg</file>
-<file>country_flags/svg/ki.svg</file>
-<file>country_flags/svg/ht.svg</file>
-<file>country_flags/svg/bm.svg</file>
-<file>country_flags/svg/lc.svg</file>
-<file>country_flags/svg/sz.svg</file>
-<file>country_flags/svg/gr.svg</file>
-<file>country_flags/svg/eg.svg</file>
-<file>country_flags/svg/hm.svg</file>
-<file>country_flags/svg/nf.svg</file>
-<file>country_flags/svg/mo.svg</file>
-<file>country_flags/svg/gb-eng.svg</file>
-<file>country_flags/svg/bh.svg</file>
-<file>country_flags/svg/pr.svg</file>
-<file>country_flags/svg/la.svg</file>
-<file>country_flags/svg/um.svg</file>
-<file>country_flags/svg/ss.svg</file>
-<file>country_flags/svg/ae.svg</file>
-<file>country_flags/svg/sv.svg</file>
-<file>country_flags/svg/pn.svg</file>
-<file>country_flags/svg/sd.svg</file>
-<file>country_flags/svg/ye.svg</file>
-<file>country_flags/svg/dz.svg</file>
-<file>country_flags/svg/cw.svg</file>
-<file>country_flags/svg/do.svg</file>
-<file>country_flags/svg/mp.svg</file>
-<file>country_flags/svg/th.svg</file>
-<file>country_flags/svg/jp.svg</file>
-<file>country_flags/svg/si.svg</file>
-<file>country_flags/svg/bg.svg</file>
-<file>country_flags/svg/vc.svg</file>
-<file>country_flags/svg/fk.svg</file>
-<file>country_flags/svg/ad.svg</file>
-<file>country_flags/svg/gm.svg</file>
-<file>country_flags/svg/cg.svg</file>
-<file>country_flags/svg/id.svg</file>
-<file>country_flags/svg/nz.svg</file>
-<file>country_flags/svg/cy.svg</file>
-<file>country_flags/svg/jo.svg</file>
-<file>country_flags/svg/ly.svg</file>
-<file>country_flags/svg/eh.svg</file>
-<file>country_flags/svg/gw.svg</file>
-<file>country_flags/svg/bj.svg</file>
-<file>country_flags/svg/hk.svg</file>
-<file>country_flags/svg/kr.svg</file>
-<file>country_flags/svg/mv.svg</file>
-<file>country_flags/svg/bw.svg</file>
-<file>country_flags/svg/re.svg</file>
-<file>country_flags/svg/ax.svg</file>
-<file>country_flags/svg/ml.svg</file>
-<file>country_flags/svg/vn.svg</file>
-<file>country_flags/svg/gn.svg</file>
-<file>country_flags/svg/am.svg</file>
-<file>country_flags/svg/mr.svg</file>
-<file>country_flags/svg/ga.svg</file>
+    <file>icons/com.github.jkotra.eovpn.svg</file>
+    <file>icons/notification_connected.svg</file>
+    <file>icons/notification_disconnected.svg</file>
+    <file>icons/openvpn_black.svg</file>
+    <file>css/main.css</file>
+
+    <file>country_flags/svg/uno.svg</file>
+    <file>country_flags/svg/aw.svg</file>
+    <file>country_flags/svg/sr.svg</file>
+    <file>country_flags/svg/bb.svg</file>
+    <file>country_flags/svg/ni.svg</file>
+    <file>country_flags/svg/gb.svg</file>
+    <file>country_flags/svg/tl.svg</file>
+    <file>country_flags/svg/ng.svg</file>
+    <file>country_flags/svg/bl.svg</file>
+    <file>country_flags/svg/im.svg</file>
+    <file>country_flags/svg/de.svg</file>
+    <file>country_flags/svg/gd.svg</file>
+    <file>country_flags/svg/cf.svg</file>
+    <file>country_flags/svg/al.svg</file>
+    <file>country_flags/svg/to.svg</file>
+    <file>country_flags/svg/sa.svg</file>
+    <file>country_flags/svg/ge.svg</file>
+    <file>country_flags/svg/ck.svg</file>
+    <file>country_flags/svg/tt.svg</file>
+    <file>country_flags/svg/az.svg</file>
+    <file>country_flags/svg/qa.svg</file>
+    <file>country_flags/svg/rw.svg</file>
+    <file>country_flags/svg/cz.svg</file>
+    <file>country_flags/svg/lr.svg</file>
+    <file>country_flags/svg/tf.svg</file>
+    <file>country_flags/svg/uy.svg</file>
+    <file>country_flags/svg/as.svg</file>
+    <file>country_flags/svg/in.svg</file>
+    <file>country_flags/svg/ps.svg</file>
+    <file>country_flags/svg/mn.svg</file>
+    <file>country_flags/svg/mx.svg</file>
+    <file>country_flags/svg/lu.svg</file>
+    <file>country_flags/svg/pa.svg</file>
+    <file>country_flags/svg/us.svg</file>
+    <file>country_flags/svg/pf.svg</file>
+    <file>country_flags/svg/nc.svg</file>
+    <file>country_flags/svg/sm.svg</file>
+    <file>country_flags/svg/sh.svg</file>
+    <file>country_flags/svg/li.svg</file>
+    <file>country_flags/svg/mh.svg</file>
+    <file>country_flags/svg/hr.svg</file>
+    <file>country_flags/svg/aq.svg</file>
+    <file>country_flags/svg/me.svg</file>
+    <file>country_flags/svg/iq.svg</file>
+    <file>country_flags/svg/sx.svg</file>
+    <file>country_flags/svg/cn.svg</file>
+    <file>country_flags/svg/fi.svg</file>
+    <file>country_flags/svg/by.svg</file>
+    <file>country_flags/svg/fj.svg</file>
+    <file>country_flags/svg/kp.svg</file>
+    <file>country_flags/svg/so.svg</file>
+    <file>country_flags/svg/td.svg</file>
+    <file>country_flags/svg/co.svg</file>
+    <file>country_flags/svg/mq.svg</file>
+    <file>country_flags/svg/mz.svg</file>
+    <file>country_flags/svg/ph.svg</file>
+    <file>country_flags/svg/hn.svg</file>
+    <file>country_flags/svg/sy.svg</file>
+    <file>country_flags/svg/fm.svg</file>
+    <file>country_flags/svg/ma.svg</file>
+    <file>country_flags/svg/gs.svg</file>
+    <file>country_flags/svg/ao.svg</file>
+    <file>country_flags/svg/rs.svg</file>
+    <file>country_flags/svg/jm.svg</file>
+    <file>country_flags/svg/no.svg</file>
+    <file>country_flags/svg/zw.svg</file>
+    <file>country_flags/svg/ke.svg</file>
+    <file>country_flags/svg/ci.svg</file>
+    <file>country_flags/svg/gb-wls.svg</file>
+    <file>country_flags/svg/br.svg</file>
+    <file>country_flags/svg/je.svg</file>
+    <file>country_flags/svg/cu.svg</file>
+    <file>country_flags/svg/ir.svg</file>
+    <file>country_flags/svg/gb-nir.svg</file>
+    <file>country_flags/svg/sn.svg</file>
+    <file>country_flags/svg/nr.svg</file>
+    <file>country_flags/svg/pt.svg</file>
+    <file>country_flags/svg/tv.svg</file>
+    <file>country_flags/svg/se.svg</file>
+    <file>country_flags/svg/ba.svg</file>
+    <file>country_flags/svg/dk.svg</file>
+    <file>country_flags/svg/gl.svg</file>
+    <file>country_flags/svg/be.svg</file>
+    <file>country_flags/svg/sc.svg</file>
+    <file>country_flags/svg/za.svg</file>
+    <file>country_flags/svg/vg.svg</file>
+    <file>country_flags/svg/wf.svg</file>
+    <file>country_flags/svg/gy.svg</file>
+    <file>country_flags/svg/cl.svg</file>
+    <file>country_flags/svg/tw.svg</file>
+    <file>country_flags/svg/gq.svg</file>
+    <file>country_flags/svg/pw.svg</file>
+    <file>country_flags/svg/bd.svg</file>
+    <file>country_flags/svg/st.svg</file>
+    <file>country_flags/svg/vi.svg</file>
+    <file>country_flags/svg/ro.svg</file>
+    <file>country_flags/svg/dm.svg</file>
+    <file>country_flags/svg/es.svg</file>
+    <file>country_flags/svg/gf.svg</file>
+    <file>country_flags/svg/dj.svg</file>
+    <file>country_flags/svg/bz.svg</file>
+    <file>country_flags/svg/gg.svg</file>
+    <file>country_flags/svg/il.svg</file>
+    <file>country_flags/svg/hu.svg</file>
+    <file>country_flags/svg/kw.svg</file>
+    <file>country_flags/svg/cr.svg</file>
+    <file>country_flags/svg/vu.svg</file>
+    <file>country_flags/svg/is.svg</file>
+    <file>country_flags/svg/er.svg</file>
+    <file>country_flags/svg/tz.svg</file>
+    <file>country_flags/svg/kn.svg</file>
+    <file>country_flags/svg/bs.svg</file>
+    <file>country_flags/svg/pk.svg</file>
+    <file>country_flags/svg/bt.svg</file>
+    <file>country_flags/svg/bv.svg</file>
+    <file>country_flags/svg/sk.svg</file>
+    <file>country_flags/svg/pg.svg</file>
+    <file>country_flags/svg/ar.svg</file>
+    <file>country_flags/svg/eu.svg</file>
+    <file>country_flags/svg/sg.svg</file>
+    <file>country_flags/svg/gi.svg</file>
+    <file>country_flags/svg/mf.svg</file>
+    <file>country_flags/svg/gb-sct.svg</file>
+    <file>country_flags/svg/mk.svg</file>
+    <file>country_flags/svg/mu.svg</file>
+    <file>country_flags/svg/tk.svg</file>
+    <file>country_flags/svg/bf.svg</file>
+    <file>country_flags/svg/gh.svg</file>
+    <file>country_flags/svg/sj.svg</file>
+    <file>country_flags/svg/mt.svg</file>
+    <file>country_flags/svg/np.svg</file>
+    <file>country_flags/svg/ne.svg</file>
+    <file>country_flags/svg/py.svg</file>
+    <file>country_flags/svg/bo.svg</file>
+    <file>country_flags/svg/lt.svg</file>
+    <file>country_flags/svg/na.svg</file>
+    <file>country_flags/svg/tn.svg</file>
+    <file>country_flags/svg/mm.svg</file>
+    <file>country_flags/svg/sb.svg</file>
+    <file>country_flags/svg/my.svg</file>
+    <file>country_flags/svg/ve.svg</file>
+    <file>country_flags/svg/kg.svg</file>
+    <file>country_flags/svg/fr.svg</file>
+    <file>country_flags/svg/fo.svg</file>
+    <file>country_flags/svg/pm.svg</file>
+    <file>country_flags/svg/af.svg</file>
+    <file>country_flags/svg/lv.svg</file>
+    <file>country_flags/svg/ky.svg</file>
+    <file>country_flags/svg/au.svg</file>
+    <file>country_flags/svg/kh.svg</file>
+    <file>country_flags/svg/mc.svg</file>
+    <file>country_flags/svg/bn.svg</file>
+    <file>country_flags/svg/ms.svg</file>
+    <file>country_flags/svg/ch.svg</file>
+    <file>country_flags/svg/ag.svg</file>
+    <file>country_flags/svg/ec.svg</file>
+    <file>country_flags/svg/xk.svg</file>
+    <file>country_flags/svg/bq.svg</file>
+    <file>country_flags/svg/ug.svg</file>
+    <file>country_flags/svg/gp.svg</file>
+    <file>country_flags/svg/tr.svg</file>
+    <file>country_flags/svg/ai.svg</file>
+    <file>country_flags/svg/cc.svg</file>
+    <file>country_flags/svg/bi.svg</file>
+    <file>country_flags/svg/md.svg</file>
+    <file>country_flags/svg/ee.svg</file>
+    <file>country_flags/svg/lb.svg</file>
+    <file>country_flags/svg/kz.svg</file>
+    <file>country_flags/svg/ls.svg</file>
+    <file>country_flags/svg/cv.svg</file>
+    <file>country_flags/svg/tj.svg</file>
+    <file>country_flags/svg/gt.svg</file>
+    <file>country_flags/svg/ru.svg</file>
+    <file>country_flags/svg/cd.svg</file>
+    <file>country_flags/svg/tg.svg</file>
+    <file>country_flags/svg/va.svg</file>
+    <file>country_flags/svg/io.svg</file>
+    <file>country_flags/svg/ws.svg</file>
+    <file>country_flags/svg/mw.svg</file>
+    <file>country_flags/svg/nu.svg</file>
+    <file>country_flags/svg/sl.svg</file>
+    <file>country_flags/svg/ua.svg</file>
+    <file>country_flags/svg/ie.svg</file>
+    <file>country_flags/svg/et.svg</file>
+    <file>country_flags/svg/pe.svg</file>
+    <file>country_flags/svg/at.svg</file>
+    <file>country_flags/svg/cx.svg</file>
+    <file>country_flags/svg/it.svg</file>
+    <file>country_flags/svg/uz.svg</file>
+    <file>country_flags/svg/ca.svg</file>
+    <file>country_flags/svg/gu.svg</file>
+    <file>country_flags/svg/cm.svg</file>
+    <file>country_flags/svg/tm.svg</file>
+    <file>country_flags/svg/yt.svg</file>
+    <file>country_flags/svg/km.svg</file>
+    <file>country_flags/svg/zm.svg</file>
+    <file>country_flags/svg/mg.svg</file>
+    <file>country_flags/svg/lk.svg</file>
+    <file>country_flags/svg/pl.svg</file>
+    <file>country_flags/svg/tc.svg</file>
+    <file>country_flags/svg/nl.svg</file>
+    <file>country_flags/svg/om.svg</file>
+    <file>country_flags/svg/ki.svg</file>
+    <file>country_flags/svg/ht.svg</file>
+    <file>country_flags/svg/bm.svg</file>
+    <file>country_flags/svg/lc.svg</file>
+    <file>country_flags/svg/sz.svg</file>
+    <file>country_flags/svg/gr.svg</file>
+    <file>country_flags/svg/eg.svg</file>
+    <file>country_flags/svg/hm.svg</file>
+    <file>country_flags/svg/nf.svg</file>
+    <file>country_flags/svg/mo.svg</file>
+    <file>country_flags/svg/gb-eng.svg</file>
+    <file>country_flags/svg/bh.svg</file>
+    <file>country_flags/svg/pr.svg</file>
+    <file>country_flags/svg/la.svg</file>
+    <file>country_flags/svg/um.svg</file>
+    <file>country_flags/svg/ss.svg</file>
+    <file>country_flags/svg/ae.svg</file>
+    <file>country_flags/svg/sv.svg</file>
+    <file>country_flags/svg/pn.svg</file>
+    <file>country_flags/svg/sd.svg</file>
+    <file>country_flags/svg/ye.svg</file>
+    <file>country_flags/svg/dz.svg</file>
+    <file>country_flags/svg/cw.svg</file>
+    <file>country_flags/svg/do.svg</file>
+    <file>country_flags/svg/mp.svg</file>
+    <file>country_flags/svg/th.svg</file>
+    <file>country_flags/svg/jp.svg</file>
+    <file>country_flags/svg/si.svg</file>
+    <file>country_flags/svg/bg.svg</file>
+    <file>country_flags/svg/vc.svg</file>
+    <file>country_flags/svg/fk.svg</file>
+    <file>country_flags/svg/ad.svg</file>
+    <file>country_flags/svg/gm.svg</file>
+    <file>country_flags/svg/cg.svg</file>
+    <file>country_flags/svg/id.svg</file>
+    <file>country_flags/svg/nz.svg</file>
+    <file>country_flags/svg/cy.svg</file>
+    <file>country_flags/svg/jo.svg</file>
+    <file>country_flags/svg/ly.svg</file>
+    <file>country_flags/svg/eh.svg</file>
+    <file>country_flags/svg/gw.svg</file>
+    <file>country_flags/svg/bj.svg</file>
+    <file>country_flags/svg/hk.svg</file>
+    <file>country_flags/svg/kr.svg</file>
+    <file>country_flags/svg/mv.svg</file>
+    <file>country_flags/svg/bw.svg</file>
+    <file>country_flags/svg/re.svg</file>
+    <file>country_flags/svg/ax.svg</file>
+    <file>country_flags/svg/ml.svg</file>
+    <file>country_flags/svg/vn.svg</file>
+    <file>country_flags/svg/gn.svg</file>
+    <file>country_flags/svg/am.svg</file>
+    <file>country_flags/svg/mr.svg</file>
+    <file>country_flags/svg/ga.svg</file>
 
   </gresource>
 </gresources>

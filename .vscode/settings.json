@@ -3,5 +3,9 @@
     "editor.defaultFormatter": "xaver.clang-format",
     "editor.formatOnSave": true
     },
+    "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml",
+    "editor.formatOnSave": true
+    },
     "mesonbuild.configureOnOpen": false
 }

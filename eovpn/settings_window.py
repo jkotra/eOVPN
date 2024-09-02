@@ -4,6 +4,8 @@ import os
 import shutil
 import gettext
 
+import gi
+gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, Gio, GLib, Secret
 
 from .eovpn_base import Base, StorageItem

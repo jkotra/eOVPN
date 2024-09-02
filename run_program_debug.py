@@ -2,6 +2,7 @@ import os
 import sys
 from gi.repository import Gio
 import subprocess
+import pathlib
 import shutil
 
 OPENVPN3 = True
@@ -20,6 +21,10 @@ os.environ["G_MESSAGES_DEBUG"] = "eovpn"
 
 def reset():
     subprocess.run(["rm", "-rf", "build"])
+
+    if pathlib.Path("subprojects/openvpn3/enums.h").exists():
+        subprocess.run(["rm", "subprojects/openvpn3/enums.h"])
+        
     subprocess.run(["meson", "setup", "build", "-Dprefix=/usr", f"-Dopenvpn3={OPENVPN3}"])
     subprocess.run(["ninja", "-C", "build"])
 

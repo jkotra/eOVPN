@@ -7,8 +7,8 @@ logger = logging.getLogger(__name__)
 
 try:
     from openvpn3 import constants as OVPN3Constants
-except:
-    logger.warning("cannot import openvpn3")
+except Exception as e:
+    logger.warning("openvpn3 error: %s", e)
 
 
 class OVPN3Dbus(Base):
