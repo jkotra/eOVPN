@@ -71,6 +71,13 @@ sudo ninja uninstall -C build
 flatpak-builder --user --install build-dir dist/flatpak/com.github.jkotra.eovpn.yml --force-clean
 ```
 
+(or)
+
+```
+flatpak-builder --repo=repo --force-clean build-dir dist/flatpak/com.github.jkotra.eovpn.yml
+flatpak build-bundle repo eovpn.flatpak com.github.jkotra.eovpn
+```
+
 to change python dependencies, refer to [flatpak documentation](https://docs.flatpak.org/en/latest/python.html#building-multiple-python-dependencies).
 
 

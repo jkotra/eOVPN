@@ -88,7 +88,7 @@ class OVPN3Dbus(Base):
 
     def send_otp(self, otp: list[int]):
         t = OVPN3Constants.ClientAttentionType.CREDENTIALS
-        g = OVPN3Constants.ClientAttentionGroup.CHALLENGE_AUTH_PENDING
+        g = OVPN3Constants.ClientAttentionGroup.CHALLENGE_STATIC
         i = 0
 
         otp = "".join(otp).encode("utf-8")
@@ -222,10 +222,10 @@ class OVPN3Dbus(Base):
                     i,
                     self.get_auth_password().encode("utf-8"),
                 )
-            elif a == "auth_pending":
+            elif a == "static_challenge":
                 OTPInputWindow(self.send_otp, lambda: self.module.callback(False)).show()
             else:
-                logger.error("unknown input required!")
+                logger.error("unknown input required! %s", a)
 
         self.module.ovpn3.set_dco(
             self.module.get_session_path(), self.get_setting(self.SETTING.OPENVPN3_DCO)

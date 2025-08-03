@@ -1,14 +1,16 @@
 app-id: com.github.jkotra.eovpn
-runtime : org.gnome.Platform
-runtime-version : '46'
-sdk : org.gnome.Sdk
+runtime: org.gnome.Platform
+runtime-version: '48'
+sdk: org.gnome.Sdk
 command: eovpn
 
 finish-args:
   - --share=network
   - --socket=fallback-x11
   - --socket=wayland
+  - --socket=system-bus
   - --share=ipc
+  - --filesystem=xdg-run/gvfsd
   - --filesystem=home/.cert/:create
   - --talk-name=org.freedesktop.Notifications
   - --talk-name=org.freedesktop.secrets
@@ -27,20 +29,17 @@ modules:
         url: https://launchpad.net/intltool/trunk/0.51.0/+download/intltool-0.51.0.tar.gz
         sha256: 67c74d94196b153b774ab9f89b2fa6c6ba79352407037c8c14d5aeb334e959cd
 
-  - name: polkit
+  - name: linux-pam
     buildsystem: autotools
+    sources: 
+      - type: archive
+        url: https://github.com/linux-pam/linux-pam/releases/download/v1.5.3/Linux-PAM-1.5.3.tar.xz
+        sha256: 7ac4b50feee004a9fa88f1dfd2d2fa738a82896763050cd773b3c54b0a818283
+
+  - name: polkit
+    buildsystem: meson
     config-opts:
-      - --disable-polkitd
-      - --disable-man-pages
-      - --disable-introspection
-      - --disable-examples
-      - --disable-gtk-doc
-      - --disable-libelogind
-      - --disable-libsystemd-login
-      - --with-systemdsystemunitdir=no
-      - --with-authdb=dummy
-      - --with-authfw=none
-    rm-configure: true
+      - -Dlibs-only=true
     cleanup:
       - /bin/*
       - /etc/pam.d
@@ -50,15 +49,8 @@ modules:
       - /lib/polkit-1
     sources:
       - type: archive
-        url: https://www.freedesktop.org/software/polkit/releases/polkit-0.116.tar.gz
-        sha256: 88170c9e711e8db305a12fdb8234fac5706c61969b94e084d0f117d8ec5d34b1
-
-      - type: patch
-        path: polkit-build-Add-option-to-build-without-polkitd.patch
-
-      - type: file
-        path: polkit-autogen
-        dest-filename: autogen.sh
+        url: https://github.com/polkit-org/polkit/archive/refs/tags/122.tar.gz
+        sha256: 0d69656d60800835c3d7d1f0a8362b32e1ae3ace2875a35bb624296fc52d5dc4
 
   - name: udev
     config-opts:
@@ -181,7 +173,7 @@ modules:
     sources:
       - type: git
         url: https://codeberg.org/OpenVPN/gdbuspp/
-        tag: 'v1'
+        tag: 'v3'
   
   - name: libnl
     buildsystem: autotools
@@ -202,13 +194,15 @@ modules:
     config-opts:
       - -Dunit_tests=disabled
       - -Dtest_programs=disabled
+      - -Ddbus_policy_dir=/tmp
+      - -Ddbus_system_service_dir=/tmp
     sources:
       - type: git
         url: 'https://codeberg.org/OpenVPN/openvpn3-linux.git'
-        tag: 'v22_dev'
+        tag: 'v24.1'
       
       - type: patch
-        path: 0001-openvpn3-v22_dev-flatpak.patch
+        path: 0001-openvpn3-linux-v24.1.patch
 
   - python3-cffi.json
 

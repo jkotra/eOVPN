@@ -1,0 +1,43 @@
+diff --git a/meson.build b/meson.build
+index d29fba3..02b5a9d 100644
+--- a/meson.build
++++ b/meson.build
+@@ -34,7 +34,7 @@ base_dependencies = [
+     dep_jsoncpp,
+     dep_lz4,
+     dep_selinux,
+-    dep_systemd,
++    # dep_systemd,
+     dep_tinyxml2,
+     dependency('gdbuspp'),
+     dependency('glib-2.0'),
+@@ -65,11 +65,11 @@ compiler = meson.get_compiler('cpp')
+ 
+ # Check for the sd_id128_to_string() method in libsystemd
+ sd_id128 = false
+-if (dep_systemd.found())
+-    sd_id128 = compiler.has_function('sd_id128_to_string',
+-                                     prefix: '#include <systemd/sd-id128.h>',
+-                                     dependencies: dep_systemd)
+-endif
++# if (dep_systemd.found())
++#     sd_id128 = compiler.has_function('sd_id128_to_string',
++#                                      prefix: '#include <systemd/sd-id128.h>',
++#                                      dependencies: dep_systemd)
++# endif
+ 
+ #
+ #  Setup additional include header dirs
+@@ -359,9 +359,9 @@ subdir('src/dbus')
+ subdir('src/selinux')
+ subdir('src/policy/polkit')
+ 
+-if dep_systemd.found()
+-    subdir('distro/systemd')
+-endif
++# if dep_systemd.found()
++#     subdir('distro/systemd')
++# endif
+ 
+ if get_option('bash-completion').enabled()
+    subdir('src/shell/bash-completion')
