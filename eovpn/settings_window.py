@@ -47,9 +47,11 @@ class SettingsWindow(Base, Gtk.Builder):
         h_box.append(v_box)
 
         switch = Gtk.Switch.new()
-        switch.set_state(switch_state) 
         switch.set_halign(Gtk.Align.CENTER)
         switch.set_valign(Gtk.Align.CENTER)
+        switch.set_state(switch_state)
+        switch.set_active(switch_state) 
+
         h_box.append(switch)
 
         list_box_row.set_child(h_box)
@@ -198,9 +200,10 @@ class SettingsWindow(Base, Gtk.Builder):
         self.auth_box.append(self.user_pass_ca_box)
 
         self.main_box.append(self.auth_box)
-        if (_ := self.get_setting(self.SETTING.REQ_AUTH)) is not None:
-            self.ask_auth_switch.set_state(_)
-            self.user_pass_ca_box.set_sensitive(_)
+        if (auth_status_opt := self.get_setting(self.SETTING.REQ_AUTH)) is not None:
+            self.ask_auth_switch.set_state(auth_status_opt)
+            self.ask_auth_switch.set_active(auth_status_opt)
+            self.user_pass_ca_box.set_sensitive(auth_status_opt)
 
             if (username := self.get_setting(self.SETTING.AUTH_USER)) is not None:
                 self.username_entry.set_text(username)
