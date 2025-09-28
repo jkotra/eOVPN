@@ -98,3 +98,18 @@
     font-size: 1.3rem;
     font-weight: bold;
 }
+
+.rounded {
+  border-radius: 16px;
+}
+
+toastoverlay > toast {
+  background-color: rgba(20, 20, 20, 0.85);
+  margin: 12px;
+  border-radius: 24px;
+  padding: 6px 8px;
+}
+
+toastoverlay > * > widget {
+margin: 6px;
+}

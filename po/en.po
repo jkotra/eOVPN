@@ -1,143 +1,148 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2022-06-09 22:39+0530\n"
-"PO-Revision-Date: 2022-06-09 22:39+0530\n"
+"POT-Creation-Date: 2025-09-28 14:27+0530\n"
+"PO-Revision-Date: 2025-09-28 14:27+0530\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.0.1\n"
-"X-Poedit-Basepath: ..\n"
-"X-Poedit-Flags-xgettext: --no-location\n"
-"X-Poedit-SearchPath-0: eovpn\n"
-"X-Poedit-SearchPath-1: data\n"
+"X-Generator: Poedit 3.7\n"
+"X-Poedit-Basepath: eovpn\n"
+"X-Poedit-SearchPath-0: .\n"
 
-msgid "eOVPN"
+#: eovpn_base.py:255
+msgid "Edit"
 msgstr ""
 
-msgid "OpenVPN Configuration Manager"
-msgstr ""
-
-msgctxt "shortcut window"
-msgid "General"
-msgstr ""
-
-msgctxt "shortcut window"
-msgid "Connect"
-msgstr ""
-
-msgctxt "shortcut window"
-msgid "Disconnect"
-msgstr ""
-
-msgctxt "shortcut window"
-msgid "Open Settings"
-msgstr ""
-
-msgctxt "shortcut window"
-msgid "Open About"
-msgstr ""
-
-msgctxt "shortcut window"
-msgid "Open Keyboard Shortcuts"
-msgstr ""
-
+#: main_window.py:75
 msgid "Authentication Required!"
 msgstr ""
 
+#: main_window.py:146
 msgid "No Configs Added!"
 msgstr ""
 
+#: main_window.py:148
 msgid "Open Settings"
 msgstr ""
 
+#: main_window.py:178
 msgid "IP: "
 msgstr ""
 
+#: main_window.py:201 main_window.py:440
 msgid "Connect"
 msgstr ""
 
+#: main_window.py:229 main_window.py:417
 msgid "Disconnect"
 msgstr ""
 
+#: main_window.py:308
 msgid "Vertical"
 msgstr ""
 
+#: main_window.py:312
 msgid "Horizontal"
 msgstr ""
 
+#: main_window.py:317
 msgid "Update"
 msgstr ""
 
+#: main_window.py:318
 msgid "Settings"
 msgstr ""
 
+#: main_window.py:319
 msgid "Keyboard Shortcuts"
 msgstr ""
 
+#: main_window.py:320
 msgid "Layout"
 msgstr ""
 
+#: main_window.py:321
 msgid "Donate"
 msgstr ""
 
+#: main_window.py:322
 msgid "About"
 msgstr ""
 
+#: main_window.py:355
+msgid "IP Address copied to Clipboard!"
+msgstr ""
+
+#: settings_window.py:64
 msgid "Reset"
 msgstr ""
 
+#: settings_window.py:92
 msgid "Setup"
 msgstr ""
 
+#: settings_window.py:93
 msgid "General"
 msgstr ""
 
+#: settings_window.py:94
 msgid "Backend"
 msgstr ""
 
+#: settings_window.py:97
 msgid "Configuration Source"
 msgstr ""
 
+#: settings_window.py:109
 msgid "Choose ZIP File"
 msgstr ""
 
+#: settings_window.py:128
 msgid "Validate & Load"
 msgstr ""
 
+#: settings_window.py:139
 msgid "Authentication"
 msgstr ""
 
+#: settings_window.py:156
 msgid "Username / Email"
 msgstr ""
 
+#: settings_window.py:166
 msgid "Password"
 msgstr ""
 
+#: settings_window.py:242
 msgid "Notifications"
 msgstr ""
 
-msgid "Show Flag"
+#: settings_window.py:247
+msgid "Flag"
 msgstr ""
 
+#: settings_window.py:252
 msgid "Dark Theme"
 msgstr ""
 
+#: settings_window.py:264
 msgid "Delete All VPN Connections!"
 msgstr ""
 
+#: settings_window.py:286
+#, python-brace-format
 msgid "{} (OpenVPN 2)"
 msgstr ""
 
+#: settings_window.py:291
+#, python-brace-format
 msgid "OpenVPN 3 {}"
 msgstr ""
 
-msgid "* Changes will take effect ONLY after restart."
-msgstr ""
-
+#: utils.py:54
 msgid "Configuration Source MUST be a ZIP file."
 msgstr ""

@@ -278,12 +278,7 @@ class SettingsWindow(Base, Gtk.Builder):
 
         
         box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
-
-        label = Gtk.Label.new(gettext.gettext("Backend"))
-        label.set_halign(Gtk.Align.START)
-        label.add_css_class("bold")
-        label.add_css_class("m-4")
-        box.append(label)
+        box.add_css_class("m-10")
 
         self.combobox = Gtk.ComboBoxText()
         version = NetworkManager(None).version()

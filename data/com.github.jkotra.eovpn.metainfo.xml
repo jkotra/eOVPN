@@ -47,6 +47,15 @@
 
   <releases>
 
+    <release version="1.33" date="2025-09-28">
+      <description>
+        <ul>
+          <li>bug fixes to OpenVPN3 backend.</li>
+          <li>cosmetic improvements</li>
+        </ul>
+      </description>
+    </release>
+
     <release version="1.30" date="2024-09-01">
       <description>
         <ul>

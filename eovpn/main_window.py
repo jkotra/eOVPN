@@ -2,9 +2,7 @@ import logging
 from time import sleep
 from .settings_window import SettingsWindow
 from .connection_manager import NetworkManager, OpenVPN3
-import gi
-gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk, Gio, GLib, Gdk
+from gi.repository import Gtk, Gio, GLib, Gdk, Adw
 from .ip_lookup.lookup import Lookup
 from .utils import ovpn_is_auth_required
 import os
@@ -30,6 +28,9 @@ class MainWindow(Base, Gtk.Builder):
         self.window = self.get_object("main_window")
         self.window.set_title("eOVPN")
         self.window.set_icon_name(self.APP_ID)
+
+        self.toast_overlay = Adw.ToastOverlay()
+
         self.app.add_window(self.window)
         self.store(StorageItem.MAIN_WINDOW, self.window)
 
@@ -165,6 +166,7 @@ class MainWindow(Base, Gtk.Builder):
         img = Gtk.Picture.new()
         img.set_halign(Gtk.Align.CENTER)
         img.set_valign(Gtk.Align.CENTER)
+        img.add_css_class("rounded")
         self.store(StorageItem.FLAG, img)
         if self.get_setting(self.SETTING.SHOW_FLAG) is False:
             img.hide()
@@ -346,9 +348,16 @@ class MainWindow(Base, Gtk.Builder):
         #finally!
         self.box.append(self.paned)
         self.box.append(self.progress_bar)
-        self.window.set_child(self.box)
+        self.toast_overlay.set_child(self.box)
+        self.window.set_child(self.toast_overlay)
 
-        cpy_btn.connect("clicked", lambda x: Gdk.Display.get_default().get_clipboard().set(self.ip_addr.get_label()))
+        def copy_ip(btn: Gtk.Button):
+            toast = Adw.Toast.new(gettext.gettext("IP Address copied to Clipboard!"))
+            toast.set_timeout(1)
+            Gdk.Display.get_default().get_clipboard().set(self.ip_addr.get_label())
+            self.toast_overlay.add_toast(toast)
+
+        cpy_btn.connect("clicked", copy_ip)
 
     def update_set_ip_flag(self):
         self.spinner.start()

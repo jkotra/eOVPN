@@ -1,5 +1,5 @@
 project('eovpn',
-  version: '1.31',
+  version: '1.33',
   meson_version: '>= 0.60.0'
 )
 
