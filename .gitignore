@@ -18,3 +18,4 @@ repo
 *.flatpak
 *#
 .wraplock
+.cache
