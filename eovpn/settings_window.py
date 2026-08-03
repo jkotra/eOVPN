@@ -107,9 +107,12 @@ class SettingsWindow(Base, Gtk.Builder):
             entry.set_placeholder_text("https://example.com/vpn/configs.zip")
         zip_chooser_btn = Gtk.Button.new_from_icon_name("media-zip-symbolic")
         zip_chooser_btn.set_tooltip_text(gettext.gettext("Choose ZIP File"))
+        folder_chooser_btn = Gtk.Button.new_from_icon_name("folder-open-symbolic")
+        folder_chooser_btn.set_tooltip_text(gettext.gettext("Choose Local Folder"))
         entry.set_hexpand(True)
         configuration_source_hbox.append(entry)
         configuration_source_hbox.append(zip_chooser_btn)
+        configuration_source_hbox.append(folder_chooser_btn)
 
         zip_file_chooser_dialog = Gtk.FileChooserNative(action=Gtk.FileChooserAction.OPEN)
         zip_file_chooser_dialog.set_transient_for(self.window)
@@ -121,6 +124,12 @@ class SettingsWindow(Base, Gtk.Builder):
         zip_file_chooser_dialog.set_current_folder(default_path)
 
         zip_chooser_btn.connect("clicked", lambda btn: zip_file_chooser_dialog.show())
+
+        folder_file_chooser_dialog = Gtk.FileChooserNative(action=Gtk.FileChooserAction.SELECT_FOLDER)
+        folder_file_chooser_dialog.set_transient_for(self.window)
+        folder_file_chooser_dialog.set_current_folder(default_path)
+
+        folder_chooser_btn.connect("clicked", lambda btn: folder_file_chooser_dialog.show())
 
         self.main_box.append(configuration_source_hbox)
 
@@ -254,6 +263,11 @@ class SettingsWindow(Base, Gtk.Builder):
         self.switches.append(switch)
         list_box.append(row)
 
+        row, switch = self.generate_option_row(gettext.gettext("Auto Reconnect"), "network-wired-symbolic", self.get_setting(self.SETTING.AUTO_RECONNECT))
+        switch.connect("state-set", self.signals.auto_reconnect_set)
+        self.switches.append(switch)
+        list_box.append(row)
+
         
         #attach to pref box
         frame.set_child(list_box)
@@ -313,6 +327,7 @@ class SettingsWindow(Base, Gtk.Builder):
                                 self.window)
         entry.connect("changed", self.signals.process_config_entry, self.revealer)
         zip_file_chooser_dialog.connect("response", self.signals.process_zip, entry, self.revealer)
+        folder_file_chooser_dialog.connect("response", self.signals.process_folder, entry, self.revealer)
         self.validate_btn.connect("clicked", self.signals.on_validate_btn_click, entry, self.ca_chooser_btn, self.spinner)
         self.username_entry.connect("changed", self.signals.process_username)
         self.password_entry.connect("changed", self.signals.process_password)
@@ -348,6 +363,15 @@ class Signals(Base):
         self.set_setting(self.SETTING.REMOTE, path)
         entry.set_buffer(eb)
         revealer.set_reveal_child(True)
+
+    def process_folder(self, chooser, response, entry, revealer):
+        if response == Gtk.ResponseType.ACCEPT:
+            path = chooser.get_file().get_path()
+            eb = Gtk.EntryBuffer()
+            eb.set_text(path, len(path))
+            self.set_setting(self.SETTING.REMOTE, path)
+            entry.set_buffer(eb)
+            revealer.set_reveal_child(True)
 
 
     def req_auth(self, swich, state, auth_box):
@@ -407,6 +431,9 @@ class Signals(Base):
         gtk_settings = Gtk.Settings().get_default()
         self.set_setting(self.SETTING.DARK_THEME, state)
         gtk_settings.set_property("gtk-application-prefer-dark-theme", state)
+
+    def auto_reconnect_set(self, switch, state):
+        self.set_setting(self.SETTING.AUTO_RECONNECT, state)
 
 
     def on_reset_btn_clicked(self, button, entries, buttons, switches, window):

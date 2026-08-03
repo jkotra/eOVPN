@@ -47,6 +47,11 @@ def download_remote_to_destination(remote, destination):
             return make_zip_from_b(remote_c.read())
 
     remote = os.path.expanduser(remote)
+    if os.path.isdir(remote):
+        configs = [f for f in os.listdir(remote) if f.endswith('.ovpn') or f.endswith('.crt') or f.endswith('.pem')]
+        for file_name in configs:
+            shutil.copy2(os.path.join(remote, file_name), destination)
+        return [f for f in configs if f.endswith('.crt') or f.endswith('.pem')]
 
     try:
         zip_file = download_zip(remote)

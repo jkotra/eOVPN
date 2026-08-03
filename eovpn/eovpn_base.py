@@ -67,9 +67,10 @@ class Settings:
     LAYOUT = "layout"
     DARK_THEME = "dark-theme"
     OPENVPN3_DCO = "openvpn3-dco"
+    AUTO_RECONNECT = "auto-reconnect"
 
     all_settings = ["current-connected", "last-connected", "last-connected-cursor", "update-on-start", "connect-on-launch",
-    "notifications", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag", "listbox-v-adjust", "layout", "dark-theme"]
+    "notifications", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag", "listbox-v-adjust", "layout", "dark-theme", "auto-reconnect"]
 
 class Base:
 

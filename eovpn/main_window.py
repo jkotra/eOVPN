@@ -223,6 +223,27 @@ class MainWindow(Base, Gtk.Builder):
 
         self.inner_right.append(h_box)
 
+        # Traffic & Speed panel
+        self.traffic_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 12)
+        self.traffic_box.set_halign(Gtk.Align.CENTER)
+        self.traffic_box.set_margin_top(8)
+        self.traffic_box.set_margin_bottom(8)
+
+        self.dl_speed_label = Gtk.Label.new("")
+        self.dl_speed_label.set_markup("⬇️ <span weight='bold'>0.0 B/s</span>")
+
+        self.ul_speed_label = Gtk.Label.new("")
+        self.ul_speed_label.set_markup("⬆️ <span weight='bold'>0.0 B/s</span>")
+
+        self.total_traffic_label = Gtk.Label.new("")
+        self.total_traffic_label.set_markup("📊 <span weight='bold'>0 B</span>")
+
+        self.traffic_box.append(self.dl_speed_label)
+        self.traffic_box.append(self.ul_speed_label)
+        self.traffic_box.append(self.total_traffic_label)
+
+        self.inner_right.append(self.traffic_box)
+
         #TODO: define it better!
         self.psh = None
 
@@ -510,6 +531,95 @@ class MainWindow(Base, Gtk.Builder):
         except Exception as e:
             logger.error(f"Error selecting fastest: {e}")
 
+    def start_network_monitor(self):
+        self.stop_network_monitor()
+        self.last_rx = 0
+        self.last_tx = 0
+        import time as pytime
+        self.last_time = pytime.time()
+        self.network_monitor_id = GLib.timeout_add_seconds(1, self.update_network_speed)
+
+    def stop_network_monitor(self):
+        if hasattr(self, "network_monitor_id") and self.network_monitor_id:
+            GLib.source_remove(self.network_monitor_id)
+            self.network_monitor_id = None
+
+    def update_network_speed(self):
+        try:
+            rx, tx = 0, 0
+            if os.path.exists("/proc/net/dev"):
+                with open("/proc/net/dev", "r") as f:
+                    for line in f:
+                        if ":" in line:
+                            parts = line.split(":")
+                            if len(parts) == 2:
+                                if any(x in parts[0] for x in ["tun", "tap", "ovpn", "ppp", "wg"]):
+                                    stats = parts[1].split()
+                                    rx += int(stats[0])
+                                    tx += int(stats[8])
+
+            if rx == 0 and tx == 0:
+                if os.path.exists("/proc/net/dev"):
+                    with open("/proc/net/dev", "r") as f:
+                        for line in f:
+                            if ":" in line:
+                                parts = line.split(":")
+                                if len(parts) == 2:
+                                    if "lo" not in parts[0]:
+                                        stats = parts[1].split()
+                                        rx += int(stats[0])
+                                        tx += int(stats[8])
+
+            import time as pytime
+            now = pytime.time()
+            dt = now - getattr(self, "last_time", now - 1.0)
+            if dt <= 0:
+                dt = 1.0
+
+            last_rx = getattr(self, "last_rx", 0)
+            last_tx = getattr(self, "last_tx", 0)
+
+            if last_rx > 0 and last_tx > 0:
+                dl_speed = (rx - last_rx) / dt
+                ul_speed = (tx - last_tx) / dt
+
+                def format_speed(bytes_per_sec):
+                    if bytes_per_sec < 1024:
+                        return f"{bytes_per_sec:.1f} B/s"
+                    elif bytes_per_sec < 1024 * 1024:
+                        return f"{bytes_per_sec / 1024:.1f} KB/s"
+                    else:
+                        return f"{bytes_per_sec / (1024 * 1024):.1f} MB/s"
+
+                def format_size(bytes_total):
+                    if bytes_total < 1024:
+                        return f"{bytes_total} B"
+                    elif bytes_total < 1024 * 1024:
+                        return f"{bytes_total / 1024:.1f} KB"
+                    elif bytes_total < 1024 * 1024 * 1024:
+                        return f"{bytes_total / (1024 * 1024):.1f} MB"
+                    else:
+                        return f"{bytes_total / (1024 * 1024 * 1024):.1f} GB"
+
+                self.dl_speed_label.set_markup(f"⬇️ <span weight='bold'>{format_speed(dl_speed)}</span>")
+                self.ul_speed_label.set_markup(f"⬆️ <span weight='bold'>{format_speed(ul_speed)}</span>")
+                self.total_traffic_label.set_markup(f"📊 <span weight='bold'>{format_size(rx + tx)}</span>")
+
+            self.last_rx = rx
+            self.last_tx = tx
+            self.last_time = now
+        except Exception as e:
+            logger.error(f"Error in network monitor: {e}")
+
+        return True
+
+    def trigger_reconnect(self):
+        selected = self.get_selected_config()
+        if selected:
+            logger.info(f"Auto-reconnecting to {selected}")
+            self.signals.connect(None, self.get_selected_config)
+        return False
+
     def update_set_ip_flag(self):
         self.spinner.start()
         if os.environ.get("FLATPAK_ID") is not None:
@@ -564,6 +674,8 @@ class MainWindow(Base, Gtk.Builder):
             return
 
         if result:
+            self.start_network_monitor()
+            self.was_connected = True
             self.update_ip_flag_async()
             self.connect_btn.set_label(gettext.gettext("Disconnect"))
             self.connect_btn.add_css_class("destructive-action")
@@ -587,6 +699,14 @@ class MainWindow(Base, Gtk.Builder):
                     self.pause_resume_btn.set_visible(True)
 
         else:
+            self.stop_network_monitor()
+            self.dl_speed_label.set_markup("⬇️ <span weight='bold'>0.0 B/s</span>")
+            self.ul_speed_label.set_markup("⬆️ <span weight='bold'>0.0 B/s</span>")
+            self.total_traffic_label.set_markup("📊 <span weight='bold'>0 B</span>")
+
+            should_reconnect = getattr(self, "was_connected", False) and self.get_setting(self.SETTING.AUTO_RECONNECT)
+            self.was_connected = False
+
             self.update_ip_flag_async()
             self.connect_btn.set_label(gettext.gettext("Connect"))
             self.connect_btn.remove_css_class("destructive-action")
@@ -597,6 +717,12 @@ class MainWindow(Base, Gtk.Builder):
             
             self.swap_pause_btn_signal_pause_to_resume()
             self.pause_resume_btn.set_visible(False)
+
+            if should_reconnect:
+                logger.info("Connection lost. Auto-reconnecting in 3 seconds...")
+                toast = Adw.Toast.new(gettext.gettext("Connection lost. Reconnecting in 3 seconds..."))
+                self.toast_overlay.add_toast(toast)
+                GLib.timeout_add_seconds(3, self.trigger_reconnect)
 
     def show(self):
         self.setup()

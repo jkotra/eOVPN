@@ -64,5 +64,8 @@
       <key type="b" name="openvpn3-dco">
          <default>true</default>
       </key>
+      <key type="b" name="auto-reconnect">
+         <default>false</default>
+      </key>
    </schema>
 </schemalist>
