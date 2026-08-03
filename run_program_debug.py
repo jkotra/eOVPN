@@ -12,7 +12,7 @@ try:
 except:
     OPENVPN3 = False
 
-APP_NAME = "com.github.jkotra.eovpn"
+APP_NAME = "com.github.mahdi-bagheban.eovpn-pro"
 
 sys.path.insert(1, os.getcwd())
 sys.path.insert(1, os.getcwd() + "/eovpn/")
@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     from eovpn.application import launch_eovpn
 
-    gre_path = "build/data/com.github.jkotra.eovpn.gresource"
+    gre_path = "build/data/com.github.mahdi-bagheban.eovpn-pro.gresource"
     resource = Gio.resource_load(gre_path)
     subprocess.run(["glib-compile-schemas", "data/"])
     sys.argv.append("--debug")

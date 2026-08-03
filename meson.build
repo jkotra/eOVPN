@@ -8,7 +8,7 @@ python = import('python')
 python_instllation = python.find_installation()
 
 gnome = import('gnome')
-project_id = 'com.github.jkotra.eovpn'
+project_id = 'com.github.mahdi-bagheban.eovpn-pro'
 
 
 prefix = get_option('prefix') # should be /usr

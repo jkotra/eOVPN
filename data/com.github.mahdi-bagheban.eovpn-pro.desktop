@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=eOVPN
-GenericName=eOVPN
-Comment=OpenVPN Configuration Manager
-Icon=com.github.jkotra.eovpn
+Name=eOVPN-Pro
+GenericName=eOVPN-Pro
+Comment=OpenVPN Configuration Manager (Pro Version)
+Icon=com.github.mahdi-bagheban.eovpn-pro
 MimeType=application/x-openvpn-profile;
 Exec=eovpn %f
 Terminal=false

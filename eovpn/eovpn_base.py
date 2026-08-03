@@ -20,7 +20,7 @@ _storage_record = {}
 
 _settings_backup = {}
 
-EOVPN_SECRET_SCHEMA = Secret.Schema.new("com.github.jkotra.eovpn", Secret.SchemaFlags.NONE,
+EOVPN_SECRET_SCHEMA = Secret.Schema.new("com.github.mahdi-bagheban.eovpn-pro", Secret.SchemaFlags.NONE,
 	                                          {
 		                                        "username": Secret.SchemaAttributeType.STRING
 	                                          }
@@ -96,7 +96,7 @@ class Base:
 
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")
         self.EOVPN_OVPN_CONFIG_DIR = os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS")
-        self.EOVPN_GRESOURCE_PREFIX = "/com/github/jkotra/" + self.APP_NAME.lower()
+        self.EOVPN_GRESOURCE_PREFIX = "/com/github/mahdi-bagheban/eovpn-pro"
         self.EOVPN_CSS = self.EOVPN_GRESOURCE_PREFIX + "/css/main.css"
         self.SETTING = Settings()
         self.__settings = Gio.Settings.new(self.APP_ID)
@@ -119,7 +119,7 @@ class Base:
     def send_connected_notification(self):
         if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
             return
-        Notify.init("com.github.jkotra.eovpn")
+        Notify.init("com.github.mahdi-bagheban.eovpn-pro")
         notif = Notify.Notification.new("Connected", "Connected to VPN")
         pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/notification_connected.svg",
                                                              128,
@@ -131,7 +131,7 @@ class Base:
     def send_disconnected_notification(self):
         if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
             return
-        Notify.init("com.github.jkotra.eovpn")
+        Notify.init("com.github.mahdi-bagheban.eovpn-pro")
         notif = Notify.Notification.new("Disconnected", "Disconnected from VPN")
         pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/notification_disconnected.svg",
                                                              128,
@@ -143,7 +143,7 @@ class Base:
     def send_error_notification(self, error_message):
         if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
             return
-        Notify.init("com.github.jkotra.eovpn")
+        Notify.init("com.github.mahdi-bagheban.eovpn-pro")
         notif = Notify.Notification.new("Error", error_message)
         pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/notification_disconnected.svg",
                                                              128,
@@ -167,14 +167,14 @@ class Base:
                                                                True)
 
     def send_notification(self, action, message, connection_event=None):
-        Notify.init("com.github.jkotra.eovpn")
+        Notify.init("com.github.mahdi-bagheban.eovpn-pro")
         notif = Notify.Notification.new(action, message)
         if connection_event is True:
             notif.set_image_from_pixbuf(self.get_image("notification_connected.svg", "icons", (64, 64)))
         elif connection_event is False:
             notif.set_image_from_pixbuf(self.get_image("notification_disconnected.svg", "icons", (64,64)))     
         else:
-            notif.set_image_from_pixbuf(self.get_image("com.github.jkotra.eovpn.svg", "icons", (64,64)))   
+            notif.set_image_from_pixbuf(self.get_image("com.github.mahdi-bagheban.eovpn-pro.svg", "icons", (64,64)))
         notif.show()
 
     def get_setting(self, key):

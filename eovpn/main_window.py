@@ -427,6 +427,8 @@ class MainWindow(Base, Gtk.Builder):
             return 1 if file1 > file2 else -1
 
     def trigger_speed_test(self):
+        if not getattr(self, "speed_test_btn", None) or not self.speed_test_btn.get_sensitive():
+            return
         self.speed_test_btn.set_sensitive(False)
         self.speed_test_btn.set_label(gettext.gettext("Testing..."))
         self.spinner.start()
