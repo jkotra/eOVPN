@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-   <schema path="/com/github/jkotra/eovpn/" id="com.github.jkotra.eovpn">
+   <schema path="/com/github/mahdi-bagheban/eovpn-pro/" id="com.github.mahdi-bagheban.eovpn-pro">
       <key type="b" name="notifications">
          <default>true</default>
       </key>
@@ -63,6 +63,9 @@
       </key>
       <key type="b" name="openvpn3-dco">
          <default>true</default>
+      </key>
+      <key type="b" name="auto-reconnect">
+         <default>false</default>
       </key>
    </schema>
 </schemalist>

@@ -26,7 +26,7 @@ if __name__ == "__main__":
     gettext.bindtextdomain('eovpn', localedir)
     gettext.textdomain('eovpn')
 
-    resource = Gio.resource_load(os.path.join(pkgdatadir, 'com.github.jkotra.eovpn.gresource'))
+    resource = Gio.resource_load(os.path.join(pkgdatadir, 'com.github.mahdi-bagheban.eovpn-pro.gresource'))
     Gio.Resource._register(resource)
     
     exit_status = launch_eovpn()

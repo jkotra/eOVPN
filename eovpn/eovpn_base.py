@@ -20,7 +20,7 @@ _storage_record = {}
 
 _settings_backup = {}
 
-EOVPN_SECRET_SCHEMA = Secret.Schema.new("com.github.jkotra.eovpn", Secret.SchemaFlags.NONE,
+EOVPN_SECRET_SCHEMA = Secret.Schema.new("com.github.mahdi-bagheban.eovpn-pro", Secret.SchemaFlags.NONE,
 	                                          {
 		                                        "username": Secret.SchemaAttributeType.STRING
 	                                          }
@@ -67,9 +67,10 @@ class Settings:
     LAYOUT = "layout"
     DARK_THEME = "dark-theme"
     OPENVPN3_DCO = "openvpn3-dco"
+    AUTO_RECONNECT = "auto-reconnect"
 
     all_settings = ["current-connected", "last-connected", "last-connected-cursor", "update-on-start", "connect-on-launch",
-    "notifications", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag", "listbox-v-adjust", "layout", "dark-theme"]
+    "notifications", "manager", "req-auth", "ca", "ca-set-explicit", "remote-type", "remote", "remote-savepath", "auth-user", "auth-pass", "nm-active-uuid", "show-flag", "listbox-v-adjust", "layout", "dark-theme", "auto-reconnect"]
 
 class Base:
 
@@ -82,6 +83,8 @@ class Base:
         self.AUTHOR = metadata["AUTHOR"]
         self.AUTHOR_MAIL = metadata["AUTHOR_MAIL"]
         self.AUTHOR_MAIL_SECONDARY = metadata["AUTHOR_MAIL_SECONDARY"]
+        self.AUTHOR_WEBSITE = metadata.get("AUTHOR_WEBSITE", "www.MahdiArts.ir")
+        self.AUTHOR_DONATE = metadata.get("AUTHOR_DONATE", "https://www.MahdiArts.ir/donate")
         
         # tip to translators - add yourself to the dict.
         #
@@ -96,7 +99,7 @@ class Base:
 
         self.EOVPN_CONFIG_DIR = os.path.join(GLib.get_user_config_dir(), "eovpn")
         self.EOVPN_OVPN_CONFIG_DIR = os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS")
-        self.EOVPN_GRESOURCE_PREFIX = "/com/github/jkotra/" + self.APP_NAME.lower()
+        self.EOVPN_GRESOURCE_PREFIX = "/com/github/mahdi-bagheban/eovpn-pro"
         self.EOVPN_CSS = self.EOVPN_GRESOURCE_PREFIX + "/css/main.css"
         self.SETTING = Settings()
         self.__settings = Gio.Settings.new(self.APP_ID)
@@ -119,7 +122,7 @@ class Base:
     def send_connected_notification(self):
         if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
             return
-        Notify.init("com.github.jkotra.eovpn")
+        Notify.init("com.github.mahdi-bagheban.eovpn-pro")
         notif = Notify.Notification.new("Connected", "Connected to VPN")
         pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/notification_connected.svg",
                                                              128,
@@ -131,7 +134,7 @@ class Base:
     def send_disconnected_notification(self):
         if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
             return
-        Notify.init("com.github.jkotra.eovpn")
+        Notify.init("com.github.mahdi-bagheban.eovpn-pro")
         notif = Notify.Notification.new("Disconnected", "Disconnected from VPN")
         pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/notification_disconnected.svg",
                                                              128,
@@ -143,7 +146,7 @@ class Base:
     def send_error_notification(self, error_message):
         if self.get_setting(self.SETTING.NOTIFICATIONS) is False:
             return
-        Notify.init("com.github.jkotra.eovpn")
+        Notify.init("com.github.mahdi-bagheban.eovpn-pro")
         notif = Notify.Notification.new("Error", error_message)
         pixbuf = GdkPixbuf.Pixbuf.new_from_resource_at_scale(self.EOVPN_GRESOURCE_PREFIX + "/icons/notification_disconnected.svg",
                                                              128,
@@ -167,14 +170,14 @@ class Base:
                                                                True)
 
     def send_notification(self, action, message, connection_event=None):
-        Notify.init("com.github.jkotra.eovpn")
+        Notify.init("com.github.mahdi-bagheban.eovpn-pro")
         notif = Notify.Notification.new(action, message)
         if connection_event is True:
             notif.set_image_from_pixbuf(self.get_image("notification_connected.svg", "icons", (64, 64)))
         elif connection_event is False:
             notif.set_image_from_pixbuf(self.get_image("notification_disconnected.svg", "icons", (64,64)))     
         else:
-            notif.set_image_from_pixbuf(self.get_image("com.github.jkotra.eovpn.svg", "icons", (64,64)))   
+            notif.set_image_from_pixbuf(self.get_image("com.github.mahdi-bagheban.eovpn-pro.svg", "icons", (64,64)))
         notif.show()
 
     def get_setting(self, key):
@@ -243,26 +246,37 @@ class Base:
             os.makedirs(self.EOVPN_OVPN_CONFIG_DIR)
 
     def load_only(self) -> int | None:
+        self.store("latency_labels", {})
 
         def widget_factory(item):
             row = Gtk.ListBoxRow.new()
+            filename = str(item)
             
             label_and_actions_box = Gtk.Grid()
-            label = Gtk.Label.new(str(item))
+            label = Gtk.Label.new(filename)
             label.set_halign(Gtk.Align.START)
+
+            latency_label = Gtk.Label.new("")
+            latency_label.set_halign(Gtk.Align.END)
+            latency_label.set_hexpand(True)
+            latency_label.set_margin_end(10)
+
+            self.retrieve("latency_labels")[filename] = latency_label
+
             edit_action = Gtk.Button.new_from_icon_name("document-edit-symbolic")
             edit_action.set_has_frame(False)
             edit_action.set_tooltip_text(gettext.gettext("Edit"))
             edit_action.set_margin_end(4)
             edit_action.set_halign(Gtk.Align.END)
-            edit_action.set_hexpand(True)
+            edit_action.set_hexpand(False)
             edit_action.set_visible(False)
             edit_action.add_css_class("btn-no-dec")
-            f = Path(self.EOVPN_OVPN_CONFIG_DIR).joinpath(str(item))
+            f = Path(self.EOVPN_OVPN_CONFIG_DIR).joinpath(filename)
             edit_action.connect("clicked", lambda w: subprocess.run(["xdg-open", str(f)]) )
 
             label_and_actions_box.attach(label, 0, 0, 1, 1)
-            label_and_actions_box.attach(edit_action, 1, 0, 1, 1)
+            label_and_actions_box.attach(latency_label, 1, 0, 1, 1)
+            label_and_actions_box.attach(edit_action, 2, 0, 1, 1)
             row.set_child(label_and_actions_box)
             self.retrieve(StorageItem.LISTBOX_ROWS).append(row)
             return row

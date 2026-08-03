@@ -33,7 +33,7 @@ def on_activate(app):
     main.start()
 
 def launch_eovpn():
-    app = Gtk.Application(application_id='com.github.jkotra.eovpn',
+    app = Gtk.Application(application_id='com.github.mahdi-bagheban.eovpn-pro',
                           flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
 
     app.add_main_option("debug", ord("d"), GLib.OptionFlags.NONE,

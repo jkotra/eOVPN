@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/com/github/jkotra/eovpn/">
+  <gresource prefix="/com/github/mahdi-bagheban/eovpn-pro/">
 
     <file>ui/main.ui</file>
     <file>ui/settings.ui</file>
@@ -11,7 +11,7 @@
     <file>icons/nm_black.svg</file>
     <file>icons/openvpn.svg</file>
 
-    <file>icons/com.github.jkotra.eovpn.svg</file>
+    <file>icons/com.github.mahdi-bagheban.eovpn-pro.svg</file>
     <file>icons/notification_connected.svg</file>
     <file>icons/notification_disconnected.svg</file>
     <file>icons/openvpn_black.svg</file>

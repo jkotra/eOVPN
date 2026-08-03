@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.github.mahdi-bagheban.eovpn-pro</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>GPL-3.0+</project_license>
+  <developer_name>Mahdi Bagheban</developer_name>
+  <name>eOVPN-Pro</name>
+  <summary>OpenVPN Configuration Manager (Pro Version)</summary>
+
+  <description>
+    <p>
+      eOVPN-Pro is an advanced application to connect, manage, and update OpenVPN configurations with built-in speed testing and sorting capabilities.
+    </p>
+  </description>
+
+  <kudos>
+    <kudo>HiDpiIcon</kudo>
+    <kudo>ModernToolkit</kudo>
+    <kudo>Notifications</kudo>
+  </kudos>
+
+  <launchable type="desktop-id">com.github.mahdi-bagheban.eovpn-pro.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/jkotra/eOVPN/master/static/window.png</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://www.MahdiArts.ir</url>
+  <url type="bugtracker">https://github.com/jkotra/eOVPN/issues</url>
+  <url type="donation">https://www.MahdiArts.ir/donate</url>
+
+  <provides>
+    <binary>eovpn</binary>
+  </provides>
+
+  <releases>
+    <release version="1.4" date="2025-10-15">
+      <description>
+        <ul>
+          <li>Pro edition branding and information updates.</li>
+          <li>Added multi-threaded TCP Ping/Speed Test for OpenVPN configuration endpoints.</li>
+          <li>Added speed-based list sorting and Select Fastest server automated utility.</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+
+  <content_rating type="oars-1.1">
+    <content_attribute id="violence-cartoon">none</content_attribute>
+    <content_attribute id="violence-fantasy">none</content_attribute>
+    <content_attribute id="violence-realistic">none</content_attribute>
+    <content_attribute id="violence-bloodshed">none</content_attribute>
+    <content_attribute id="violence-sexual">none</content_attribute>
+    <content_attribute id="violence-desecration">none</content_attribute>
+    <content_attribute id="violence-slavery">none</content_attribute>
+    <content_attribute id="violence-worship">none</content_attribute>
+    <content_attribute id="drugs-alcohol">none</content_attribute>
+    <content_attribute id="drugs-narcotics">none</content_attribute>
+    <content_attribute id="drugs-tobacco">none</content_attribute>
+    <content_attribute id="sex-nudity">none</content_attribute>
+    <content_attribute id="sex-themes">none</content_attribute>
+    <content_attribute id="sex-homosexuality">none</content_attribute>
+    <content_attribute id="sex-prostitution">none</content_attribute>
+    <content_attribute id="sex-adultery">none</content_attribute>
+    <content_attribute id="sex-appearance">none</content_attribute>
+    <content_attribute id="language-profanity">none</content_attribute>
+    <content_attribute id="language-humor">none</content_attribute>
+    <content_attribute id="language-discrimination">none</content_attribute>
+    <content_attribute id="social-chat">none</content_attribute>
+    <content_attribute id="social-info">none</content_attribute>
+    <content_attribute id="social-audio">none</content_attribute>
+    <content_attribute id="social-location">none</content_attribute>
+    <content_attribute id="social-contacts">none</content_attribute>
+    <content_attribute id="money-purchasing">none</content_attribute>
+    <content_attribute id="money-gambling">none</content_attribute>
+  </content_rating>
+  <keywords>
+    <keyword>configurer</keyword>
+    <keyword>openvpn</keyword>
+    <keyword>management</keyword>
+    <keyword>vpn client</keyword>
+    <keyword>networking</keyword>
+  </keywords>
+
+</component>

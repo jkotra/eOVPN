@@ -33,11 +33,15 @@ class MainWindow(Base, Gtk.Builder):
 
         self.app.add_window(self.window)
         self.store(StorageItem.MAIN_WINDOW, self.window)
+        self.store("main_window_instance", self)
 
         self.selected_row = None
+        self.manual_disconnect = False
         self.selected_config = None
         self.connected_cursor = None
         self.signals = Signals()
+        self.latencies = {}
+        self.sort_by_speed_active = False
 
         ###########################################################
         # Initialize and setup Connection Manager (CM)
@@ -57,7 +61,7 @@ class MainWindow(Base, Gtk.Builder):
             row = self.list_box.get_selected_row().get_child()
             self.selected_row = row
             label = row.get_child_at(0, 0).get_label()
-            edit_action = row.get_child_at(1, 0)
+            edit_action = row.get_child_at(2, 0)
             edit_action.set_visible(True)
             return label
         except AttributeError:
@@ -65,7 +69,7 @@ class MainWindow(Base, Gtk.Builder):
 
     def row_changed(self, listbox, row):
         try:
-            self.selected_row.get_child_at(1, 0).set_visible(False)
+            self.selected_row.get_child_at(2, 0).set_visible(False)
         except:
             pass
         if (selected := self.get_selected_config()) is not None:
@@ -158,6 +162,35 @@ class MainWindow(Base, Gtk.Builder):
         viewport.set_child(self.list_box)
         self.load_only()
 
+        # Set up sort function
+        self.list_box.set_sort_func(self.list_box_sort_func)
+
+        # Pro Features Toolbar
+        self.pro_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 6)
+        self.pro_box.set_margin_start(10)
+        self.pro_box.set_margin_end(10)
+        self.pro_box.set_margin_top(6)
+        self.pro_box.set_margin_bottom(6)
+        self.pro_box.add_css_class("linked")
+
+        self.speed_test_btn = Gtk.Button.new_with_label(gettext.gettext("Speed Test"))
+        self.speed_test_btn.set_tooltip_text(gettext.gettext("Test latency of all VPN servers"))
+        self.speed_test_btn.connect("clicked", lambda b: self.trigger_speed_test())
+
+        self.sort_btn = Gtk.ToggleButton.new_with_label(gettext.gettext("Sort"))
+        self.sort_btn.set_tooltip_text(gettext.gettext("Sort servers by lowest latency"))
+        self.sort_btn.connect("toggled", self.on_sort_toggled)
+
+        self.fastest_btn = Gtk.Button.new_with_label(gettext.gettext("Select Fastest"))
+        self.fastest_btn.set_tooltip_text(gettext.gettext("Auto-select server with the lowest latency"))
+        self.fastest_btn.connect("clicked", self.select_fastest)
+
+        self.pro_box.append(self.speed_test_btn)
+        self.pro_box.append(self.sort_btn)
+        self.pro_box.append(self.fastest_btn)
+
+        self.inner_left.append(self.pro_box)
+
         self.inner_left.append(self.scrolled_window)
 
         ###########################################################
@@ -191,6 +224,27 @@ class MainWindow(Base, Gtk.Builder):
         h_box.append(cpy_btn)
 
         self.inner_right.append(h_box)
+
+        # Traffic & Speed panel
+        self.traffic_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 12)
+        self.traffic_box.set_halign(Gtk.Align.CENTER)
+        self.traffic_box.set_margin_top(8)
+        self.traffic_box.set_margin_bottom(8)
+
+        self.dl_speed_label = Gtk.Label.new("")
+        self.dl_speed_label.set_markup("⬇️ <span weight='bold'>0.0 B/s</span>")
+
+        self.ul_speed_label = Gtk.Label.new("")
+        self.ul_speed_label.set_markup("⬆️ <span weight='bold'>0.0 B/s</span>")
+
+        self.total_traffic_label = Gtk.Label.new("")
+        self.total_traffic_label.set_markup("📊 <span weight='bold'>0 B</span>")
+
+        self.traffic_box.append(self.dl_speed_label)
+        self.traffic_box.append(self.ul_speed_label)
+        self.traffic_box.append(self.total_traffic_label)
+
+        self.inner_right.append(self.traffic_box)
 
         #TODO: define it better!
         self.psh = None
@@ -242,7 +296,10 @@ class MainWindow(Base, Gtk.Builder):
             about.set_copyright(self.AUTHOR)
             about.set_license_type(Gtk.License.LGPL_3_0)
             about.set_version(self.APP_VERSION)
-            about.set_website("https://github.com/jkotra/eOVPN")
+            website = self.AUTHOR_WEBSITE
+            if not website.startswith("http"):
+                website = "https://" + website
+            about.set_website(website)
             about.set_system_information("Flatpak: \t {}\nCommit: \t {}".format("true" if os.getenv("FLATPAK_ID") is not None else "false", self.APP_COMMIT))
             about.set_transient_for(self.window)
             about.set_modal(True)
@@ -280,7 +337,7 @@ class MainWindow(Base, Gtk.Builder):
         self.app.add_action(action)
 
         action = Gio.SimpleAction().new("donate", None)
-        action.connect("activate", lambda x, d: webbrowser.open("https://ko-fi.com/jkotra"))
+        action.connect("activate", lambda x, d: webbrowser.open(self.AUTHOR_DONATE))
         self.app.add_action(action)
 
         action = Gio.SimpleAction().new("keyboard_shortcuts", None)
@@ -359,6 +416,212 @@ class MainWindow(Base, Gtk.Builder):
 
         cpy_btn.connect("clicked", copy_ip)
 
+    def list_box_sort_func(self, row1, row2, *args):
+        if not getattr(self, "sort_by_speed_active", False):
+            # Sort alphabetically (default)
+            try:
+                file1 = row1.get_child().get_child_at(0, 0).get_label()
+                file2 = row2.get_child().get_child_at(0, 0).get_label()
+                return 1 if file1 > file2 else -1
+            except Exception:
+                return 0
+        try:
+            grid1 = row1.get_child()
+            grid2 = row2.get_child()
+            if not grid1 or not grid2:
+                return 0
+            file1 = grid1.get_child_at(0, 0).get_label()
+            file2 = grid2.get_child_at(0, 0).get_label()
+        except Exception:
+            return 0
+
+        rtt1 = self.latencies.get(file1, None)
+        rtt2 = self.latencies.get(file2, None)
+
+        if rtt1 is None and rtt2 is None:
+            return 1 if file1 > file2 else -1
+        if rtt1 is None:
+            return 1
+        if rtt2 is None:
+            return -1
+
+        if rtt1 < rtt2:
+            return -1
+        elif rtt1 > rtt2:
+            return 1
+        else:
+            return 1 if file1 > file2 else -1
+
+    def trigger_speed_test(self):
+        if not getattr(self, "speed_test_btn", None) or not self.speed_test_btn.get_sensitive():
+            return
+        self.speed_test_btn.set_sensitive(False)
+        self.speed_test_btn.set_label(gettext.gettext("Testing..."))
+        self.spinner.start()
+
+        def worker():
+            from .speed_test import test_all_configs
+            configs_list = self.retrieve(StorageItem.CONFIGS_LIST)
+            latencies = test_all_configs(self.EOVPN_OVPN_CONFIG_DIR, configs_list)
+            GLib.idle_add(self.on_speed_test_complete, latencies)
+
+        th = threading.Thread(target=worker)
+        th.daemon = True
+        th.start()
+
+    def on_speed_test_complete(self, latencies):
+        self.latencies = latencies
+        latency_labels = self.retrieve("latency_labels")
+
+        for file, rtt in latencies.items():
+            if file in latency_labels:
+                label_widget = latency_labels[file]
+                if rtt is not None:
+                    if rtt < 100:
+                        label_widget.set_markup(f"<span foreground='#2ec27e' weight='bold'>{rtt} ms</span>")
+                    elif rtt < 250:
+                        label_widget.set_markup(f"<span foreground='#e5a50a' weight='bold'>{rtt} ms</span>")
+                    else:
+                        label_widget.set_markup(f"<span foreground='#e01b24' weight='bold'>{rtt} ms</span>")
+                else:
+                    label_widget.set_markup("<span foreground='#e01b24' alpha='60%'>Error</span>")
+
+        if self.sort_by_speed_active:
+            self.list_box.invalidate_sort()
+
+        self.speed_test_btn.set_sensitive(True)
+        self.speed_test_btn.set_label(gettext.gettext("Speed Test"))
+        self.spinner.stop()
+
+        if getattr(self, "auto_select_after_test", False):
+            self.auto_select_after_test = False
+            self.select_fastest(None)
+
+    def on_sort_toggled(self, button):
+        self.sort_by_speed_active = button.get_active()
+        if self.sort_by_speed_active:
+            button.add_css_class("suggested-action")
+            if not self.latencies:
+                self.trigger_speed_test()
+        else:
+            button.remove_css_class("suggested-action")
+        self.list_box.invalidate_sort()
+
+    def select_fastest(self, button):
+        if not self.latencies:
+            self.auto_select_after_test = True
+            self.trigger_speed_test()
+            return
+
+        valid_latencies = {k: v for k, v in self.latencies.items() if v is not None}
+        if not valid_latencies:
+            toast = Adw.Toast.new(gettext.gettext("No reachable servers found! Please run speed test."))
+            self.toast_overlay.add_toast(toast)
+            return
+
+        fastest_file = min(valid_latencies, key=valid_latencies.get)
+
+        configs_list = self.retrieve(StorageItem.CONFIGS_LIST)
+        try:
+            idx = configs_list.index(fastest_file)
+            rows = self.retrieve(StorageItem.LISTBOX_ROWS)
+            row_to_select = rows[idx]
+            self.list_box.select_row(row_to_select)
+
+            toast = Adw.Toast.new(gettext.gettext(f"Selected fastest server: {fastest_file} ({valid_latencies[fastest_file]} ms)"))
+            self.toast_overlay.add_toast(toast)
+        except Exception as e:
+            logger.error(f"Error selecting fastest: {e}")
+
+    def start_network_monitor(self):
+        self.stop_network_monitor()
+        self.last_rx = 0
+        self.last_tx = 0
+        import time as pytime
+        self.last_time = pytime.time()
+        self.network_monitor_id = GLib.timeout_add_seconds(1, self.update_network_speed)
+
+    def stop_network_monitor(self):
+        if hasattr(self, "network_monitor_id") and self.network_monitor_id:
+            GLib.source_remove(self.network_monitor_id)
+            self.network_monitor_id = None
+
+    def update_network_speed(self):
+        try:
+            rx, tx = 0, 0
+            if os.path.exists("/proc/net/dev"):
+                with open("/proc/net/dev", "r") as f:
+                    for line in f:
+                        if ":" in line:
+                            parts = line.split(":")
+                            if len(parts) == 2:
+                                if any(x in parts[0] for x in ["tun", "tap", "ovpn", "ppp", "wg"]):
+                                    stats = parts[1].split()
+                                    rx += int(stats[0])
+                                    tx += int(stats[8])
+
+            if rx == 0 and tx == 0:
+                if os.path.exists("/proc/net/dev"):
+                    with open("/proc/net/dev", "r") as f:
+                        for line in f:
+                            if ":" in line:
+                                parts = line.split(":")
+                                if len(parts) == 2:
+                                    if "lo" not in parts[0]:
+                                        stats = parts[1].split()
+                                        rx += int(stats[0])
+                                        tx += int(stats[8])
+
+            import time as pytime
+            now = pytime.time()
+            dt = now - getattr(self, "last_time", now - 1.0)
+            if dt <= 0:
+                dt = 1.0
+
+            last_rx = getattr(self, "last_rx", 0)
+            last_tx = getattr(self, "last_tx", 0)
+
+            if last_rx > 0 and last_tx > 0:
+                dl_speed = (rx - last_rx) / dt
+                ul_speed = (tx - last_tx) / dt
+
+                def format_speed(bytes_per_sec):
+                    if bytes_per_sec < 1024:
+                        return f"{bytes_per_sec:.1f} B/s"
+                    elif bytes_per_sec < 1024 * 1024:
+                        return f"{bytes_per_sec / 1024:.1f} KB/s"
+                    else:
+                        return f"{bytes_per_sec / (1024 * 1024):.1f} MB/s"
+
+                def format_size(bytes_total):
+                    if bytes_total < 1024:
+                        return f"{bytes_total} B"
+                    elif bytes_total < 1024 * 1024:
+                        return f"{bytes_total / 1024:.1f} KB"
+                    elif bytes_total < 1024 * 1024 * 1024:
+                        return f"{bytes_total / (1024 * 1024):.1f} MB"
+                    else:
+                        return f"{bytes_total / (1024 * 1024 * 1024):.1f} GB"
+
+                self.dl_speed_label.set_markup(f"⬇️ <span weight='bold'>{format_speed(dl_speed)}</span>")
+                self.ul_speed_label.set_markup(f"⬆️ <span weight='bold'>{format_speed(ul_speed)}</span>")
+                self.total_traffic_label.set_markup(f"📊 <span weight='bold'>{format_size(rx + tx)}</span>")
+
+            self.last_rx = rx
+            self.last_tx = tx
+            self.last_time = now
+        except Exception as e:
+            logger.error(f"Error in network monitor: {e}")
+
+        return True
+
+    def trigger_reconnect(self):
+        selected = self.get_selected_config()
+        if selected:
+            logger.info(f"Auto-reconnecting to {selected}")
+            self.signals.connect(None, self.get_selected_config)
+        return False
+
     def update_set_ip_flag(self):
         self.spinner.start()
         if os.environ.get("FLATPAK_ID") is not None:
@@ -413,6 +676,8 @@ class MainWindow(Base, Gtk.Builder):
             return
 
         if result:
+            self.start_network_monitor()
+            self.was_connected = True
             self.update_ip_flag_async()
             self.connect_btn.set_label(gettext.gettext("Disconnect"))
             self.connect_btn.add_css_class("destructive-action")
@@ -436,6 +701,15 @@ class MainWindow(Base, Gtk.Builder):
                     self.pause_resume_btn.set_visible(True)
 
         else:
+            self.stop_network_monitor()
+            self.dl_speed_label.set_markup("⬇️ <span weight='bold'>0.0 B/s</span>")
+            self.ul_speed_label.set_markup("⬆️ <span weight='bold'>0.0 B/s</span>")
+            self.total_traffic_label.set_markup("📊 <span weight='bold'>0 B</span>")
+
+            should_reconnect = getattr(self, "was_connected", False) and self.get_setting(self.SETTING.AUTO_RECONNECT) and not getattr(self, "manual_disconnect", False)
+            self.was_connected = False
+            self.manual_disconnect = False
+
             self.update_ip_flag_async()
             self.connect_btn.set_label(gettext.gettext("Connect"))
             self.connect_btn.remove_css_class("destructive-action")
@@ -446,6 +720,12 @@ class MainWindow(Base, Gtk.Builder):
             
             self.swap_pause_btn_signal_pause_to_resume()
             self.pause_resume_btn.set_visible(False)
+
+            if should_reconnect:
+                logger.info("Connection lost. Auto-reconnecting in 3 seconds...")
+                toast = Adw.Toast.new(gettext.gettext("Connection lost. Reconnecting in 3 seconds..."))
+                self.toast_overlay.add_toast(toast)
+                GLib.timeout_add_seconds(3, self.trigger_reconnect)
 
     def show(self):
         self.setup()
@@ -471,6 +751,11 @@ class Signals(Base):
         if manager.status():
             self.disconnect(None, manager)
             return
+        try:
+            mw = self.retrieve("main_window_instance")
+            mw.manual_disconnect = False
+        except Exception:
+            pass
         config = config()
         manager.connect(os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS", config))
 
@@ -479,6 +764,11 @@ class Signals(Base):
         self.connect(None, config)
 
     def disconnect(self, button, manager):
+        try:
+            mw = self.retrieve("main_window_instance")
+            mw.manual_disconnect = True
+        except Exception:
+            pass
         manager.disconnect()
 
     def pause(self, button, manager):
