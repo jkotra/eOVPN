@@ -387,6 +387,13 @@ class MainWindow(Base, Gtk.Builder):
         menu_button.set_popover(popover)
         header_bar.pack_end(menu_button)
 
+        # Dedicated Sponsor/Donate Button (❤️)
+        self.donate_btn_header = Gtk.Button.new_from_icon_name("emblem-favorite-symbolic")
+        self.donate_btn_header.set_tooltip_text(gettext.gettext("Sponsor & Donate (حمایت مالی)"))
+        self.donate_btn_header.add_css_class("flat")
+        self.donate_btn_header.connect("clicked", lambda b: webbrowser.open(self.AUTHOR_DONATE))
+        header_bar.pack_end(self.donate_btn_header)
+
         self.spinner = Gtk.Spinner()
         header_bar.pack_end(self.spinner)
 
