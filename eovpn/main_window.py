@@ -273,7 +273,10 @@ class MainWindow(Base, Gtk.Builder):
             about.set_copyright(self.AUTHOR)
             about.set_license_type(Gtk.License.LGPL_3_0)
             about.set_version(self.APP_VERSION)
-            about.set_website("https://github.com/jkotra/eOVPN")
+            website = self.AUTHOR_WEBSITE
+            if not website.startswith("http"):
+                website = "https://" + website
+            about.set_website(website)
             about.set_system_information("Flatpak: \t {}\nCommit: \t {}".format("true" if os.getenv("FLATPAK_ID") is not None else "false", self.APP_COMMIT))
             about.set_transient_for(self.window)
             about.set_modal(True)

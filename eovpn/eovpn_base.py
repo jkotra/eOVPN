@@ -82,6 +82,7 @@ class Base:
         self.AUTHOR = metadata["AUTHOR"]
         self.AUTHOR_MAIL = metadata["AUTHOR_MAIL"]
         self.AUTHOR_MAIL_SECONDARY = metadata["AUTHOR_MAIL_SECONDARY"]
+        self.AUTHOR_WEBSITE = metadata.get("AUTHOR_WEBSITE", "www.MahdiArts.ir")
         
         # tip to translators - add yourself to the dict.
         #
