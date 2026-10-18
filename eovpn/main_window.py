@@ -2,10 +2,15 @@ import logging
 from time import sleep
 from .settings_window import SettingsWindow
 from .connection_manager import NetworkManager, OpenVPN3
+import gi
+gi.require_version("Gtk", "4.0")
+gi.require_version("Adw", "1")
 from gi.repository import Gtk, Gio, GLib, Gdk, Adw
 from .ip_lookup.lookup import Lookup
-from .utils import ovpn_is_auth_required
+from .utils import ovpn_is_auth_required, inline_ovpn_config_content
 import os
+import shutil
+from pathlib import Path
 import gettext
 import webbrowser
 import threading
@@ -359,6 +364,127 @@ class MainWindow(Base, Gtk.Builder):
 
         cpy_btn.connect("clicked", copy_ip)
 
+        # Drag and Drop support for .ovpn files
+        self.drop_target = Gtk.DropTarget.new(Gdk.FileList, Gdk.DragAction.COPY)
+        self.drop_target.set_gtypes([Gio.File, Gdk.FileList])
+        self.drop_target.connect("drop", self.on_drop_files)
+        self.window.add_controller(self.drop_target)
+
+    def on_drop_files(self, target, value, x, y):
+        files = []
+        if isinstance(value, Gdk.FileList):
+            files = value.get_files()
+        elif isinstance(value, Gio.File):
+            files = [value]
+        elif hasattr(value, "get_files"):
+            files = value.get_files()
+        elif isinstance(value, (list, tuple)):
+            files = list(value)
+        elif isinstance(value, str):
+            for line in value.strip().splitlines():
+                line = line.strip()
+                if line.startswith("file://"):
+                    files.append(Gio.File.new_for_uri(line))
+                elif os.path.exists(line):
+                    files.append(Gio.File.new_for_path(line))
+
+        if not files:
+            return False
+
+        ovpn_files = []
+        zip_files = []
+        other_files = []
+
+        for f in files:
+            try:
+                if f.query_file_type(Gio.FileQueryInfoFlags.NONE, None) != Gio.FileType.REGULAR:
+                    other_files.append(f)
+                    continue
+            except Exception:
+                continue
+
+            basename = f.get_basename()
+            if not basename:
+                continue
+
+            ext = os.path.splitext(basename)[1].lower()
+            if ext == ".ovpn":
+                ovpn_files.append(f)
+            elif ext == ".zip":
+                zip_files.append(f)
+            else:
+                other_files.append(f)
+
+        if not ovpn_files:
+            if zip_files:
+                toast = Adw.Toast.new(gettext.gettext("ZIP files must be added from Settings"))
+                toast.set_timeout(3)
+                self.toast_overlay.add_toast(toast)
+            elif other_files:
+                toast = Adw.Toast.new(gettext.gettext("Only .ovpn files are supported"))
+                toast.set_timeout(3)
+                self.toast_overlay.add_toast(toast)
+            return False
+
+        os.makedirs(self.EOVPN_OVPN_CONFIG_DIR, exist_ok=True)
+        added_files = []
+        for f in ovpn_files:
+            basename = f.get_basename()
+            dest_path = os.path.join(self.EOVPN_OVPN_CONFIG_DIR, basename)
+            try:
+                src_path = f.get_path()
+                if src_path and os.path.exists(src_path):
+                    raw_content = Path(src_path).read_text(encoding="utf-8", errors="replace")
+                    ca = self.get_setting(self.SETTING.CA)
+                    search_dirs = [os.path.dirname(src_path), self.EOVPN_OVPN_CONFIG_DIR]
+                    if ca:
+                        search_dirs.append(os.path.dirname(ca))
+                    inlined = inline_ovpn_config_content(
+                        raw_content, search_dirs=search_dirs, ca_override=ca
+                    )
+                    Path(dest_path).write_text(inlined, encoding="utf-8")
+                else:
+                    dest_file = Gio.File.new_for_path(dest_path)
+                    if f.get_uri() != dest_file.get_uri():
+                        f.copy(dest_file, Gio.FileCopyFlags.OVERWRITE, None, None)
+                added_files.append(basename)
+            except Exception as e:
+                logger.error("Failed to copy/import %s: %s", basename, e)
+
+        if not added_files:
+            return False
+
+        self.load_only()
+
+        if not self.CM().status():
+            try:
+                configs = self.retrieve(StorageItem.CONFIGS_LIST)
+                target_name = added_files[0]
+                if target_name in configs:
+                    idx = configs.index(target_name)
+                    rows = self.retrieve(StorageItem.LISTBOX_ROWS)
+                    if 0 <= idx < len(rows):
+                        self.list_box.select_row(rows[idx])
+            except Exception as e:
+                logger.debug("Failed to auto-select imported config: %s", e)
+
+        if len(added_files) == 1:
+            msg = gettext.gettext("Added {}").format(added_files[0])
+        else:
+            msg = gettext.ngettext(
+                "Added {} configuration file",
+                "Added {} configuration files",
+                len(added_files)
+            ).format(len(added_files))
+
+        if zip_files:
+            msg += " (" + gettext.gettext("ZIP files must be added from Settings") + ")"
+
+        toast = Adw.Toast.new(msg)
+        toast.set_timeout(3)
+        self.toast_overlay.add_toast(toast)
+        return True
+
     def update_set_ip_flag(self):
         self.spinner.start()
         if os.environ.get("FLATPAK_ID") is not None:
@@ -471,8 +597,10 @@ class Signals(Base):
         if manager.status():
             self.disconnect(None, manager)
             return
-        config = config()
-        manager.connect(os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS", config))
+        config_name = config()
+        if not config_name:
+            return
+        manager.connect(os.path.join(self.EOVPN_CONFIG_DIR, "CONFIGS", config_name))
 
     def connect_via_ks(self, action, _args, config):
         #FIXME: shortcuts

@@ -74,7 +74,8 @@ class Settings:
 class Base:
 
     def __init__(self):
-        metadata = json.loads(open(os.path.dirname(__file__) + "/" + "metadata.json", "r").read())
+        with open(os.path.join(os.path.dirname(__file__), "metadata.json"), "r") as f:
+            metadata = json.load(f)
         self.APP_NAME = metadata["APP_NAME"]
         self.APP_ID = metadata["APP_ID"]
         self.APP_VERSION = metadata["APP_VERSION"]
@@ -270,7 +271,7 @@ class Base:
         box = self.retrieve(StorageItem.LISTBOX)
         
         try:
-            configs = os.listdir(self.EOVPN_OVPN_CONFIG_DIR)
+            configs = [f for f in os.listdir(self.EOVPN_OVPN_CONFIG_DIR) if f.lower().endswith(".ovpn")]
             configs.sort()
         except:
             configs = []
@@ -283,8 +284,6 @@ class Base:
         self.store(StorageItem.LISTBOX_ROWS, [])  
 
         for file in configs:
-            if not file.endswith("ovpn"):
-                continue
             liststore.append(ConfigItem(file))
         return len(configs)
 

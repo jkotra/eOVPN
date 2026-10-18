@@ -1,5 +1,5 @@
 project('eovpn',
-  version: '1.33',
+  version: '1.34',
   meson_version: '>= 0.60.0'
 )
 
@@ -56,5 +56,12 @@ install_subdir(
   'eovpn',
   install_dir: python_dir
 )
+
+if get_option('openvpn3')
+  install_subdir(
+    'openvpn3',
+    install_dir: python_dir
+  )
+endif
 
 meson.add_install_script('meson_post_install.py')

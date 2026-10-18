@@ -1,6 +1,6 @@
 app-id: com.github.jkotra.eovpn
 runtime: org.gnome.Platform
-runtime-version: '50'
+runtime-version: '51'
 sdk: org.gnome.Sdk
 command: eovpn
 
@@ -124,6 +124,7 @@ modules:
       - -Dgtk_doc=false
       - -Dintrospection=false
       - -Dvapi=false
+      - -Dgcr=false
     sources:
       - type: git
         url: 'https://gitlab.gnome.org/GNOME/libnma.git'
@@ -136,75 +137,6 @@ modules:
       - type: git
         url: 'https://github.com/NetworkManager/NetworkManager-openvpn.git'
         tag: "1.8.18"
-
-  - name: jsoncpp
-    buildsystem: meson
-    sources:
-      - type: git
-        url: 'https://github.com/open-source-parsers/jsoncpp.git'
-        tag: '1.9.5'
-
-  - name: libcap-ng
-    buildsystem: autotools
-    sources:
-      - type: git
-        url: 'https://github.com/stevegrubb/libcap-ng'
-        tag: 'v0.8.3'
-
-  - name: tinyxml2
-    buildsystem: meson
-    sources:
-      - type: git
-        url: 'https://github.com/leethomason/tinyxml2'
-        tag: '9.0.0'
-
-  - name: python-dbus
-    buildsystem: meson
-    config-opts:
-      - -Dtests=false
-    sources:
-      - type: archive
-        url: https://dbus.freedesktop.org/releases/dbus-python/dbus-python-1.4.0.tar.xz
-        sha256: c36b28f10ffcc8f1f798aca973bcc132f91f33eb9b6b8904381b4077766043d5
-
-  - name: gdus++
-    buildsystem: meson
-    config-opts:
-      - -Dwerror=false
-    sources:
-      - type: git
-        url: https://codeberg.org/OpenVPN/gdbuspp.git
-        tag: 'v3'
-  
-  - name: libnl
-    buildsystem: autotools
-    sources:
-      - type: git
-        url: https://github.com/thom311/libnl.git
-        tag: libnl3_12_0
-  
-  - name: protobuf
-    buildsystem: cmake
-    sources:
-      - type: git
-        url: https://github.com/protocolbuffers/protobuf
-        tag: v34.1
-
-  - name: openvpn3
-    buildsystem: meson
-    config-opts:
-      - -Dunit_tests=disabled
-      - -Dtest_programs=disabled
-      - -Ddbus_policy_dir=/tmp
-      - -Ddbus_system_service_dir=/tmp
-      - -Dwerror=false
-    sources:
-      - type: git
-        url: 'https://codeberg.org/OpenVPN/openvpn3-linux.git'
-        tag: 'v24.1'
-      
-      - type: patch
-        path: 0001-openvpn3-linux-v24.1.patch
 
   - python3-cffi.json
 

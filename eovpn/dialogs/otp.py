@@ -18,7 +18,13 @@ class OTPInputWindow(Base):
         self.window.set_title("2FA OTP Input")
         self.window.set_default_size(600, 200)
         self.window.set_resizable(False)
-        self.window.set_transient_for(self.retrieve(StorageItem.MAIN_WINDOW))
+
+        try:
+            main_window = self.retrieve(StorageItem.MAIN_WINDOW)
+            if main_window:
+                self.window.set_transient_for(main_window)
+        except KeyError:
+            pass
         self.window.set_modal(True)
 
         self.submit_btn = self.builder.get_object("submit")
@@ -28,9 +34,15 @@ class OTPInputWindow(Base):
         for i in range(1, 7):
             entry = self.builder.get_object(f"O{i}")
             entry.set_max_length(1)
-            next_entry = self.builder.get_object(f"O{i+1}") if i <= 6 else None
+            next_entry = self.builder.get_object(f"O{i+1}") if i < 6 else None
             entry.connect("changed", self.on_entry_changed, next_entry)
-    
+            entry.connect(
+                "activate",
+                lambda _: self.return_and_destroy()
+                if len(self.gather_otp()) == 6
+                else None,
+            )
+
     def on_entry_changed(self, entry, next_entry):
         text: str = entry.get_text()
         if not text.isnumeric():
@@ -39,7 +51,7 @@ class OTPInputWindow(Base):
         if len(text) == 1 and next_entry is not None:
             next_entry.grab_focus()
 
-        # check weather if we can enable submit btn.
+        # check whether we can enable submit btn.
         if len(self.gather_otp()) == 6:
             self.submit_btn.set_sensitive(True)
         else:
@@ -49,17 +61,38 @@ class OTPInputWindow(Base):
         otp = []
         for i in range(1, 7):
             entry = self.builder.get_object(f"O{i}")
-            text = entry.get_text()
-            if len(text) == 1:
-                otp.append(entry.get_text())
+            if entry:
+                text = entry.get_text()
+                if len(text) == 1:
+                    otp.append(text)
         return otp
 
     def return_and_destroy(self):
-        self.window.destroy()
-        self.callback(self.gather_otp())
-    
+        otp = self.gather_otp()
+        callback = self.callback
+        self.callback = None
+        self.error_callback = None
+        if self.window:
+            self.window.destroy()
+            self.window = None
+        if callback:
+            callback(otp)
+
     def manual_close(self, window):
-        self.error_callback()
+        err_cb = self.error_callback
+        self.callback = None
+        self.error_callback = None
+        if err_cb:
+            err_cb()
+        return False
+
+    def close(self):
+        self.callback = None
+        self.error_callback = None
+        if self.window:
+            self.window.destroy()
+            self.window = None
 
     def show(self):
-        self.window.show()
+        if self.window:
+            self.window.show()

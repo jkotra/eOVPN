@@ -47,6 +47,18 @@
 
   <releases>
 
+    <release version="1.34" date="2026-10-18">
+      <description>
+        <ul>
+          <li>Add drag-and-drop support for importing .ovpn configuration files.</li>
+          <li>OpenVPN 3: Add support for two-factor authentication (2FA/TOTP) static challenges.</li>
+          <li>Support separate CA certificates and automatic configuration inlining.</li>
+          <li>OpenVPN 3: Improve session lifecycle management and D-Bus signal handling.</li>
+          <li>OpenVPN 3 and NetworkManager backend stability fixes and improvements.</li>
+        </ul>
+      </description>
+    </release>
+
     <release version="1.33" date="2025-09-28">
       <description>
         <ul>
